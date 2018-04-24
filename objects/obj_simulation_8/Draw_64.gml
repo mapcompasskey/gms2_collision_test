@@ -1,0 +1,1 @@
+scr_simulation_8_draw_gui();
