@@ -39,14 +39,14 @@ var _cell_x = floor(_x2 / _cell_size);
 var _cell_y = floor(_y2 / _cell_size);
 
 // if the horizontal movement is negative and the x position is directly on a cell
-if (_move_h <= 0 && (_x2 mod _cell_size) == 0)
+if (_move_h < 0 && (_x2 mod _cell_size) == 0)
 {
     // offset the horizontal cell by one
     _cell_x -= 1;
 }
 
 // if the vertical movement is negative and the y position is directly on a cell
-if (_move_v <= 0 && (_y2 mod _cell_size) == 0)
+if (_move_v < 0 && (_y2 mod _cell_size) == 0)
 {
     // offset the vertical cell by one
     _cell_y -= 1;
