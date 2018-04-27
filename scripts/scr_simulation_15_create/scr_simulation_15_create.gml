@@ -52,8 +52,8 @@ raycast_hv_color = c_red;
 sprite_index = spr_simulation_6_15px;
 mask_index = spr_simulation_6_15px;
 
-//sprite_index = spr_simulation_6_10px;
-//mask_index = spr_simulation_6_10px;
+sprite_index = spr_simulation_6_10px;
+mask_index = spr_simulation_6_10px;
 
 //sprite_index = spr_simulation_6_8x6px;
 //mask_index = spr_simulation_6_8x6px;
@@ -235,7 +235,7 @@ if (false)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (true)
+if (false)
 {
     sim_x = -8 * cell_size + 5
     sim_y = 2 * cell_size;
@@ -246,3 +246,29 @@ if (true)
     camera_y = (cell_size * -1);
     camera_set_view_pos(camera, camera_x, camera_y);
 }
+
+if (false)
+{
+    sim_x = -7 * cell_size;
+    sim_y = 4 * cell_size;
+    move_angle = -45;
+    move_angle = -405;
+    
+    // update the camera position
+    camera_x = (cell_size * -10);
+    camera_y = (cell_size * -1);
+    camera_set_view_pos(camera, camera_x, camera_y);
+}
+
+if (true)
+{
+    sim_x = 15 * cell_size;
+    sim_y = 5 * cell_size;
+    move_angle = -405;
+    
+    // update the camera position
+    camera_x = (cell_size * 10);
+    camera_y = (cell_size * 0);
+    camera_set_view_pos(camera, camera_x, camera_y);
+}
+

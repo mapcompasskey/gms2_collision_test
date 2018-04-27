@@ -27,6 +27,13 @@ var _collision = false;
 var _move_h = _move_list[| 0];
 var _move_v = _move_list[| 1];
 
+// get the slope
+var _slope = 0;
+if (_move_h != 0 && _move_v != 0)
+{
+    _slope = (_move_v / _move_h);
+}
+
 // record the collision point
 var _list = ds_list_create();
 if (_axis == 1) ds_list_add(_list, _x2, _y2, global.COLLISION_V_COLOR);
@@ -63,6 +70,7 @@ ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
 var _tile_at_point = tilemap_get(_tilemap, _cell_x, _cell_y) & tile_index_mask;
 if (_tile_at_point == 1)
 {
+    /** /
     // update the horizontal movement
     if (_move_h > 0)
     {
@@ -100,6 +108,108 @@ if (_tile_at_point == 1)
             _collision = true;
         }
     }
+    /**/
+    
+    /**/
+    // if testing horizontal movement
+    if (_axis == 0)
+    {
+        // update the horizontal movement
+        if (_move_h > 0)
+        {
+            if (_x2 < (_x1 + _move_h))
+            {
+                _move_h = _x2 - _x1;
+                _collision = true;
+            }
+        }
+        
+        else if (_move_h < 0)
+        {
+            if (_x2 > (_x1 + _move_h))
+            {
+                _move_h = _x2 - _x1;
+                _collision = true;
+            }
+        }
+        
+        if (_collision)
+        {
+            if (_slope != 0)
+            {
+                _y2 = (_slope * (_x2 - _x1)) + _y1;
+                
+                // update the vertical movement
+                if (_move_v > 0)
+                {
+                    if (_y2 < (_y1 + _move_v))
+                    {
+                        _move_v = _y2 - _y1;
+                    }
+                }
+                
+                else if (_move_v < 0)
+                {
+                    if (_y2 > (_y1 + _move_v))
+                    {
+                        _move_v = _y2 - _y1;
+                    }
+                }
+                
+            }   
+        }
+        
+    }
+    
+    else if (_axis == 1)
+    {
+        // update the vertical movement
+        if (_move_v > 0)
+        {
+            if (_y2 < (_y1 + _move_v))
+            {
+                _move_v = _y2 - _y1;
+                _collision = true;
+            }
+        }
+    
+        else if (_move_v < 0)
+        {
+            if (_y2 > (_y1 + _move_v))
+            {
+                _move_v = _y2 - _y1;
+                _collision = true;
+            }
+        }
+        
+        if (_collision)
+        {
+            if (_slope != 0)
+            {
+                _x2 = ((_y2 - _y1) / _slope) + _x1;
+                
+                // update the horizontal movement
+                if (_move_h > 0)
+                {
+                    if (_x2 < (_x1 + _move_h))
+                    {
+                        _move_h = _x2 - _x1;
+                    }
+                }
+                
+                else if (_move_h < 0)
+                {
+                    if (_x2 > (_x1 + _move_h))
+                    {
+                        _move_h = _x2 - _x1;
+                    }
+                }
+        
+            }
+        }
+        
+    }
+    /**/
     
 }
 

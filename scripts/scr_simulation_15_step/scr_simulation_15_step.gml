@@ -349,7 +349,7 @@ new_move_v = new_move_list[| 1];
  * Find Directional Collision State
  *
  * This is used to determine if the entity was falling and has hit the floor and is now grounded.
- * Can also be used to tell entities they have struck and wall and need to turn around.
+ * Can also be used to tell entities they have struck a wall and need to turn around.
  *
  * The only problem is the floating point values that can occur from the cosine and sine functions.
  */
