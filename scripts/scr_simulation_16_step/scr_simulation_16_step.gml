@@ -231,7 +231,7 @@ if ( ! update_simulation)
     exit;
 }
 
-draw_cell_index = 0;
+draw_cell_index = -1;
 update_simulation = false;
 
 
