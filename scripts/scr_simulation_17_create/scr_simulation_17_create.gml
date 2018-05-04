@@ -49,8 +49,8 @@ raycast_v_color = c_yellow;
 raycast_hv_color = c_red;
 
 // drawing
-sprite_index = spr_simulation_6_15px;
-mask_index = spr_simulation_6_15px;
+//sprite_index = spr_simulation_6_15px;
+//mask_index = spr_simulation_6_15px;
 
 sprite_index = spr_simulation_6_10px;
 mask_index = spr_simulation_6_10px;

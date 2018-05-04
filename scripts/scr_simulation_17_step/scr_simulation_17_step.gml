@@ -339,7 +339,7 @@ ds_list_mark_as_list(gui_bbox_points, ds_list_size(gui_bbox_points) - 1);
  *
  */
 
-scr_simulation_17_raycast(x1, y1, new_move_list, bbox_width, bbox_height, collision_tilemap, cell_size);
+scr_simulation_17_raycast(x1, y1, new_move_list, collision_tilemap, cell_size, bbox_width, bbox_height);
 
 new_move_h = new_move_list[| 0];
 new_move_v = new_move_list[| 1];
