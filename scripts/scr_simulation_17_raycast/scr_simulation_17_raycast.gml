@@ -27,17 +27,17 @@ var _new_move_h = _move_h;
 var _new_move_v = _move_v;
 
 // the tilemap layer and tile size
-var _collision_tilemap = argument5;
-var _cell_size = argument6;
+var _collision_tilemap = argument3;
+var _cell_size = argument4;
 
 // the object size
-var _width = argument3;
-var _height = argument4;
+var _width = argument5;
+var _height = argument6;
 
 // if there is movement
 if (_move_h != 0 || _move_v != 0)
 {
-    // which test can be performed
+    // the test that can be performed
     var _test_h = (_move_h == 0 ? false : true);
     var _test_v = (_move_v == 0 ? false : true);
     
@@ -274,7 +274,7 @@ if (_move_h != 0 || _move_v != 0)
                 
                 if (collision)
                 {
-                    // update the movement
+                    // update the movement value and target
                     _new_move_1 = _step_1 - _start_1;
                     _end_1 = _start_1 + _new_move_1;
                     
@@ -282,7 +282,7 @@ if (_move_h != 0 || _move_v != 0)
                     // and the new point does not exceed the target
                     if (_move_2 > 0 && _step_2 < _end_2)
                     {
-                        // update the other movement
+                        // update the other movement value and target
                         _new_move_2 = _step_2 - _start_2;
                         _end_2 = _start_2 + _new_move_2;
                     }
@@ -291,7 +291,7 @@ if (_move_h != 0 || _move_v != 0)
                     // and the new point does not exceed the target
                     else if (_move_2 < 0 && _step_2 > _end_2)
                     {
-                        // update the other movement
+                        // update the other movement value and target
                         _new_move_2 = _step_2 - _start_2;
                         _end_2 = _start_2 + _new_move_2;
                     }
@@ -332,12 +332,12 @@ if (_move_h != 0 || _move_v != 0)
             _size_delta += _cell_size;
         }
         
-        // move along the ray towards the next intersection
-        _step_1 = round(_step_1 + (_cell_size * sign(_move_1)));
-        
-        // if horizontal collision was checked during this step
-        if (_axis == 0)
+        // if horizontal collision was checked during this step and no collision occurred
+        if (_axis == 0 && _collision_h == false)
         {
+            // move along the ray towards the next intersection
+            _step_1 = round(_step_1 + (_cell_size * sign(_move_1)));
+            
             // if there is slope
             if (_slope != 0)
             {
@@ -367,9 +367,12 @@ if (_move_h != 0 || _move_v != 0)
             
         }
         
-        // else, if vertical collision was checked during this step
-        else if (_axis == 1)
+        // else, if vertical collision was checked during this step and no collision occurred
+        else if (_axis == 1 && _collision_v == false)
         {
+            // move along the ray towards the next intersection
+            _step_1 = round(_step_1 + (_cell_size * sign(_move_1)));
+            
             // if there is slope
             if (_slope != 0)
             {
@@ -397,6 +400,12 @@ if (_move_h != 0 || _move_v != 0)
                 _test_v = false;
             }
             
+        }
+        
+        // else, unforeseen loop condition
+        else
+        {
+            break;
         }
         
     }
