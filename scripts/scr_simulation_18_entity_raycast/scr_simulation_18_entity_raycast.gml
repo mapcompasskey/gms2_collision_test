@@ -1,4 +1,4 @@
-/// @function scr_simulation_17_raycast(x1, y1, move_list, tilemap_layer, tile_size, bbox_width, bbox_height);
+/// @function scr_simulation_18_entity_raycast(x1, y1, move_list, tilemap_layer, tile_size, bbox_width, bbox_height);
 /// @param {number} x1 the starting x position
 /// @param {number} y1 the starting y position
 /// @param {real} move_list the ds_list containing the move_h and move_v
@@ -231,17 +231,6 @@ if (_move_h != 0 || _move_v != 0)
         // while the target size hasn't been reached and test can be performed
         while (_size_delta < _size_target && (_test_h || _test_v))
         {
-            // capture the cell
-            var _list = ds_list_create();
-            if (_axis == 1) ds_list_add(_list, (_cell_2 * _cell_size), (_cell_1 * _cell_size), global.COLLISION_V_COLOR);
-            else ds_list_add(_list, (_cell_1 * _cell_size), (_cell_2 * _cell_size), global.COLLISION_H_COLOR);
-            
-            ds_list_add(global.GUI_AXIS_POINTS, _list);
-            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-            
-            ds_list_add(global.DRAW_CELLS, _list);
-            ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
-            
             // check tile collision
             _tile_at_point = 0;
             if (_axis == 0)
@@ -351,7 +340,7 @@ if (_move_h != 0 || _move_v != 0)
             _step_h_y = _step_2;
             
             // capture the new end point
-            // *if collision occurred and it updated
+            // *in case collision occurred and was updated
             _end_h = _end_1;
             _end_v = _end_2;
             
@@ -386,7 +375,7 @@ if (_move_h != 0 || _move_v != 0)
             _step_v_y = _step_1;
             
             // capture the new end point
-            // *if collision occurred and it updated
+            // *in case collision occurred and was updated
             _end_h = _end_2;
             _end_v = _end_1;
             
