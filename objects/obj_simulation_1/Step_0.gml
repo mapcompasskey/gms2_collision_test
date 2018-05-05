@@ -1,1 +1,0 @@
-scr_simulation_1_step();

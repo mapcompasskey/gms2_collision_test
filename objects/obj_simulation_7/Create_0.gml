@@ -1,1 +1,0 @@
-scr_simulation_7_create();
