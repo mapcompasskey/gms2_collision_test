@@ -33,14 +33,14 @@ collision_h = false;
 collision_v = false;
 
 // drawing
-the_sprite = spr_simulation_9_entity_1;
+the_sprite = spr_simulation_15px;
 switch (irandom(4))
 {
-    case 0: the_sprite = spr_simulation_9_entity_1; break;
-    case 1: the_sprite = spr_simulation_9_entity_2; break;
-    case 2: the_sprite = spr_simulation_9_entity_3; break;
-    case 3: the_sprite = spr_simulation_9_entity_4; break;
-    case 4: the_sprite = spr_simulation_9_entity_5; break;
+    case 0: the_sprite = spr_simulation_15px; break;
+    case 1: the_sprite = spr_simulation_10px; break;
+    case 2: the_sprite = spr_simulation_8x6px; break;
+    case 3: the_sprite = spr_simulation_6px; break;
+    case 4: the_sprite = spr_simulation_1px; break;
 }
 
 sprite_index = the_sprite;

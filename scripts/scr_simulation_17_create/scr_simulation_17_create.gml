@@ -49,20 +49,20 @@ raycast_v_color = c_yellow;
 raycast_hv_color = c_red;
 
 // drawing
-//sprite_index = spr_simulation_6_15px;
-//mask_index = spr_simulation_6_15px;
+//sprite_index = spr_simulation_15px;
+//mask_index = spr_simulation_15px;
 
-sprite_index = spr_simulation_6_10px;
-mask_index = spr_simulation_6_10px;
+sprite_index = spr_simulation_10px;
+mask_index = spr_simulation_10px;
 
-//sprite_index = spr_simulation_6_8x6px;
-//mask_index = spr_simulation_6_8x6px;
+//sprite_index = spr_simulation_8x6px;
+//mask_index = spr_simulation_8x6px;
 
-//sprite_index = spr_simulation_6_6px;
-//mask_index = spr_simulation_6_6px;
+//sprite_index = spr_simulation_6px;
+//mask_index = spr_simulation_6px;
 
-//sprite_index = spr_simulation_6_1px;
-//mask_index = spr_simulation_6_1px;
+//sprite_index = spr_simulation_1px;
+//mask_index = spr_simulation_1px;
 
 bbox_width = sprite_get_bbox_right(sprite_index) - sprite_get_bbox_left(sprite_index)
 bbox_height = sprite_get_bbox_bottom(sprite_index) - sprite_get_bbox_top(sprite_index)
