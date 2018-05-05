@@ -1,0 +1,1 @@
+scr_simulation_3_entity_create();

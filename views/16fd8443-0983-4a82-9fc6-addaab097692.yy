@@ -11,7 +11,7 @@
         "1e39e498-f6c4-4d34-adbf-2d98248220a4"
     ],
     "filterType": "GMScript",
-    "folderName": "Simulation 17",
+    "folderName": "Simulation 2",
     "isDefaultView": false,
     "localisedFolderName": ""
 }
