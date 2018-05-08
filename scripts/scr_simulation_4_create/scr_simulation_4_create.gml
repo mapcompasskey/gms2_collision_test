@@ -18,6 +18,11 @@ tile_solid_east = 3;
 tile_solid_south = 4;
 tile_solid_north = 5;
 
+tile_solid_45_se = 6;
+tile_solid_45_sw = 7;
+tile_solid_45_ne = 8;
+tile_solid_45_nw = 9;
+
 // collision tilemap
 collision_tilemap_layer_id = layer_get_id("Collision_Tiles");
 collision_tilemap = layer_tilemap_get_id(collision_tilemap_layer_id);
@@ -50,6 +55,7 @@ collision_v = false;
 collision_h_color = c_orange;
 collision_v_color = c_yellow;
 collision_hv_color = c_red;
+collision_slope_color = c_lime;
 raycast_h_color = c_orange;
 raycast_v_color = c_yellow;
 raycast_hv_color = c_red;
@@ -150,6 +156,7 @@ global.DRAW_CELLS = draw_cells;
 global.COLLISION_H_COLOR = collision_h_color;
 global.COLLISION_V_COLOR = collision_v_color;
 global.COLLISION_HV_COLOR = collision_hv_color;
+global.COLLISION_SLOPE_COLOR = collision_slope_color;
 
 
 /**
@@ -157,7 +164,7 @@ global.COLLISION_HV_COLOR = collision_hv_color;
  *
  */
 
-if (true)
+if (false)
 {
     sim_x = 15 * cell_size;
     sim_y = 15 * cell_size;
@@ -169,4 +176,16 @@ if (true)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
+if (true)
+{
+    sim_x = 27 * cell_size;
+    sim_y = 13 * cell_size;
+    move_angle = -11;
+    move_distance = 40;
+    
+    // update the camera position
+    camera_x = (cell_size * 21);
+    camera_y = (cell_size * 7);
+    camera_set_view_pos(camera, camera_x, camera_y);
+}
 
