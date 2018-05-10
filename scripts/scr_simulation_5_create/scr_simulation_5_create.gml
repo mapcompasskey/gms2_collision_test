@@ -1,4 +1,4 @@
-/// @function scr_simulation_4_create()
+/// @function scr_simulation_5_create()
 
 
 /**
@@ -54,11 +54,11 @@ collision_v = false;
 // colors
 collision_h_color = c_orange;
 collision_v_color = c_yellow;
-collision_hv_color = c_red;
+collision_hv_color = c_lime;
 collision_slope_color = c_lime;
 raycast_h_color = c_orange;
 raycast_v_color = c_yellow;
-raycast_hv_color = c_red;
+raycast_hv_color = c_lime;
 
 // drawing
 //sprite_index = spr_simulation_15px;
@@ -103,6 +103,7 @@ gui_room_x_axis = ds_list_create();
 gui_room_y_axis = ds_list_create();
 gui_axis_points = ds_list_create();
 gui_bbox_points = ds_list_create();
+gui_ray_2_points = ds_list_create();
 
 
 /**
@@ -189,7 +190,7 @@ if (false)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (true)
+if (false)
 {
     sim_x = 5 * cell_size;
     sim_y = 5 * cell_size;
@@ -199,6 +200,19 @@ if (true)
     // update the camera position
     camera_x = (cell_size * 0);
     camera_y = (cell_size * 0);
+    camera_set_view_pos(camera, camera_x, camera_y);
+}
+
+if (true)
+{
+    sim_x = 5 * cell_size;
+    sim_y = 14 * cell_size;
+    move_angle = -11;
+    move_distance = 40;
+    
+    // update the camera position
+    camera_x = (cell_size * 0);
+    camera_y = (cell_size * 10);
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
