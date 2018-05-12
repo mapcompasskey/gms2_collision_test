@@ -70,7 +70,7 @@ if (move_v < 0)
 }
 
 // raycast for tile collision
-scr_simulation_6_entity_raycast(_x1, _y1, new_move_list, collision_tilemap, tile_size, bbox_width, bbox_height);
+scr_simulation_6_entity_raycast(_x1, _y1, new_move_list, collision_tilemap, tile_size, bbox_width, bbox_height, false);
 
 // update new move values
 new_move_h = new_move_list[| 0];
@@ -82,7 +82,7 @@ new_move_v = new_move_list[| 1];
  *
  * This is used to determine if the entity was falling and has hit the floor and is now grounded.
  * Can also be used to tell entities they have struck a wall and need to turn around.
- */
+ * /
 
 // reset collision states
 collision_h = false;

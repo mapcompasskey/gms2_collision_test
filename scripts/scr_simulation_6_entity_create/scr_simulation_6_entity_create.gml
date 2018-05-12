@@ -24,11 +24,6 @@ tile_solid_45_nw = global.TILE_SOLID_45_NW;
 collision_tilemap = global.COLLISION_TILEMAP;
 
 // movement
-//var speed_min = 50;
-//var speed_max = 150;
-//velocity_x = random_range(speed_min, speed_max) * (irandom(1) ? 1 : -1);
-//velocity_y = random_range(speed_min, speed_max) * (irandom(1) ? 1 : -1);
-
 speed_h = 50;
 speed_v = 50;
 
@@ -50,15 +45,12 @@ collision_h = false;
 collision_v = false;
 
 // drawing
+// the_sprite = spr_simulation_15px;
 the_sprite = spr_simulation_10px;
-//switch (irandom(4))
-//{
-//    case 0: the_sprite = spr_simulation_15px; break;
-//    case 1: the_sprite = spr_simulation_10px; break;
-//    case 2: the_sprite = spr_simulation_8x6px; break;
-//    case 3: the_sprite = spr_simulation_6px; break;
-//    case 4: the_sprite = spr_simulation_1px; break;
-//}
+// the_sprite = spr_simulation_10px;
+// the_sprite = spr_simulation_8x6px;
+// the_sprite = spr_simulation_6px;
+// the_sprite = spr_simulation_1px;
 
 sprite_index = the_sprite;
 mask_index = the_sprite;

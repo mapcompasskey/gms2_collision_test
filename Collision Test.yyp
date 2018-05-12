@@ -95,6 +95,14 @@
             }
         },
         {
+            "Key": "11f83c9f-d2b5-48e7-a602-0d6b46ad4c05",
+            "Value": {
+                "id": "184a10f1-a9de-497e-be32-299ba07f4d6b",
+                "resourcePath": "scripts\\scr_simulation_7_draw\\scr_simulation_7_draw.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "1574c846-cca4-4577-a71a-d5ca1ebe3934",
             "Value": {
                 "id": "d1d541da-badf-4233-8d68-42825ac7e2ea",
@@ -124,6 +132,14 @@
                 "id": "0d872ce0-7612-47eb-bc57-836592e19f3d",
                 "resourcePath": "views\\182b46d1-671e-4d58-a073-56fe2245f8c9.yy",
                 "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "1bd368d1-62ca-4da4-afba-223037d5e976",
+            "Value": {
+                "id": "f40235eb-b287-4b6c-b2aa-fe740edd4744",
+                "resourcePath": "scripts\\scr_simulation_7_draw_gui\\scr_simulation_7_draw_gui.yy",
+                "resourceType": "GMScript"
             }
         },
         {
@@ -215,6 +231,14 @@
             }
         },
         {
+            "Key": "48d2e2d8-53ce-410c-baa0-df66693831cb",
+            "Value": {
+                "id": "f5710c99-747c-4337-8f59-fcf6e6f710b1",
+                "resourcePath": "scripts\\scr_simulation_7_step\\scr_simulation_7_step.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "4aba4c5f-decc-4732-9de3-0959fa829cb0",
             "Value": {
                 "id": "1651bd28-507b-41a0-917b-05864b67e87e",
@@ -236,6 +260,14 @@
                 "id": "0c5dc2d7-e3db-43c4-8842-74e081743a49",
                 "resourcePath": "scripts\\scr_simulation_6_entity_create\\scr_simulation_6_entity_create.yy",
                 "resourceType": "GMScript"
+            }
+        },
+        {
+            "Key": "4fb7fa3f-2c5a-4e10-96de-a6b1900c5001",
+            "Value": {
+                "id": "0f834e41-4a14-4759-a81d-0439fbaacd66",
+                "resourcePath": "rooms\\rm_stage_7\\rm_stage_7.yy",
+                "resourceType": "GMRoom"
             }
         },
         {
@@ -339,6 +371,14 @@
             "Value": {
                 "id": "bdd8eca5-03a6-4442-8719-bc7825530f60",
                 "resourcePath": "scripts\\scr_simulation_4_raycast_5\\scr_simulation_4_raycast_5.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
+            "Key": "79568671-1723-46d0-bd1c-ada53e1ee0f9",
+            "Value": {
+                "id": "25192646-6b84-4cac-8b2b-5ab5d697f472",
+                "resourcePath": "scripts\\scr_simulation_7_create\\scr_simulation_7_create.yy",
                 "resourceType": "GMScript"
             }
         },
@@ -551,11 +591,27 @@
             }
         },
         {
+            "Key": "c046b3e6-4672-49cb-8d18-382468b807b6",
+            "Value": {
+                "id": "fc83738d-9c44-4911-926c-e8245bc2cf67",
+                "resourcePath": "views\\c046b3e6-4672-49cb-8d18-382468b807b6.yy",
+                "resourceType": "GMFolder"
+            }
+        },
+        {
             "Key": "c34cd8ef-72a1-4283-a1c2-483046a77463",
             "Value": {
                 "id": "d7f27fc2-a78b-456b-b5b9-97d5ed98b781",
                 "resourcePath": "views\\c34cd8ef-72a1-4283-a1c2-483046a77463.yy",
                 "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "c43e32c0-fe52-4c5c-98f8-5ef8d4e1845f",
+            "Value": {
+                "id": "053017c3-b4c6-477c-acf5-4452a2bc2acd",
+                "resourcePath": "objects\\obj_simulation_7\\obj_simulation_7.yy",
+                "resourceType": "GMObject"
             }
         },
         {
@@ -671,6 +727,14 @@
             }
         },
         {
+            "Key": "f087d62f-8147-4d1a-8e65-fda7f7f6467b",
+            "Value": {
+                "id": "c1aa0e8d-5093-48f7-854d-201e56eac080",
+                "resourcePath": "scripts\\scr_simulation_7_raycast\\scr_simulation_7_raycast.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "f3bb99f1-1351-4b64-ba5f-cf7b0e97d9b1",
             "Value": {
                 "id": "cb813f29-3300-42c8-86d9-7a609b91c96b",
@@ -754,7 +818,12 @@
         "3c58e976-4d0f-4fe1-b573-64495f77867c",
         "4d75c253-ed5b-4b58-9966-8fce08e74528",
         "af02fb8b-ec3d-4314-b4a7-aa4b060c94ee",
-        "d62dd5dd-b90c-4a61-b265-fcdcb1400abf"
+        "d62dd5dd-b90c-4a61-b265-fcdcb1400abf",
+        "79568671-1723-46d0-bd1c-ada53e1ee0f9",
+        "48d2e2d8-53ce-410c-baa0-df66693831cb",
+        "f087d62f-8147-4d1a-8e65-fda7f7f6467b",
+        "11f83c9f-d2b5-48e7-a602-0d6b46ad4c05",
+        "1bd368d1-62ca-4da4-afba-223037d5e976"
     ],
     "tutorial": ""
 }

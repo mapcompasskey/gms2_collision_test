@@ -1,4 +1,4 @@
-/// @function scr_simulation_5_raycast(x1, y1, move_list, tilemap_layer, tile_size, bbox_width, bbox_height, redirected);
+/// @function scr_simulation_7_raycast(x1, y1, move_list, tilemap_layer, tile_size, bbox_width, bbox_height, redirected);
 /// @param {number} x1 the starting x position
 /// @param {number} y1 the starting y position
 /// @param {real} move_list the ds_list containing the move_h and move_v
