@@ -317,7 +317,6 @@ ds_list_add(temp_list, x1, y1, 2);
 ds_list_add(bbox_points, temp_list);
 ds_list_mark_as_list(bbox_points, ds_list_size(bbox_points) - 1);
 
-
 // capture the bounding box rays
 temp_list = ds_list_create();
 ds_list_add(temp_list, x_max, y_min, 0);

@@ -40,15 +40,25 @@ var _redirected = argument7;
 // if there is movement
 if (_move_h != 0 || _move_v != 0)
 {
+    // prepare variables
+    var _cell_x, _cell_y;
+    var _size_delta, _size_target;
+    
+    // tile values
+    var _tile_at_point;
+    var _tile_solid = tile_solid;
+    var _tile_one_way = tile_solid;
+    
     // the test that can be performed
     var _test_h = (_move_h == 0 ? false : true);
     var _test_v = (_move_v == 0 ? false : true);
     
     // the slope of the line
-    var _slope = 0;
+    // *using a different term since "slope" can also refer to a type of tile
+    var _gradient = 0;
     if (_move_h != 0 && _move_v != 0)
     {
-        _slope = (_move_v / _move_h);
+        _gradient = (_move_v / _move_h);
     }
     
     // the distances traveled along the ray
@@ -58,19 +68,19 @@ if (_move_h != 0 || _move_v != 0)
     // the maximum distance of the ray
     var _ray_target = point_distance(0, 0, _move_h, _move_v);
     
+    // the distances to the collision points
+    var _ray_collision_h = _ray_target;
+    var _ray_collision_v = _ray_target;
+    
     // collision states
     var _collision_h = false;
     var _collision_v = false;
     
-    // target positions
-    var _end_h = (_start_x + _move_h);
-    var _end_v = (_start_y + _move_v);
-    
-    // the first point to check horizontally
+    // the point to check horizontally
     var _step_h_x = _start_x;
     var _step_h_y = _start_y;
     
-    // the first point to check vertically
+    // the point to check vertically
     var _step_v_x = _start_x;
     var _step_v_y = _start_y;
     
@@ -93,10 +103,10 @@ if (_move_h != 0 || _move_v != 0)
             }
         
             // if there is slope
-            if (_slope != 0)
+            if (_gradient != 0)
             {
                 // get the new y point
-                _step_h_y = (_slope * (_step_h_x - _start_x)) + _start_y;
+                _step_h_y = (_gradient * (_step_h_x - _start_x)) + _start_y;
             }
         
         }
@@ -130,10 +140,10 @@ if (_move_h != 0 || _move_v != 0)
             }
         
             // if there is slope
-            if (_slope != 0)
+            if (_gradient != 0)
             {
                 // get the new x point
-                _step_v_x = ((_step_v_y - _start_y) / _slope) + _start_x;
+                _step_v_x = ((_step_v_y - _start_y) / _gradient ) + _start_x;
             }
         
         }
@@ -148,524 +158,214 @@ if (_move_h != 0 || _move_v != 0)
         }
     }
     
-    // prepare variables
-    var _axis;
-    var _start_1, _start_2;
-    var _end_1, _end_2;
-    var _step_1, _step_2;
-    var _move_1, _move_2;
-    var _new_move_1, _new_move_2;
-    var _cell_1, _cell_2;
-    var _cell_slope_1, _cell_slope_2;
-    var _size, _size_delta, _size_target;
-    var _tile_at_point;
-    var _tile_collision, _slope_tile_collision, _slope_tile_intercept;
-    var _tile_solid, _tile_one_way;
-    var _tile_slope_45_1, _tile_slope_45_2;
-    
-    // while no collisions have occurred and test can be performed
-    while ( ! _collision_h && ! _collision_v && (_test_h || _test_v))
+    // while test can be performed and no collisions have occurred
+    while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
     {
         // if can test horizontal collision
         // (and either can't test veritcal collision or the horizontal test is closer than the vertical test)
         if (_test_h && ( ! _test_v || _ray_delta_h <= _ray_delta_v))
         {
-            // prepare the horizontal test
-            _axis = 0;
-            _start_1 = _start_x;
-            _start_2 = _start_y;
-            _end_1 = _end_h;
-            _end_2 = _end_v;
-            _step_1 = _step_h_x;
-            _step_2 = _step_h_y;
-            _move_1 = _move_h;
-            _move_2 = _move_v;
-            _new_move_1 = _new_move_h;
-            _new_move_2 = _new_move_v;
-            _size = _height;
-            
-            _tile_solid = tile_solid;
             _tile_one_way = (_move_h > 0 ? tile_solid_east : tile_solid_west);
-            _tile_slope_45_1 = (_move_h > 0 ? tile_solid_45_se : tile_solid_45_sw);
-            _tile_slope_45_2 = (_move_h > 0 ? tile_solid_45_ne : tile_solid_45_nw);
-        }
-        
-        // else, if can test vertical collision
-        // (and either can't test horizontal collision or the vertical test is closer than the horizontal test)
-        //else if  (_test_v && ( ! _test_h || _ray_delta_v < _ray_delta_h))
-        else if  (_test_v && ( ! _test_h || _ray_delta_v <= _ray_delta_h))
-        {
-            // prepare the vertical test
-            _axis = 1;
-            _start_1 = _start_y;
-            _start_2 = _start_x;
-            _end_1 = _end_v;
-            _end_2 = _end_h;
-            _step_1 = _step_v_y;
-            _step_2 = _step_v_x;
-            _move_1 = _move_v;
-            _move_2 = _move_h;
-            _new_move_1 = _new_move_v;
-            _new_move_2 = _new_move_h;
-            _size = _width;
             
-            _tile_solid = tile_solid;
-            _tile_one_way = (_move_v > 0 ? tile_solid_south : tile_solid_north);
-            _tile_slope_45_1 = (_move_v > 0 ? tile_solid_45_se : tile_solid_45_sw);
-            _tile_slope_45_2 = (_move_v > 0 ? tile_solid_45_ne : tile_solid_45_nw);
-        }
-        
-        // else, unforeseen loop condition
-        else
-        {
-            break;
-        }
-        
-        // find the cell this point occupies
-        _cell_1 = round(_step_1 / _cell_size);
-        _cell_2 = floor(_step_2 / _cell_size);
-        
-        // if the movement is negative
-        if (_move_1 < 0)
-        {
-            _cell_1 = _cell_1 - 1;
-        }
-        
-        // if the point is on the other intersection
-        if (_step_2 mod _cell_size == 0)
-        {
-            // if there is no slope and the other movement is negative
-            if (_slope == 0 || _move_2 < 0)
+            // find the cell this point occupies
+            _cell_x = round(_step_h_x / _cell_size);
+            _cell_y = floor(_step_h_y / _cell_size);
+            
+            // if the movement is negative
+            if (_move_h < 0)
             {
-                _cell_2 = _cell_2 - 1;
-            }
-        }
-        
-        // get the distance from the point to the axes intersection
-        // *the top left corner of a cell
-        _size_delta = point_distance(0, _step_2, 0, (_cell_2 * _cell_size));
-        
-        // if the other movement is negative
-        if (_move_2 < 0)
-        {
-            // subtract the distance to the other side of the cell
-            // *right side of the cell if the x movement is negative
-            // *bottom side of the cell if y movement is negative
-            _size_delta = _cell_size - _size_delta;
-        }
-        
-        // get the total distance to check
-        _size_target = (_size + _cell_size + 1);
-        
-        // while the target size hasn't been reached and test can be performed
-        //while (_size_delta < _size_target && (_test_h || _test_v))
-        
-        // while the target size hasn't been reached
-        // *with slope detection included, every side collision must be tested to find the closest
-        while (_size_delta < _size_target)
-        {
-            if ( ! _redirected)
-            {
-                // capture the cell
-                var _list = ds_list_create();
-                if (_axis == 1) ds_list_add(_list, (_cell_2 * _cell_size), (_cell_1 * _cell_size), global.COLLISION_V_COLOR);
-                else ds_list_add(_list, (_cell_1 * _cell_size), (_cell_2 * _cell_size), global.COLLISION_H_COLOR);
-            
-                ds_list_add(global.GUI_AXIS_POINTS, _list);
-                ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-            
-                ds_list_add(global.DRAW_CELLS, _list);
-                ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                _cell_x = _cell_x - 1;
             }
             
-            // check tile collision
-            _tile_at_point = 0;
-            if (_axis == 0)
+            // if the point is on the other intersection
+            if (_step_h_y mod _cell_size == 0)
             {
-                _tile_at_point = tilemap_get(_collision_tilemap, _cell_1, _cell_2) & tile_index_mask;
-            }
-            else if (_axis == 1)
-            {
-                _tile_at_point = tilemap_get(_collision_tilemap, _cell_2, _cell_1) & tile_index_mask;
-            }
-            
-            /*
-            // reset collision states
-            _tile_collision = false;
-            _slope_tile_collision = false;
-            _slope_tile_intercept = false;
-            
-            // if a solid or one-way tile
-            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_one_way)
-            {
-                // if the movement is postive
-                // and the new point does not exceed the target
-                if (_move_1 > 0 && _step_1 < _end_1)
+                // if there is no slope and the other movement is negative
+                if (_gradient == 0 || _move_v < 0)
                 {
-                    _tile_collision = true;
+                    _cell_y = _cell_y - 1;
+                }
+            }
+            
+            // get the distance from the point to the TOP LEFT corner of the cell
+            _size_delta = point_distance(0, _step_h_y, 0, (_cell_y * _cell_size));
+            
+            // if the other movement is negative
+            if (_move_v < 0)
+            {
+                // converts the distance to the BOTTOM LEFT corner of the cell
+                _size_delta = _cell_size - _size_delta;
+            }
+            
+            // get the total distance to check
+            _size_target = (_height + _cell_size + 1);
+            
+            // while the target size hasn't been reached
+            while (_size_delta < _size_target)
+            {
+                if ( ! _redirected)
+                {
+                    // capture the cell
+                    var _list = ds_list_create();
+                    ds_list_add(_list, (_cell_x * _cell_size), (_cell_y * _cell_size), global.COLLISION_H_COLOR);
+                    ds_list_add(global.GUI_AXIS_POINTS, _list);
+                    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+                    ds_list_add(global.DRAW_CELLS, _list);
+                    ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
                 }
                 
-                // else, if the movement is negative
-                // and the new point does not exceed the target
-                else if (_move_1 < 0 && _step_1 > _end_1)
+                // check tile collision
+                _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
+                if (_tile_at_point == _tile_solid || _tile_at_point == _tile_one_way)
                 {
-                    _tile_collision = true;
-                }
-            }
-            
-            // if a sloped tile
-            if (_tile_at_point == _tile_slope_45_1 || _tile_at_point == _tile_slope_45_2)
-            {
-                //...
-            }
-            
-            // if the tile collision is okay
-            if (_tile_collision)
-            {
-                // update the movement value and target
-                _new_move_1 = _step_1 - _start_1;
-                _end_1 = _start_1 + _new_move_1;
-                    
-                // if the other movement is positive
-                // and the new point does not exceed the target
-                if (_move_2 > 0 && _step_2 < _end_2)
-                {
-                    // update the other movement value and target
-                    _new_move_2 = _step_2 - _start_2;
-                    _end_2 = _start_2 + _new_move_2;
-                }
-                    
-                // else, if the other movement is negative
-                // and the new point does not exceed the target
-                else if (_move_2 < 0 && _step_2 > _end_2)
-                {
-                    // update the other movement value and target
-                    _new_move_2 = _step_2 - _start_2;
-                    _end_2 = _start_2 + _new_move_2;
-                }
-                    
-                // if horizontal test
-                if (_axis == 0)
-                {
-                    // update collision states
-                    _collision_h = true;
-                    _test_h = false;
-                        
-                    // update movement values
-                    _new_move_h = _new_move_1;
-                    _new_move_v = _new_move_2;
-                }
-                    
-                // else, if a veritcal test
-                else if (_axis == 1)
-                {
-                    // update collision states
-                    _collision_v = true;
-                    _test_v = false;
-                        
-                    // update movement values
-                    _new_move_h = _new_move_2;
-                    _new_move_v = _new_move_1;
-                }
-                    
-            }
-            */
-            
-            /**/
-            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_one_way || _tile_at_point == _tile_slope_45_1 || _tile_at_point == _tile_slope_45_2)
-            {
-                // reset collision states
-                _tile_collision = false;
-                _slope_tile_collision = false;
-                _slope_tile_intercept = false;
-                
-                // move_h: _tile_slope_45_1 = (_move_v > 0 ? tile_solid_45_se : tile_solid_45_sw);
-                // move_v: _tile_slope_45_1 = (_move_h > 0 ? tile_solid_45_se : tile_solid_45_sw);
-                if ( _tile_at_point == _tile_slope_45_1)
-                {
-                    _slope_tile_collision = true;
-                    
-                    var m1 = _slope;
-                    var m2 = _slope;
-                    
-                    // if horizontal test
-                    if (_axis == 0)
-                    {
-                        var x1 = _start_1;
-                        var y1 = _start_2;
-                        
-                        var x2 = (_cell_1 * _cell_size);
-                        var y2 = (_cell_2 * _cell_size);
-                        
-                        // rising east /-|
-                        if (_move_h > 0)
-                        {
-                            m2 = -1;
-                            y1 += (_move_v < 0 ? (_size + 1) : 0);
-                            y2 += _cell_size;
-                        }
-                        
-                        // rising west |-\
-                        else if (_move_h < 0)
-                        {
-                            m2 = 1;
-                            y1 += (_move_v < 0 ? (_size + 1) : 0);
-                            x2 += _cell_size;
-                            y2 += _cell_size;
-                        }
-                        
-                    }
-                    
-                    // else, if vertical test
-                    else if (_axis == 1)
-                    {
-                        var x1 = _start_2;
-                        var y1 = _start_1;
-                        
-                        var x2 = (_cell_2 * _cell_size);
-                        var y2 = (_cell_1 * _cell_size);
-                        
-                        // rising east /-|
-                        if (_move_v > 0)
-                        {
-                            m2 = -1;
-                            x1 += (_move_h < 0 ? (_size + 1) : 0);
-                            y2 += _cell_size;
-                        }
-                        
-                        // rising west |-\
-                        else if (_move_v < 0)
-                        {
-                            m2 = 1;
-                            x1 += (_move_h < 0 ? (_size + 1) : 0);
-                            x2 += _cell_size;
-                            y2 += _cell_size;
-                        }
-                        
-                    }
-                    
-                    // if the slopes are not the same
-                    // *if the slopes were the same the lines would never cross
-                    if (m1 != m2)
-                    {
-                        // find the y-intercepts for both lines
-                        var b1 = y1 - (m1 * x1);
-                        var b2 = y2 - (m2 * x2);
-                        
-                        // find the point where the lines meet
-                        var xx = (b2 - b1) / (m1 - m2);
-                        var yy = (m1 * xx) + b1;
-                        
-                        // if colliding with the exact corner of the sloped tile
-                        // *it would end up rounding down to being the tile direclty beneath it
-                        if (xx == x2 && yy == y2)
-                        {
-                            _slope_tile_intercept = true;
-                        }
-                        else
-                        {
-                            if (_axis == 0)
-                            {
-                                // find the cell where the lines intercept
-                                _cell_slope_1 = floor(xx / _cell_size);
-                                _cell_slope_2 = floor(yy / _cell_size);
-                            }
-                            
-                            else if (_axis == 1)
-                            {
-                                // find the cell where the lines intercept
-                                _cell_slope_1 = floor(yy / _cell_size);
-                                _cell_slope_2 = floor(xx / _cell_size);
-                            }
-                            
-                            // if the lines intercept within the cell this slope occupies
-                            if (_cell_slope_1 == _cell_1 && _cell_slope_2 == _cell_2)
-                            {
-                                // if the distance to the intercept point does not exceede the maximum target distance
-                                if (point_distance(x1, y1, xx, yy) < _ray_target)
-                                {
-                                    _slope_tile_intercept = true;
-                                }
-                            }
-                            
-                        }
-                        
-                        // if the lines intercepted within the sloped tile
-                        if (_slope_tile_intercept)
-                        {
-                            if (_axis == 0)
-                            {
-                                _step_1 = xx;
-                                _step_2 = yy - (_move_v < 0 ? (_size + 1) : 0);
-                            }
-                            else if (_axis == 1)
-                            {
-                                _step_1 = yy;
-                                _step_2 = xx - (_move_h < 0 ? (_size + 1) : 0);
-                            }
-                                    
-                            var _list = ds_list_create();
-                            ds_list_add(_list, xx, yy, global.COLLISION_SLOPE_COLOR);
-                            ds_list_add(global.GUI_AXIS_POINTS, _list);
-                            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-                        }
-                        
-                    }
-                    
-                }
-                
-                // if the movement is postive
-                // and the new point does not exceed the target
-                if (_move_1 > 0 && _step_1 < _end_1)
-                {
-                    _tile_collision = true;
-                }
-                
-                // else, if the movement is negative
-                // and the new point does not exceed the target
-                else if (_move_1 < 0 && _step_1 > _end_1)
-                {
-                    _tile_collision = true;
-                }
-                
-                // if colliding with a sloped tile, but the interception happened elsewhere
-                if (_slope_tile_collision && ! _slope_tile_intercept)
-                {
-                    _tile_collision = false;
-                }
-                
-                // if the movement distances needs updating
-                if (_tile_collision)
-                {
-                    // update the movement value and target
-                    _new_move_1 = _step_1 - _start_1;
-                    _end_1 = _start_1 + _new_move_1;
-                    
-                    // if the other movement is positive
-                    // and the new point does not exceed the target
-                    if (_move_2 > 0 && _step_2 < _end_2)
-                    {
-                        // update the other movement value and target
-                        _new_move_2 = _step_2 - _start_2;
-                        _end_2 = _start_2 + _new_move_2;
-                    }
-                    
-                    // else, if the other movement is negative
-                    // and the new point does not exceed the target
-                    else if (_move_2 < 0 && _step_2 > _end_2)
-                    {
-                        // update the other movement value and target
-                        _new_move_2 = _step_2 - _start_2;
-                        _end_2 = _start_2 + _new_move_2;
-                    }
-                    
-                    // if horizontal test
-                    if (_axis == 0)
+                    if (_ray_delta_h < _ray_collision_h)
                     {
                         // update collision states
                         _collision_h = true;
                         _test_h = false;
                         
-                        // update movement values
-                        _new_move_h = _new_move_1;
-                        _new_move_v = _new_move_2;
+                        // update the movement values
+                        _new_move_h = _step_h_x - _start_x;
+                        _new_move_v = _step_h_y - _start_y;
+                        
+                        // update the collision target distance
+                        _ray_collision_h = point_distance(0, 0, _new_move_h, _new_move_v);
                     }
-                    
-                    // else, if a veritcal test
-                    else if (_axis == 1)
+                }
+                
+                // move the cell to the next intersection along the side of the object
+                _cell_y = _cell_y + (_move_v >= 0 ? -1 : 1);
+                
+                // increase the distance traveled
+                _size_delta += _cell_size;
+            }
+            
+            // if no collision occurred during this step
+            if (_collision_h == false)
+            {
+                // move along the ray towards the next intersection
+                _step_h_x = round(_step_h_x + (_cell_size * sign(_move_h)));
+                
+                // if there is slope
+                if (_gradient != 0)
+                {
+                    // find the new y point
+                    _step_h_y = (_gradient * (_step_h_x - _start_x)) + _start_y;   
+                }
+                
+                // update the distance traveled
+                _ray_delta_h = point_distance(_start_x, _start_y, _step_h_x, _step_h_y);
+                
+                // continue collision until the target distance is reached
+                _test_h = (_ray_delta_h < _ray_target);
+            
+            }
+            
+        }
+        
+        // else, if can test vertical collision
+        // (and either can't test horizontal collision or the vertical test is closer than the horizontal test)
+        else if  (_test_v && ( ! _test_h || _ray_delta_v <= _ray_delta_h))
+        {
+            _tile_one_way = (_move_v > 0 ? tile_solid_south : tile_solid_north);
+            
+            // find the cell this point occupies
+            _cell_x = floor(_step_v_x / _cell_size);
+            _cell_y = round(_step_v_y / _cell_size);
+            
+            // if the movement is negative
+            if (_move_v < 0)
+            {
+                _cell_y = _cell_y - 1;
+            }
+            
+            // if the point is on the other intersection
+            if (_step_v_x mod _cell_size == 0)
+            {
+                // if there is no slope and the other movement is negative
+                if (_gradient == 0 || _move_h < 0)
+                {
+                    _cell_x = _cell_x - 1;
+                }
+            }
+            
+            // get the distance from the point to the TOP LEFT corner of the cell
+            _size_delta = point_distance(_step_v_x, 0, (_cell_x * _cell_size), 0);
+            
+            // if the other movement is negative
+            if (_move_h < 0)
+            {
+                // converts the distance to the TOP RIGHT corner of the cell
+                _size_delta = _cell_size - _size_delta;
+            }
+            
+            // get the total distance to check
+            _size_target = (_width + _cell_size + 1);
+            
+            // while the target size hasn't been reached
+            while (_size_delta < _size_target)
+            {
+                if ( ! _redirected)
+                {
+                    // capture the cell
+                    var _list = ds_list_create();
+                    ds_list_add(_list, (_cell_x * _cell_size), (_cell_y * _cell_size), global.COLLISION_V_COLOR);
+                    ds_list_add(global.GUI_AXIS_POINTS, _list);
+                    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+                    ds_list_add(global.DRAW_CELLS, _list);
+                    ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                }
+                
+                // check tile collision
+                _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
+                if (_tile_at_point == _tile_solid || _tile_at_point == _tile_one_way)
+                {
+                    if (_ray_delta_v < _ray_collision_v)
                     {
                         // update collision states
                         _collision_v = true;
                         _test_v = false;
                         
-                        // update movement values
-                        _new_move_h = _new_move_2;
-                        _new_move_v = _new_move_1;
+                        // update the movement values
+                        _new_move_h = _step_v_x - _start_x;
+                        _new_move_v = _step_v_y - _start_y;
+                        
+                        // update the collision target distance
+                        _ray_collision_v = point_distance(0, 0, _new_move_h, _new_move_v);
                     }
-                    
                 }
                 
-            }
-            /**/
-            
-            // move the cell to the next intersection along the side of the object
-            _cell_2 = _cell_2 + (_move_2 >= 0 ? -1 : 1);
-            
-            // increase the distance traveled
-            _size_delta += _cell_size;
-        }
-        
-        // if horizontal collision was checked during this step and no collision occurred
-        if (_axis == 0 && _collision_h == false)
-        {
-            // move along the ray towards the next intersection
-            _step_1 = round(_step_1 + (_cell_size * sign(_move_1)));
-            
-            // if there is slope
-            if (_slope != 0)
-            {
-                // find the new y point
-                _step_2 = (_slope * (_step_1 - _start_1)) + _start_2;   
+                // move the cell to the next intersection along the side of the object
+                _cell_x = _cell_x + (_move_h >= 0 ? -1 : 1);
+                
+                // increase the distance traveled
+                _size_delta += _cell_size;
             }
             
-            // capture the current point
-            // *to use during the next horizontal test
-            _step_h_x = _step_1;
-            _step_h_y = _step_2;
-            
-            // capture the new end point
-            // *if collision occurred and it updated
-            _end_h = _end_1;
-            _end_v = _end_2;
-            
-            // update the horizontal distance traveled
-            _ray_delta_h = point_distance(_start_1, _start_2, _step_1, _step_2);
-            
-            // if the distance along the ray has exceeded the target
-            if (_ray_delta_h > _ray_target)
+            // if no collision occurred during this step
+            if (_collision_v == false)
             {
-                // no more horizontal test
-                _test_h = false;
+                // move along the ray towards the next intersection
+                _step_v_y = round(_step_v_y + (_cell_size * sign(_move_v)));
+                
+                // if there is slope
+                if (_gradient != 0)
+                {
+                    // find the new x point
+                    _step_v_x = ((_step_v_y - _start_y) / _gradient ) + _start_x;
+                }
+                
+                // update the distance traveled
+                _ray_delta_v = point_distance(_start_x, _start_y, _step_v_x, _step_v_y);
+                
+                // continue collision until the target distance is reached
+                _test_v = (_ray_delta_v < _ray_target);
+            
             }
             
         }
         
-        // else, if vertical collision was checked during this step and no collision occurred
-        else if (_axis == 1 && _collision_v == false)
-        {
-            // move along the ray towards the next intersection
-            _step_1 = round(_step_1 + (_cell_size * sign(_move_1)));
-            
-            // if there is slope
-            if (_slope != 0)
-            {
-                // find the new x point
-                _step_2 = ((_step_1 - _start_1) / _slope) + _start_2;
-            }
-            
-            // capture the current point
-            // *to use during the next vertical test
-            _step_v_x = _step_2;
-            _step_v_y = _step_1;
-            
-            // capture the new end point
-            // *if collision occurred and it updated
-            _end_h = _end_2;
-            _end_v = _end_1;
-            
-            // update the vertical distance traveled
-            _ray_delta_v = point_distance(_start_2, _start_1, _step_2, _step_1);
-            
-            // if the distance along the ray has exceeded the target
-            if (_ray_delta_v > _ray_target)
-            {
-                // no more vertical test
-                _test_v = false;
-            }
-            
-        }
-        
-        // else, unforeseen loop condition
+        // else, expected loop condition
         else
         {
             break;
@@ -673,87 +373,57 @@ if (_move_h != 0 || _move_v != 0)
         
     }
     
-    if ( ! _redirected)
+    // if this test was not a straight line and a collision occurred
+    if (_gradient != 0 && (_collision_h || _collision_v))
     {
-        if (_collision_h || _collision_v)
+        var _start_x2 = _start_x + _new_move_h;
+        var _start_y2 = _start_y + _new_move_v;
+        
+        var _new_move_h2 = 0;
+        var _new_move_v2 = 0;
+        
+        // if horizontal collision
+        if (_collision_h)
         {
-            if (_move_h != 0 && _move_v != 0)
-            {
-                var _start_x2 = _start_x + _new_move_h;
-                var _start_y2 = _start_y + _new_move_v;
-        
-                var _new_move_h2 = 0;
-                var _new_move_v2 = 0;
-        
-                var _offset_x2 = 0;
-                var _offset_y2 = 0;
-        
-                if (_collision_h)
-                {
-                    _new_move_v2 = (_start_y + _move_v) - _start_y2;
-                    _offset_x2 = (_move_h < 0 ? (_width + 1) : 0);
-                    _start_x2 += _offset_x2;
-                }
-        
-                else if (_collision_v)
-                {
-                    _new_move_h2 = (_start_x + _move_h) - _start_x2;
-                    _offset_y2 = (_move_v < 0 ? (_height + 1) : 0);
-                    _start_y2 += _offset_y2;
-                }
-        
-                ds_list_add(gui_ray_2_points, _start_x2, _start_y2, (_start_x2 + _new_move_h2), (_start_y2 + _new_move_v2));
-        
-                // update the ds_list with the new movement variables
-                _move_list[| 0] = _new_move_h2;
-                _move_list[| 1] = _new_move_v2;
-        
-                // do another collision check
-                scr_simulation_5_raycast(_start_x2, _start_y2, _move_list, _collision_tilemap, _cell_size, _width, _height, true);
-        
-                // get the new movement after another collision check
-                _new_move_h2 = _move_list[| 0];
-                _new_move_v2 = _move_list[| 1];
-        
-                // if the redirected ray didn't find any collision... go ahead and check the other direction just in case....
-                if (_collision_h && _new_move_h2 == 0 && _new_move_v2 == 0)
-                {
-                    var _new_move_h2 = 0;
-                    var _new_move_v2 = 0;
+            // move the remaining vertical distance
+            _new_move_h2 = 0;
+            _new_move_v2 = _move_v - _new_move_v;
             
-                    var _offset_x2 = 0;
-                    var _offset_y2 = 0;
-        
-                    if (_collision_h)
-                    {
-                        _new_move_h2 = (_start_x + _move_h) - _start_x2;
-                        _offset_y2 = (_move_v < 0 ? (_height + 1) : 0);
-                        _start_y2 += _offset_y2;
-                    }
-                    else if (_collision_v)
-                    {
-                        _new_move_v2 = (_start_y + _move_v) - _start_y2;
-                        _offset_x2 = (_move_h < 0 ? (_width + 1) : 0);
-                        _start_x2 += _offset_x2;
-                    }
-        
-                    // update the ds_list with the new movement variables
-                    _move_list[| 0] = _new_move_h2;
-                    _move_list[| 1] = _new_move_v2;
-            
-                    // do another collision check
-                    scr_simulation_5_raycast(_start_x2, _start_y2, _move_list, _collision_tilemap, _cell_size, _width, _height, true);
-            
-                    // get the new movement after another collision check
-                    _new_move_h2 = _move_list[| 0];
-                    _new_move_v2 = _move_list[| 1];
-                }
-        
-                // reset the ds_list and add the new movement
-                _new_move_h += _new_move_h2;
-                _new_move_v += _new_move_v2;
-            }
+            // if the horizontal movement is negative, offset the ray to start on the right edge of the object
+            // *the ray is cast from the right edge whenever an object is moving straight up or down
+            _start_x2 += (_move_h < 0 ? (_width + 1) : 0);
         }
+        
+        // else, if vertical collision
+        else if (_collision_v)
+        {
+            // move the remaining horizontal distance
+            _new_move_h2 = _move_h - _new_move_h;
+            _new_move_v2 = 0;
+            
+            // if the vertical movement is negative, offset the ray to start on the bottom edge of the object
+            // *the ray is cast from the bottom edge whenever an object is moving straight left or right
+            _start_y2 += (_move_v < 0 ? (_height + 1) : 0);
+        }
+        
+        ds_list_add(gui_ray_2_points, _start_x2, _start_y2, (_start_x2 + _new_move_h2), (_start_y2 + _new_move_v2));
+        
+        // update the ds_list with the new movement variables
+        _move_list[| 0] = _new_move_h2;
+        _move_list[| 1] = _new_move_v2;
+        
+        // do another collision check
+        scr_simulation_5_raycast(_start_x2, _start_y2, _move_list, _collision_tilemap, _cell_size, _width, _height, true);
+        
+        // *IF THE NEW DISTANCES ARE BOTH ZERO, THEN I NEED TO ADD THE ADDITIONAL CHECK IN CASE THE PATH TO THE LEFT OR RIGHT ARE CLEAR
+        
+        // get the new movement after another collision check
+        _new_move_h2 = _move_list[| 0];
+        _new_move_v2 = _move_list[| 1];
+        
+        // update movement values
+        _new_move_h += _new_move_h2;
+        _new_move_v += _new_move_v2;
     }
     
 }

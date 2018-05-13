@@ -775,6 +775,14 @@
             }
         },
         {
+            "Key": "f96dae83-2969-42a1-9ba8-d7163302f3da",
+            "Value": {
+                "id": "691ad4e8-ec6a-4b33-a67e-e4c835b1d2b8",
+                "resourcePath": "scripts\\scr_simulation_7_raycast_2\\scr_simulation_7_raycast_2.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "fe7d6995-a009-4938-8ab5-cca59ae5f8e9",
             "Value": {
                 "id": "bcd953cb-be6a-4aef-b6d4-74bc799f3c82",
@@ -822,6 +830,7 @@
         "79568671-1723-46d0-bd1c-ada53e1ee0f9",
         "48d2e2d8-53ce-410c-baa0-df66693831cb",
         "f087d62f-8147-4d1a-8e65-fda7f7f6467b",
+        "f96dae83-2969-42a1-9ba8-d7163302f3da",
         "11f83c9f-d2b5-48e7-a602-0d6b46ad4c05",
         "1bd368d1-62ca-4da4-afba-223037d5e976"
     ],
