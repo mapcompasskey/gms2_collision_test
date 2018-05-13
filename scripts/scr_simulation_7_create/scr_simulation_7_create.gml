@@ -41,24 +41,21 @@ move_v = 0;
 new_move_h = 0;
 new_move_v = 0;
 
-new_move_list = ds_list_create();
-new_move_list[| 0] = 0;
-new_move_list[| 1] = 0;
+move_list = ds_list_create();
+move_list[| 0] = 0; // horizontal movement
+move_list[| 1] = 0; // vertical movement
+
+// collision
+collision_h = false;
+collision_v = false;
+
+collision_list = ds_list_create();
+collision_list[| 0] = false; // horizontal collision
+collision_list[| 1] = false; // vertical colission
 
 // states
 update_simulation = true;
 is_rotating = false;
-collision_h = false;
-collision_v = false;
-
-// colors
-collision_h_color = c_orange;
-collision_v_color = c_yellow;
-collision_hv_color = c_lime;
-collision_slope_color = c_lime;
-raycast_h_color = c_orange;
-raycast_v_color = c_yellow;
-raycast_hv_color = c_lime;
 
 // drawing
 //sprite_index = spr_simulation_15px;
@@ -84,26 +81,19 @@ sprite_bbox_right = sprite_get_bbox_right(sprite_index) - sprite_get_xoffset(spr
 sprite_bbox_bottom = sprite_get_bbox_bottom(sprite_index) - sprite_get_yoffset(sprite_index);
 sprite_bbox_top = sprite_get_bbox_top(sprite_index) - sprite_get_yoffset(sprite_index);
 
+bbox_list = ds_list_create();
+bbox_list[| 0] = bbox_width;
+bbox_list[| 1] = bbox_height;
+bbox_list[| 2] = sprite_bbox_top;
+bbox_list[| 3] = sprite_bbox_right;
+bbox_list[| 4] = sprite_bbox_bottom;
+bbox_list[| 5] = sprite_bbox_left;
+
 // rotation timers
 rotation_time = 0.1;
 rotation_timer = 0;
 rotation_pause_time = 0.5;
 rotation_pause_timer = 0;
-
-
-/**
- * DS Lists
- *
- */
-
-bbox_points = ds_list_create();
-draw_cells = ds_list_create();
-gui_room_axes = ds_list_create();
-gui_room_x_axis = ds_list_create();
-gui_room_y_axis = ds_list_create();
-gui_axis_points = ds_list_create();
-gui_bbox_points = ds_list_create();
-gui_ray_2_points = ds_list_create();
 
 
 /**
@@ -151,13 +141,21 @@ view_set_yport(view_index, 0);
 /**
  * Globals for Helper Function
  *
- */ 
-global.GUI_AXIS_POINTS = gui_axis_points;
-global.DRAW_CELLS = draw_cells;
-global.COLLISION_H_COLOR = collision_h_color;
-global.COLLISION_V_COLOR = collision_v_color;
-global.COLLISION_HV_COLOR = collision_hv_color;
-global.COLLISION_SLOPE_COLOR = collision_slope_color;
+ */
+
+// colors
+global.COLLISION_H_COLOR = c_orange;
+global.COLLISION_V_COLOR = c_yellow;
+global.COLLISION_HV_COLOR = c_lime;
+global.COLLISION_SLOPE_COLOR = c_lime;
+
+// lists
+global.DRAW_CELLS = ds_list_create();
+global.GUI_ROOM_AXES = ds_list_create();
+global.GUI_ROOM_X_AXIS = ds_list_create();
+global.GUI_ROOM_Y_AXIS = ds_list_create();
+global.GUI_AXIS_POINTS = ds_list_create();
+global.GUI_BBOX_POINTS = ds_list_create();
 
 
 /**

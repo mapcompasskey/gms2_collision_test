@@ -204,7 +204,7 @@ if (keyboard_check_released(ord("E")) && is_rotating)
 if (keyboard_check_pressed(221))
 {
     draw_cell_index++;
-    if (draw_cell_index >= ds_list_size(draw_cells))
+    if (draw_cell_index >= ds_list_size(global.DRAW_CELLS))
     {
         draw_cell_index = 0;
     }
@@ -216,7 +216,7 @@ else if (keyboard_check_pressed(219))
     draw_cell_index--;
     if (draw_cell_index < 0)
     {
-        draw_cell_index = (ds_list_size(draw_cells) - 1);
+        draw_cell_index = (ds_list_size(global.DRAW_CELLS) - 1);
     }
 }
 
@@ -269,8 +269,8 @@ move_v = move_distance * sin(move_angle_rads) * -1;
 new_move_h = move_h;
 new_move_v = move_v;
 
-new_move_list[| 0] = new_move_h;
-new_move_list[| 1] = new_move_v;
+move_list[| 0] = new_move_h;
+move_list[| 1] = new_move_v;
 
 
 /**
@@ -278,71 +278,98 @@ new_move_list[| 1] = new_move_v;
  *
  */
 
-ds_list_clear(bbox_points);
-ds_list_clear(draw_cells);
-ds_list_clear(gui_room_axes);
-ds_list_clear(gui_room_x_axis);
-ds_list_clear(gui_room_y_axis);
-ds_list_clear(gui_axis_points);
-ds_list_clear(gui_bbox_points);
-ds_list_clear(gui_ray_2_points);
+//ds_list_clear(bbox_points);
+ds_list_clear(global.DRAW_CELLS);
+ds_list_clear(global.GUI_ROOM_AXES);
+ds_list_clear(global.GUI_ROOM_X_AXIS);
+ds_list_clear(global.GUI_ROOM_Y_AXIS);
+ds_list_clear(global.GUI_AXIS_POINTS);
+ds_list_clear(global.GUI_BBOX_POINTS);
 
 
 /**
- * Raycast From the Bounding Box Corner
+ * Check for Tile Collision and Update Movement Values
  *
  */
 
-var x_min = (sim_x + sprite_bbox_left);
-var x_max = (sim_x + sprite_bbox_right + 1);
-if (move_h < 0)
-{
-    x_min = (sim_x + sprite_bbox_right + 1);
-    x_max = (sim_x + sprite_bbox_left);
-}
+// perform a collision test
+scr_simulation_7_raycast(sim_x, sim_y, bbox_list, move_list, collision_list, collision_tilemap, cell_size);
 
-var y_min = (sim_y + sprite_bbox_top);
-var y_max = (sim_y + sprite_bbox_bottom + 1);
-if (move_v < 0)
-{
-    y_min = (sim_y + sprite_bbox_bottom + 1);
-    y_max = (sim_y + sprite_bbox_top);
-}
+// get the new movement values
+new_move_h = move_list[| 0];
+new_move_v = move_list[| 1];
 
-var x1 = x_max;
-var y1 = y_max;
-
-temp_list = ds_list_create();
-ds_list_add(temp_list, x1, y1, 2);
-ds_list_add(bbox_points, temp_list);
-ds_list_mark_as_list(bbox_points, ds_list_size(bbox_points) - 1);
-
-// capture the bounding box rays
-temp_list = ds_list_create();
-ds_list_add(temp_list, x_max, y_min, 0);
-ds_list_add(gui_bbox_points, temp_list);
-ds_list_mark_as_list(gui_bbox_points, ds_list_size(gui_bbox_points) - 1);
-
-temp_list = ds_list_create();
-ds_list_add(temp_list, x_min, y_max, 1);
-ds_list_add(gui_bbox_points, temp_list);
-ds_list_mark_as_list(gui_bbox_points, ds_list_size(gui_bbox_points) - 1);
-
-temp_list = ds_list_create();
-ds_list_add(temp_list, x_max, y_max, 2);
-ds_list_add(gui_bbox_points, temp_list);
-ds_list_mark_as_list(gui_bbox_points, ds_list_size(gui_bbox_points) - 1);
+// get the new collision states
+collision_h = collision_list[| 0];
+collision_v = collision_list[| 1];
 
 
 /**
- * Update Movement Values
+ * Check for Tile Collision and Update Movement Values
  *
+ * If the first collision check was successful, redirect the object the remaining distance until another collision occurs.
  */
 
-scr_simulation_7_raycast(x1, y1, new_move_list, collision_tilemap, cell_size, bbox_width, bbox_height, false);
-
-new_move_h = new_move_list[| 0];
-new_move_v = new_move_list[| 1];
+if (collision_h || collision_v)
+{
+    // get the updated point where the collision occurred
+    var _sim_x = sim_x + new_move_h;
+    var _sim_y = sim_y + new_move_v;
+    
+    // if horizontal collision
+    if (collision_h)
+    {
+        // test the remaining vertical movement for collisions
+        move_list[| 0] = 0;
+        move_list[| 1] = move_v - new_move_v;
+    }
+    
+    // else, if vertical collision
+    else if (collision_v)
+    {
+        // test the remaining horizontal movement for collisions
+        move_list[| 0] = move_h - new_move_h;
+        move_list[| 1] = 0;
+    }
+    
+    // preform another collision test
+    scr_simulation_7_raycast(_sim_x, _sim_y, bbox_list, move_list, collision_list, collision_tilemap, cell_size);
+    
+    // get the new movement values from the second test
+    var _new_move_h = move_list[| 0];
+    var _new_move_v = move_list[| 1];
+    
+    // if the first test found a horizontal collision and the second test was unable to move up or down, try another straight horizontal test
+    // *since horizontal collision is tested first, there is a false positive that occurs when a tile is directly diagonal to the object but the path is clear horizontally
+    if (collision_h && _new_move_h == 0 && _new_move_v == 0)
+    {
+        // test the remaining horizontal movement for collisions
+        move_list[| 0] = move_h - new_move_h;
+        move_list[| 1] = 0;
+        
+        // preform another collision test
+        scr_simulation_7_raycast(_sim_x, _sim_y, bbox_list, move_list, collision_list, collision_tilemap, cell_size);
+    }
+    
+    // add the new movement values from the second test
+    new_move_h += move_list[| 0];
+    new_move_v += move_list[| 1];
+    
+    // if the first test found horizontal collision
+    if (collision_h)
+    {
+        // update the vertical collision state
+        collision_v = collision_list[| 1];
+    }
+    
+    // else, if the first test found vertical collision
+    else if (collision_v)
+    {
+        // update the horizontal collision state
+        collision_h = collision_list[| 0];
+    }
+    
+}
 
 
 /**
@@ -352,7 +379,7 @@ new_move_v = new_move_list[| 1];
  * Can also be used to tell entities they have struck a wall and need to turn around.
  *
  * The only problem is the floating point values that can occur from the cosine and sine functions.
- */
+ * /
 
 // if the horizontal movement changed
 collision_h = false;
@@ -402,8 +429,8 @@ while (y1 < (camera_height * view_scale))
     
     temp_list = ds_list_create();
     ds_list_add(temp_list, x1, y1, x2, y2);
-    ds_list_add(gui_room_axes, temp_list);
-    ds_list_mark_as_list(gui_room_axes, ds_list_size(gui_room_axes) - 1);
+    ds_list_add(global.GUI_ROOM_AXES, temp_list);
+    ds_list_mark_as_list(global.GUI_ROOM_AXES, ds_list_size(global.GUI_ROOM_AXES) - 1);
 }
 
 // get vertical lines
@@ -419,8 +446,8 @@ while (x1 < (camera_width * view_scale))
     
     temp_list = ds_list_create();
     ds_list_add(temp_list, x1, y1, x2, y2);
-    ds_list_add(gui_room_axes, temp_list);
-    ds_list_mark_as_list(gui_room_axes, ds_list_size(gui_room_axes) - 1);
+    ds_list_add(global.GUI_ROOM_AXES, temp_list);
+    ds_list_mark_as_list(global.GUI_ROOM_AXES, ds_list_size(global.GUI_ROOM_AXES) - 1);
 }
 
 
@@ -437,12 +464,12 @@ x1 = 0;
 y1 = 0 - (camera_y * view_scale);
 x2 = x1 + (camera_width * view_scale);
 y2 = y1;
-ds_list_add(gui_room_x_axis, x1, y1, x2, y2);
+ds_list_add(global.GUI_ROOM_X_AXIS, x1, y1, x2, y2);
 
 // get the y-axis at zero
 x1 = 0 - (camera_x * view_scale);
 y1 = 0;
 x2 = x1;
 y2 = y1 + (camera_height * view_scale);
-ds_list_add(gui_room_y_axis, x1, y1, x2, y2);
+ds_list_add(global.GUI_ROOM_Y_AXIS, x1, y1, x2, y2);
 
