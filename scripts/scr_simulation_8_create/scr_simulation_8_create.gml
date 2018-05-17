@@ -1,4 +1,4 @@
-/// @function scr_simulation_7_create()
+/// @function scr_simulation_8_create()
 
 
 /**
@@ -165,67 +165,16 @@ view_set_yport(view_index, 0);
  *
  */
 
-if (false)
-{
-    sim_x = 15 * global.TILE_SIZE;
-    sim_y = 15 * global.TILE_SIZE;
-    move_angle = 45;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 10);
-    camera_y = (global.TILE_SIZE * 8);
-    camera_set_view_pos(camera, camera_x, camera_y);
-}
-
-if (false)
+if (true)
 {
     sim_x = 27 * global.TILE_SIZE;
     sim_y = 13 * global.TILE_SIZE;
-    move_angle = -11;
-    move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 21);
-    camera_y = (global.TILE_SIZE * 7);
-    camera_set_view_pos(camera, camera_x, camera_y);
-}
-
-if (false)
-{
-    sim_x = 5 * global.TILE_SIZE;
-    sim_y = 5 * global.TILE_SIZE;
-    move_angle = -11;
-    move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 0);
-    camera_y = (global.TILE_SIZE * 0);
-    camera_set_view_pos(camera, camera_x, camera_y);
-}
-
-if (false)
-{
-    sim_x = 5 * global.TILE_SIZE;
-    sim_y = 14 * global.TILE_SIZE;
-    move_angle = -11;
-    move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 0);
-    camera_y = (global.TILE_SIZE * 10);
-    camera_set_view_pos(camera, camera_x, camera_y);
-}
-
-if (true)
-{
-    sim_x = 3 * global.TILE_SIZE;
-    sim_y = 3 * global.TILE_SIZE;
     move_angle = 30;
-    move_distance = 40;
+    move_distance = -10;
     
     // update the camera position
-    camera_x = (global.TILE_SIZE * -2);
-    camera_y = (global.TILE_SIZE * -2);
+    camera_x = (global.TILE_SIZE * 22);
+    camera_y = (global.TILE_SIZE * 5);
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 

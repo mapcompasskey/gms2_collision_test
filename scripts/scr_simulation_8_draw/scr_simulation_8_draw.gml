@@ -1,4 +1,4 @@
-/// @function scr_simulation_7_draw()
+/// @function scr_simulation_8_draw()
 
 
 /**

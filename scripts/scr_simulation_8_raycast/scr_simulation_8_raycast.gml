@@ -1,4 +1,4 @@
-/// @function scr_simulation_7_raycast(x1, y1, bbox_list, move_list, collision_list, tilemap_layer, tile_size);
+/// @function scr_simulation_8_raycast(x1, y1, bbox_list, move_list, collision_list, tilemap_layer, tile_size);
 /// @param {number} x1              - the starting x position
 /// @param {number} y1              - the starting y position
 /// @param {real} bbox_list         - the ds_list containing the bounding box information: [width, height, top, right, bottom, left]

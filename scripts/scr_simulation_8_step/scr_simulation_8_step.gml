@@ -1,4 +1,4 @@
-/// @function scr_simulation_7_step()
+/// @function scr_simulation_8_step()
 
 
 /**
@@ -293,7 +293,7 @@ ds_list_clear(global.GUI_BBOX_POINTS);
  */
 
 // perform a collision test
-scr_simulation_7_raycast(sim_x, sim_y, bbox_list, move_list, collision_list, collision_tilemap, global.TILE_SIZE);
+scr_simulation_8_raycast(sim_x, sim_y, bbox_list, move_list, collision_list, collision_tilemap, global.TILE_SIZE);
 
 // get the new movement values
 new_move_h = move_list[| 0];
@@ -333,7 +333,7 @@ if (collision_h || collision_v)
     }
     
     // preform another collision test
-    scr_simulation_7_raycast(_sim_x, _sim_y, bbox_list, move_list, collision_list, collision_tilemap, global.TILE_SIZE);
+    scr_simulation_8_raycast(_sim_x, _sim_y, bbox_list, move_list, collision_list, collision_tilemap, global.TILE_SIZE);
     
     // get the new movement values from the second test
     var _new_move_h = move_list[| 0];
@@ -348,7 +348,7 @@ if (collision_h || collision_v)
         move_list[| 1] = 0;
         
         // preform another collision test
-        scr_simulation_7_raycast(_sim_x, _sim_y, bbox_list, move_list, collision_list, collision_tilemap, global.TILE_SIZE);
+        scr_simulation_8_raycast(_sim_x, _sim_y, bbox_list, move_list, collision_list, collision_tilemap, global.TILE_SIZE);
     }
     
     // add the new movement values from the second test

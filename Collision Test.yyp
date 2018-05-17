@@ -79,6 +79,14 @@
             }
         },
         {
+            "Key": "0cda1a0e-aad7-4810-aa5a-13a7ebcb0b01",
+            "Value": {
+                "id": "fa46707d-1658-40a8-aebc-d0e4c8e2ae78",
+                "resourcePath": "scripts\\scr_simulation_8_draw\\scr_simulation_8_draw.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "0e9a811f-b61f-40e9-badc-fad1b96a66dd",
             "Value": {
                 "id": "2953d2e5-aaaf-4819-9a18-40a660b5428e",
@@ -91,6 +99,14 @@
             "Value": {
                 "id": "ba796698-2d7e-41e1-867d-90c6ceb6040f",
                 "resourcePath": "objects\\obj_simulation_4\\obj_simulation_4.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
+            "Key": "10eaa04e-05f1-4538-8a5b-8d47451ef2a1",
+            "Value": {
+                "id": "d473ed4d-09cc-439f-aba8-c8782dbfc878",
+                "resourcePath": "objects\\obj_simulation_8\\obj_simulation_8.yy",
                 "resourceType": "GMObject"
             }
         },
@@ -151,6 +167,14 @@
             }
         },
         {
+            "Key": "1f327e03-a609-4be7-a614-e15d9b4cd67f",
+            "Value": {
+                "id": "4b0591fa-7923-4d90-b2de-e9998b1249fa",
+                "resourcePath": "scripts\\scr_simulation_8_draw_gui\\scr_simulation_8_draw_gui.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "253ed899-b2e5-4cbc-9c6f-4ef2c274826b",
             "Value": {
                 "id": "c2bfa80e-5d5f-4742-809d-99102c6092eb",
@@ -195,6 +219,14 @@
             "Value": {
                 "id": "1f1e606e-ee9f-417c-8d6f-a573ab329262",
                 "resourcePath": "scripts\\scr_simulation_6_create\\scr_simulation_6_create.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
+            "Key": "39b9b48d-27f6-4bb7-a357-f5729888b344",
+            "Value": {
+                "id": "e50eba61-7cb3-41e1-9fa3-5d1e42c6db49",
+                "resourcePath": "scripts\\scr_simulation_8_raycast\\scr_simulation_8_raycast.yy",
                 "resourceType": "GMScript"
             }
         },
@@ -319,6 +351,14 @@
             }
         },
         {
+            "Key": "679ef4b5-60db-4095-9002-bdaf53a3d37e",
+            "Value": {
+                "id": "c835d7fb-b5f4-47bf-99a7-537a80b45a1e",
+                "resourcePath": "scripts\\scr_simulation_8_step\\scr_simulation_8_step.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "6af5bddc-6a1c-45c0-8b08-068ace9b53d4",
             "Value": {
                 "id": "abf8f059-0e98-4fad-ae09-17228f79af5f",
@@ -331,6 +371,14 @@
             "Value": {
                 "id": "0b7447d4-1968-4b81-8bd7-ece7078b8751",
                 "resourcePath": "views\\6c428a53-9303-4eff-923c-b9accb2b53da.yy",
+                "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "721decc1-f984-4955-aa0f-d95d7795d963",
+            "Value": {
+                "id": "64926689-e0e2-4935-9d45-f84ddf79f439",
+                "resourcePath": "views\\721decc1-f984-4955-aa0f-d95d7795d963.yy",
                 "resourceType": "GMFolder"
             }
         },
@@ -591,6 +639,14 @@
             }
         },
         {
+            "Key": "b99a96a0-4791-4fe7-9f6e-049bdf32eead",
+            "Value": {
+                "id": "97f3a43b-97ec-4b59-aa1a-03ef2ef35189",
+                "resourcePath": "scripts\\scr_simulation_8_create\\scr_simulation_8_create.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "bdc6d4fe-34d8-45b2-b3e3-25a439d57856",
             "Value": {
                 "id": "9ef095cc-6a3d-4025-bd5c-a4b189c2d7d9",
@@ -775,6 +831,14 @@
             }
         },
         {
+            "Key": "f64ca393-4f23-4e55-a4cb-b5079ed13a42",
+            "Value": {
+                "id": "1216dc9f-37ff-452f-8a14-0259419a1057",
+                "resourcePath": "rooms\\rm_stage_8\\rm_stage_8.yy",
+                "resourceType": "GMRoom"
+            }
+        },
+        {
             "Key": "f726b2ce-99f1-4a63-b3e2-d3819dc04a92",
             "Value": {
                 "id": "d90da286-2667-4662-9539-b1ecbaf7a717",
@@ -841,7 +905,12 @@
         "8b576d3b-49dd-412d-baf9-a4345aba843c",
         "f96dae83-2969-42a1-9ba8-d7163302f3da",
         "11f83c9f-d2b5-48e7-a602-0d6b46ad4c05",
-        "1bd368d1-62ca-4da4-afba-223037d5e976"
+        "1bd368d1-62ca-4da4-afba-223037d5e976",
+        "b99a96a0-4791-4fe7-9f6e-049bdf32eead",
+        "679ef4b5-60db-4095-9002-bdaf53a3d37e",
+        "39b9b48d-27f6-4bb7-a357-f5729888b344",
+        "0cda1a0e-aad7-4810-aa5a-13a7ebcb0b01",
+        "1f327e03-a609-4be7-a614-e15d9b4cd67f"
     ],
     "tutorial": ""
 }
