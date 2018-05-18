@@ -31,10 +31,10 @@ global.TILE_SOLID_EAST = 3;
 global.TILE_SOLID_SOUTH = 4;
 global.TILE_SOLID_NORTH = 5;
 
-global.TILE_SOLID_45_SE = 6;
-global.TILE_SOLID_45_SW = 7;
-global.TILE_SOLID_45_NE = 8;
-global.TILE_SOLID_45_NW = 9;
+global.TILE_SOLID_45_SE = 6; // ◢
+global.TILE_SOLID_45_SW = 7; // ◣
+global.TILE_SOLID_45_NE = 8; // ◥
+global.TILE_SOLID_45_NW = 9; // ◤
 
 
 /**
@@ -169,8 +169,8 @@ if (true)
 {
     sim_x = 27 * global.TILE_SIZE;
     sim_y = 13 * global.TILE_SIZE;
-    move_angle = 30;
-    move_distance = -10;
+    move_angle = -10;
+    move_distance = 40;
     
     // update the camera position
     camera_x = (global.TILE_SIZE * 22);

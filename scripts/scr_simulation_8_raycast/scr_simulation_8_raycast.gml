@@ -117,6 +117,8 @@ var _size_delta, _size_target;
 var _tile_at_point;
 var _tile_solid = global.TILE_SOLID;
 var _tile_one_way = global.TILE_SOLID;
+var _tile_slope_45_1 = global.TILE_SOLID;
+var _tile_slope_45_2 = global.TILE_SOLID;
     
 // the test that can be performed
 var _test_h = (_move_h == 0 ? false : true);
@@ -230,7 +232,7 @@ if (_test_v)
  * Move towards each horizontal and veritcal intersection until a tile is found.
  * At each intersection, test the width or height of the bounding box, checking for tiles along the opposite intersection.
  */
- 
+
 // while test can be performed and no collisions have occurred
 while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
 {
@@ -239,7 +241,9 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
     if (_test_h && ( ! _test_v || _ray_delta_h <= _ray_delta_v))
     {
         _tile_one_way = (_move_h > 0 ? global.TILE_SOLID_EAST : global.TILE_SOLID_WEST);
-            
+        _tile_slope_45_1 = (_move_h > 0 ? global.TILE_SOLID_45_SE : global.TILE_SOLID_45_SW);
+        _tile_slope_45_2 = (_move_h > 0 ? global.TILE_SOLID_45_NE : global.TILE_SOLID_45_NW);
+        
         // find the cell this point occupies
         _cell_x = round(_step_h_x / _cell_size);
         _cell_y = floor(_step_h_y / _cell_size);
@@ -277,12 +281,12 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         while (_size_delta < _size_target)
         {
             // capture the cell
-            var _list = ds_list_create();
-            ds_list_add(_list, (_cell_x * _cell_size), (_cell_y * _cell_size), global.COLLISION_H_COLOR);
-            ds_list_add(global.GUI_AXIS_POINTS, _list);
-            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-            ds_list_add(global.DRAW_CELLS, _list);
-            ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+            //var _list = ds_list_create();
+            //ds_list_add(_list, (_cell_x * _cell_size), (_cell_y * _cell_size), global.COLLISION_H_COLOR);
+            //ds_list_add(global.GUI_AXIS_POINTS, _list);
+            //ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+            //ds_list_add(global.DRAW_CELLS, _list);
+            //ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
             
             // check tile collision
             _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
@@ -302,7 +306,12 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _ray_collision_h = point_distance(0, 0, _new_move_h, _new_move_v);
                 }
             }
-                
+            
+            else if (_tile_at_point == _tile_slope_45_1 || _tile_at_point == _tile_slope_45_2)
+            {
+                scr_simulation_8_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, 0, _size_target, _cell_size, _move_list, _ray_collision_h, _tile_at_point);
+            }
+            
             // move the cell to the next intersection along the side of the object
             _cell_y = _cell_y + (_move_v >= 0 ? -1 : 1);
                 
@@ -338,7 +347,9 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
     else if  (_test_v && ( ! _test_h || _ray_delta_v <= _ray_delta_h))
     {
         _tile_one_way = (_move_v > 0 ? global.TILE_SOLID_SOUTH : global.TILE_SOLID_NORTH);
-            
+        _tile_slope_45_1 = (_move_v > 0 ? global.TILE_SOLID_45_SE : global.TILE_SOLID_45_NE);
+        _tile_slope_45_2 = (_move_v > 0 ? global.TILE_SOLID_45_SW : global.TILE_SOLID_45_NW);
+        
         // find the cell this point occupies
         _cell_x = floor(_step_v_x / _cell_size);
         _cell_y = round(_step_v_y / _cell_size);
@@ -376,12 +387,12 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         while (_size_delta < _size_target)
         {
             // capture the cell
-            var _list = ds_list_create();
-            ds_list_add(_list, (_cell_x * _cell_size), (_cell_y * _cell_size), global.COLLISION_V_COLOR);
-            ds_list_add(global.GUI_AXIS_POINTS, _list);
-            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-            ds_list_add(global.DRAW_CELLS, _list);
-            ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+            //var _list = ds_list_create();
+            //ds_list_add(_list, (_cell_x * _cell_size), (_cell_y * _cell_size), global.COLLISION_V_COLOR);
+            //ds_list_add(global.GUI_AXIS_POINTS, _list);
+            //ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+            //ds_list_add(global.DRAW_CELLS, _list);
+            //ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
                 
             // check tile collision
             _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
@@ -400,6 +411,11 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     // update the collision target distance
                     _ray_collision_v = point_distance(0, 0, _new_move_h, _new_move_v);
                 }
+            }
+            
+            else if (_tile_at_point == _tile_slope_45_1 || _tile_at_point == _tile_slope_45_2)
+            {
+                scr_simulation_8_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, 1, _size_target, _cell_size, _move_list, _ray_collision_v, _tile_at_point);
             }
                 
             // move the cell to the next intersection along the side of the object
