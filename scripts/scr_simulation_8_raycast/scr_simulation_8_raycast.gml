@@ -309,7 +309,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             
             else if (_tile_at_point == _tile_slope_45_1 || _tile_at_point == _tile_slope_45_2)
             {
-                scr_simulation_8_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, 0, _size_target, _cell_size, _move_list, _ray_collision_h, _tile_at_point);
+                scr_simulation_8_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, 0, _height, _cell_size, _move_list, _ray_collision_h, _tile_at_point);
             }
             
             // move the cell to the next intersection along the side of the object
@@ -415,7 +415,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             
             else if (_tile_at_point == _tile_slope_45_1 || _tile_at_point == _tile_slope_45_2)
             {
-                scr_simulation_8_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, 1, _size_target, _cell_size, _move_list, _ray_collision_v, _tile_at_point);
+                scr_simulation_8_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, 1, _width, _cell_size, _move_list, _ray_collision_v, _tile_at_point);
             }
                 
             // move the cell to the next intersection along the side of the object
