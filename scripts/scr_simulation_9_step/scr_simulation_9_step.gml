@@ -269,8 +269,8 @@ move_v = move_distance * sin(move_angle_rads) * -1;
 new_move_h = move_h;
 new_move_v = move_v;
 
-move_list[| 0] = new_move_h;
-move_list[| 1] = new_move_v;
+//move_list[| 0] = new_move_h;
+//move_list[| 1] = new_move_v;
 
 
 /**
@@ -292,16 +292,11 @@ ds_list_clear(global.GUI_BBOX_POINTS);
  *
  */
 
+collision_h = false;
+collision_v = false;
+
 // perform a collision test
-scr_simulation_9_raycast(sim_x, sim_y, bbox_list, move_list, collision_list, collision_tilemap, global.TILE_SIZE);
-
-// get the new movement values
-new_move_h = move_list[| 0];
-new_move_v = move_list[| 1];
-
-// get the new collision states
-collision_h = collision_list[| 0];
-collision_v = collision_list[| 1];
+scr_simulation_9_raycast();
 
 
 /**
@@ -312,95 +307,75 @@ collision_v = collision_list[| 1];
 
 if (collision_h || collision_v)
 {
-    // get the updated point where the collision occurred
-    var _sim_x = sim_x + new_move_h;
-    var _sim_y = sim_y + new_move_v;
+    // backup the current x/y position
+    var _sim_x = sim_x;
+    var _sim_y = sim_y;
     
-    // if horizontal collision
-    if (collision_h)
-    {
-        // test the remaining vertical movement for collisions
-        move_list[| 0] = 0;
-        move_list[| 1] = move_v - new_move_v;
-    }
+    // backup the original movement values
+    var _move_h = move_h;
+    var _move_v = move_v;
     
-    // else, if vertical collision
-    else if (collision_v)
-    {
-        // test the remaining horizontal movement for collisions
-        move_list[| 0] = move_h - new_move_h;
-        move_list[| 1] = 0;
-    }
+    // backup the updated movement values
+    var _new_move_h = new_move_h;
+    var _new_move_v = new_move_v;
+    
+    // backup the updated collison states
+    var _collision_h = collision_h;
+    var _collision_v = collision_v;
+    
+    // move to the first collision point
+    sim_x = _sim_x + _new_move_h;
+    sim_y = _sim_y + _new_move_v;
+    
+    // add the remaining movement distance
+    move_h = (_collision_v ? _move_h - _new_move_h : 0);
+    move_v = (_collision_h ? _move_v - _new_move_v : 0);
+    
+    // add the remaining movement distance
+    new_move_h = move_h;
+    new_move_v = move_v;
     
     // preform another collision test
-    scr_simulation_8_raycast(_sim_x, _sim_y, bbox_list, move_list, collision_list, collision_tilemap, global.TILE_SIZE);
+    scr_simulation_9_raycast();
     
-    // get the new movement values from the second test
-    var _new_move_h = move_list[| 0];
-    var _new_move_v = move_list[| 1];
-    
-    // if the first test found a horizontal collision and the second test was unable to move up or down, try another straight horizontal test
-    // *since horizontal collision is tested first, there is a false positive that occurs when a tile is directly diagonal to the object but the path is clear horizontally
-    if (collision_h && _new_move_h == 0 && _new_move_v == 0)
+    // if the first test found a horizontal collision and the second test found a vertical collision but was unable to move up or down, try another straight horizontal test
+    // *since horizontal collision is tested first, there is a false positive that occurs when a tile is directly diagonal and the vertical path is blocked but the horizontal path is clear
+    if (_collision_h && collision_v && new_move_h == 0 && new_move_v == 0)
     {
-        // test the remaining horizontal movement for collisions
-        move_list[| 0] = move_h - new_move_h;
-        move_list[| 1] = 0;
+        // add the remaining movement distance
+        move_h = _move_h - _new_move_h;
+        move_v = 0;
+        
+        // add the remaining movement distance
+        new_move_h = move_h;
+        new_move_v = move_v;
+        
+        // we know there was a vertical collision
+        _collision_h = false;
+        _collision_v = true;
+        collision_h = _collision_h;
+        collision_v = _collision_v;
         
         // preform another collision test
-        scr_simulation_8_raycast(_sim_x, _sim_y, bbox_list, move_list, collision_list, collision_tilemap, global.TILE_SIZE);
+        scr_simulation_9_raycast();
     }
     
-    // add the new movement values from the second test
-    new_move_h += move_list[| 0];
-    new_move_v += move_list[| 1];
+    // add the original updated movement values to the new updated movement values
+    new_move_h += _new_move_h;
+    new_move_v += _new_move_v;
     
-    // if the first test found horizontal collision
-    if (collision_h)
-    {
-        // update the vertical collision state
-        collision_v = collision_list[| 1];
-    }
+    // reset the x/y point
+    sim_x = _sim_x;
+    sim_y = _sim_y;
     
-    // else, if the first test found vertical collision
-    else if (collision_v)
-    {
-        // update the horizontal collision state
-        collision_h = collision_list[| 0];
-    }
+    // reset the original movement values
+    move_h = _move_h;
+    move_v = _move_v;
     
-}
-
-
-/**
- * Find Directional Collision State
- *
- * This is used to determine if the entity was falling and has hit the floor and is now grounded.
- * Can also be used to tell entities they have struck a wall and need to turn around.
- *
- * The only problem is the floating point values that can occur from the cosine and sine functions.
- * /
-
-// if the horizontal movement changed
-collision_h = false;
-if (new_move_h != move_h)
-{
-    // if the horizontal point is on an intersection
-    if ((x_max + new_move_h) mod global.TILE_SIZE == 0)
-    {
-        collision_h = true;
-    }
-}
-
-// if the vertical movement changed
-collision_v = false;
-if (new_move_v != move_v)
-{
-    // if the vertical point is on an intersection
-    if ((y_max + new_move_v) mod global.TILE_SIZE == 0)
-    {
-        collision_v = true;
-    }
+    // update new collision states with the previous ones
+    collision_h = (_collision_h ? _collision_h : collision_h);
+    collision_v = (_collision_v ? _collision_v : collision_v);
+    
 }
 
 

@@ -103,19 +103,63 @@ sprite_bbox_right = sprite_get_bbox_right(sprite_index) - sprite_get_xoffset(spr
 sprite_bbox_bottom = sprite_get_bbox_bottom(sprite_index) - sprite_get_yoffset(sprite_index);
 sprite_bbox_top = sprite_get_bbox_top(sprite_index) - sprite_get_yoffset(sprite_index);
 
-bbox_list = ds_list_create();
-bbox_list[| 0] = bbox_width;
-bbox_list[| 1] = bbox_height;
-bbox_list[| 2] = sprite_bbox_top;
-bbox_list[| 3] = sprite_bbox_right;
-bbox_list[| 4] = sprite_bbox_bottom;
-bbox_list[| 5] = sprite_bbox_left;
+//bbox_list = ds_list_create();
+//bbox_list[| 0] = bbox_width;
+//bbox_list[| 1] = bbox_height;
+//bbox_list[| 2] = sprite_bbox_top;
+//bbox_list[| 3] = sprite_bbox_right;
+//bbox_list[| 4] = sprite_bbox_bottom;
+//bbox_list[| 5] = sprite_bbox_left;
 
 // rotation timers
 rotation_time = 0.1;
 rotation_timer = 0;
 rotation_pause_time = 0.5;
 rotation_pause_timer = 0;
+
+
+/*
+/// @function scr_simulation_9_raycast(x1, y1, bbox_list, move_list, collision_list, tilemap_layer, tile_size);
+/// @function scr_simulation_9_slope(x1, y1, cell_x, cell_y, slope, axis, size, tile_size, move_list, ray_target, tile_at_point);
+
+
+STEP EVENT
+
+new_move_h = move_h;
+new_move_v = move_v;
+
+move_list[| 0] = new_move_h;
+move_list[| 1] = new_move_v;
+
+// perform a collision test
+scr_simulation_9_raycast(sim_x, sim_y, bbox_list, move_list, collision_list, collision_tilemap, global.TILE_SIZE);
+
+// get the new movement values
+new_move_h = move_list[| 0];
+new_move_v = move_list[| 1];
+
+// get the new collision states
+collision_h = collision_list[| 0];
+collision_v = collision_list[| 1];
+*/
+
+
+
+/*
+    VALUES USED WE ALREADY HAVE
+    
+    x, y
+    bbox_width, bbox_height
+    sprite_bbox_top, sprite_bbox_right, sprite_bbox_bottom, sprite_bbox_left
+    
+    move_h, move_v
+    new_move_h, new_move_v
+    
+    collision_h, collision_v
+*/
+
+
+
 
 
 /**
@@ -165,7 +209,7 @@ view_set_yport(view_index, 0);
  *
  */
 
-if (true)
+if (false)
 {
     sim_x = 27 * global.TILE_SIZE;
     sim_y = 13 * global.TILE_SIZE;
@@ -178,3 +222,15 @@ if (true)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
+if (true)
+{
+    sim_x = 5 * global.TILE_SIZE;
+    sim_y = 5 * global.TILE_SIZE;
+    move_angle = -10;
+    move_distance = 40;
+    
+    // update the camera position
+    camera_x = (global.TILE_SIZE * 0);
+    camera_y = (global.TILE_SIZE * 0);
+    camera_set_view_pos(camera, camera_x, camera_y);
+}
