@@ -1,13 +1,10 @@
-/// @function scr_simulation_9_slope(x1, y1, cell_x, cell_y, slope, axis, size, tile_size, move_list, ray_target, tile_at_point);
+/// @function scr_simulation_9_slope(start_x, start_y, cell_x, cell_y, slope, axis, ray_target, tile_at_point);
 /// @param {number} x1          - the starting x position
 /// @param {number} y1          - the starting y position
 /// @param {number} cell_x      - the horizontal cell position
 /// @param {number} cell_y      - the vertical cell position
 /// @param {number} slope       - the starting x position
 /// @param {number} axis        - the axis to test against
-/// @param {number} size        - the distance to check along the other axis
-/// @param {number} tile_size   - the size of the tiles
-/// @param {real} move_list     - the ds_list containing the move_h and move_v values
 /// @param {real} ray_target    - the maximum distance that can be traveled
 /// @param {real} tile_at_point - the index of the tile that was collided with
 
@@ -28,17 +25,23 @@ var _start_x = argument0;
 var _start_y = argument1;
 var _cell_x = argument2;
 var _cell_y = argument3;
-var _slope = argument4;
+var _gradient = argument4;
 var _axis = argument5;
-var _size = argument6;
-var _cell_size = argument7;
+var _ray_target = argument6;
+var _tile_at_point = argument7;
 
-var _move_list = argument8;
-var _move_h = _move_list[| 0];
-var _move_v = _move_list[| 1];
+// movement values
+var _move_h = raycast_move_h;
+var _move_v = raycast_move_v;
 
-var _ray_target = argument9;
-var _tile_at_point = argument10;
+// the tile size
+var _cell_size = global.TILE_SIZE;
+
+// if there is no movement
+if (_move_h == 0 && _move_v == 0)
+{
+    exit;
+}
 
 var _cell_slope_x, _cell_slope_y;
 
@@ -47,8 +50,8 @@ var _slope_tile_collision = false;
 var _slope_tile_intercept = false;
 
 // slope of the lines
-var _m1 = _slope;
-var _m2 = _slope;
+var _m1 = _gradient;
+var _m2 = _gradient;
 
 // the starting position of the ray
 var _x1 = _start_x;
@@ -150,6 +153,30 @@ _x2 = _corner_x1;
 _y2 = _corner_y1;
 
 
+/*
+    ◤ <---   0
+    
+    ◣ <---   1
+    
+    ---> ◥   0
+    
+    ---> ◢   1
+    
+    
+    0     1
+    
+    ◤    ◥
+    +     +
+    |     |
+    
+    |     |
+    +     +
+    ◣    ◢
+    
+    0     1
+*/
+
+
 /**
  * Update the Horizontal Offset
  *
@@ -165,7 +192,7 @@ if (_tile_at_point == global.TILE_SOLID_45_NW || _tile_at_point == global.TILE_S
     // *these rays are cast from the right side of the bounding box, reposition it to the left side of the object
     if (_move_h >= 0)
     {
-        _offset_x1 = -(_size + 1);
+        _offset_x1 = -(bbox_width + 1);
     }
 }
 
@@ -176,7 +203,7 @@ else if (_tile_at_point == global.TILE_SOLID_45_NE || _tile_at_point == global.T
     // *these rays are cast from the left side of the bounding box, reposition it to the right side of the object
     if (_move_h < 0)
     {
-        _offset_x1 = (_size + 1);
+        _offset_x1 = (bbox_width + 1);
     }
 }
 
@@ -199,7 +226,8 @@ if (_tile_at_point == global.TILE_SOLID_45_SW || _tile_at_point == global.TILE_S
     // *these rays are cast from the top of the bounding box, reposition it to the bottom of the object
     if (_move_v < 0)
     {
-        _offset_y1 = (_size + 1);
+        //_offset_y1 = (_size + 1);
+        _offset_y1 = (bbox_height + 1);
     }
 }
 
@@ -210,7 +238,8 @@ else if (_tile_at_point == global.TILE_SOLID_45_NW || _tile_at_point == global.T
     // *these rays are cast from the bottom of the boudning box, reposition it to the top of the object
     if (_move_v >= 0)
     {
-        _offset_y1 = -(_size + 1);
+        //_offset_y1 = -(_size + 1);
+        _offset_y1 = -(bbox_height + 1);
     }
 }
 

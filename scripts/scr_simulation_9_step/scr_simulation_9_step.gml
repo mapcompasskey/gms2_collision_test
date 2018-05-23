@@ -245,35 +245,6 @@ camera_set_view_pos(camera, camera_x, camera_y);
 
 
 /**
- * Update Movement
- *
- */
-
-// *if the move angle is 255, dcos and dsin aren't calculating correctly
-//move_h = move_distance * dcos(move_angle);
-//move_v = move_distance * dsin(move_angle) * -1;
-
-// get the x and y distance to move each step
-// *this is also returning values that are slightly off
-//move_angle_rads = degtorad(move_angle);
-//move_h = move_distance * cos(move_angle_rads);
-//move_v = move_distance * sin(move_angle_rads) * -1;
-
-//move_angle = (move_angle mod 360);
-//var rad = ((move_angle + 36000) mod 360);
-var rad = ((move_angle + 360) % 360);
-move_angle_rads = degtorad(rad);
-move_h = move_distance * cos(move_angle_rads);
-move_v = move_distance * sin(move_angle_rads) * -1;
-
-new_move_h = move_h;
-new_move_v = move_v;
-
-//move_list[| 0] = new_move_h;
-//move_list[| 1] = new_move_v;
-
-
-/**
  * Reset the Lists
  *
  */
@@ -288,94 +259,84 @@ ds_list_clear(global.GUI_BBOX_POINTS);
 
 
 /**
- * Check for Tile Collision and Update Movement Values
+ * Update Movement
  *
  */
+
+var rad = ((move_angle + 360) % 360);
+move_angle_rads = degtorad(rad);
+move_h = move_distance * cos(move_angle_rads);
+move_v = move_distance * sin(move_angle_rads) * -1;
+
+new_move_h = move_h;
+new_move_v = move_v;
 
 collision_h = false;
 collision_v = false;
 
-// perform a collision test
-scr_simulation_9_raycast();
+raycast_x = sim_x;
+raycast_y = sim_y;
+
+raycast_move_h = move_h;
+raycast_move_v = move_v;
+
+raycast_collision_h = false;
+raycast_collision_v = false;
 
 
 /**
  * Check for Tile Collision and Update Movement Values
  *
- * If the first collision check was successful, redirect the object the remaining distance until another collision occurs.
  */
 
+// perform a collision test
+scr_simulation_9_raycast();
+
+new_move_h = raycast_move_h;
+new_move_v = raycast_move_v;
+
+collision_h = raycast_collision_h;
+collision_v = raycast_collision_v;
+
+// if the first collision check was successful, redirect the object the remaining distance until another collision occurs
 if (collision_h || collision_v)
 {
-    // backup the current x/y position
-    var _sim_x = sim_x;
-    var _sim_y = sim_y;
+    raycast_x = sim_x + new_move_h;
+    raycast_y = sim_y + new_move_v;
     
-    // backup the original movement values
-    var _move_h = move_h;
-    var _move_v = move_v;
+    raycast_move_h = (collision_v ? move_h - new_move_h : 0);
+    raycast_move_v = (collision_h ? move_v - new_move_v : 0);
     
-    // backup the updated movement values
-    var _new_move_h = new_move_h;
-    var _new_move_v = new_move_v;
+    raycast_collision_h = false;
+    raycast_collision_v = false;
     
-    // backup the updated collison states
-    var _collision_h = collision_h;
-    var _collision_v = collision_v;
-    
-    // move to the first collision point
-    sim_x = _sim_x + _new_move_h;
-    sim_y = _sim_y + _new_move_v;
-    
-    // add the remaining movement distance
-    move_h = (_collision_v ? _move_h - _new_move_h : 0);
-    move_v = (_collision_h ? _move_v - _new_move_v : 0);
-    
-    // add the remaining movement distance
-    new_move_h = move_h;
-    new_move_v = move_v;
-    
-    // preform another collision test
+    // perform another a collision test
     scr_simulation_9_raycast();
     
     // if the first test found a horizontal collision and the second test found a vertical collision but was unable to move up or down, try another straight horizontal test
     // *since horizontal collision is tested first, there is a false positive that occurs when a tile is directly diagonal and the vertical path is blocked but the horizontal path is clear
-    if (_collision_h && collision_v && new_move_h == 0 && new_move_v == 0)
+    if (collision_h && raycast_collision_v && raycast_move_h == 0 && raycast_move_v == 0)
     {
         // add the remaining movement distance
-        move_h = _move_h - _new_move_h;
-        move_v = 0;
-        
-        // add the remaining movement distance
-        new_move_h = move_h;
-        new_move_v = move_v;
+        raycast_move_h = move_h - new_move_h;
+        raycast_move_v = 0;
         
         // we know there was a vertical collision
-        _collision_h = false;
-        _collision_v = true;
-        collision_h = _collision_h;
-        collision_v = _collision_v;
+        collision_h = false;
+        collision_v = true;
+        raycast_collision_h = collision_h;
+        raycast_collision_v = collision_v;
         
         // preform another collision test
         scr_simulation_9_raycast();
     }
     
-    // add the original updated movement values to the new updated movement values
-    new_move_h += _new_move_h;
-    new_move_v += _new_move_v;
+    new_move_h += raycast_move_h;
+    new_move_v += raycast_move_v;
     
-    // reset the x/y point
-    sim_x = _sim_x;
-    sim_y = _sim_y;
-    
-    // reset the original movement values
-    move_h = _move_h;
-    move_v = _move_v;
-    
-    // update new collision states with the previous ones
-    collision_h = (_collision_h ? _collision_h : collision_h);
-    collision_v = (_collision_v ? _collision_v : collision_v);
-    
+    // update the new collision states with the previous ones
+    collision_h = (collision_h ? collision_h : raycast_collision_h);
+    collision_v = (collision_v ? collision_v : raycast_collision_v);
 }
 
 
