@@ -66,19 +66,24 @@ new_move_v = 0;
 
 // collision states
 collision_h = false;
-collision_v = false;
+collision_v = false
+collision_slope = false;
 
 // raycasting starting position
 raycast_x = 0;
 raycast_y = 0;
+
+raycast_slope_x = 0;
+raycast_slope_y = 0;
 
 // raycasting movement values
 raycast_move_h = 0;
 raycast_move_v = 0;
 
 // raycasting collision states
-raycast_collision_h = 0;
-raycast_collision_v = 0;
+raycast_collision_h = false;
+raycast_collision_v = false;
+raycast_collision_slope = false;
 
 // simulation states
 update_simulation = true;

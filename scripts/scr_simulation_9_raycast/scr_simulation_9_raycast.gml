@@ -120,8 +120,8 @@ var _ray_delta_v = 0;
 var _ray_target = point_distance(0, 0, raycast_move_h, raycast_move_v);
 
 // the distances to the collision points
-var _ray_collision_h = _ray_target;
-var _ray_collision_v = _ray_target;
+var _ray_target_h = _ray_target;
+var _ray_target_v = _ray_target;
 
 // the point to check horizontally
 var _step_h_x = _start_x;
@@ -274,7 +274,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_one_way)
             {
-                if (_ray_delta_h < _ray_collision_h)
+                if (_ray_delta_h < _ray_target_h)
                 {
                     // update collision states
                     _collision_h = true;
@@ -285,14 +285,37 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _move_v = _step_h_y - _start_y;
                     
                     // update the collision target distance
-                    _ray_collision_h = point_distance(0, 0, _move_h, _move_v);
+                    _ray_target_h = point_distance(0, 0, _move_h, _move_v);
                 }
             }
             
             else if (_tile_at_point == _tile_slope_45_1 || _tile_at_point == _tile_slope_45_2)
             {
-                //scr_simulation_9_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, 0, bbox_height, _cell_size, _move_list, _ray_collision_h, _tile_at_point);
-                scr_simulation_9_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, 0, _ray_collision_h, _tile_at_point);
+                raycast_slope_x = _step_h_x;
+                raycast_slope_y = _step_h_y;
+                raycast_collision_slope = false;
+                
+                //scr_simulation_9_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, 0, bbox_height, _cell_size, _move_list, _ray_target_h, _tile_at_point);
+                if (scr_simulation_9_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, _ray_target_h, _tile_at_point))
+                {
+                    raycast_collision_slope = true;
+                    
+                    _step_h_x = raycast_slope_x;
+                    _step_h_y = raycast_slope_y;
+                    
+                    // update collision states
+                    _collision_h = true;
+                    _collision_v = true;
+                    _test_h = false;
+                    _test_v = false;
+                    
+                    // update the movement values
+                    _move_h = _step_h_x - _start_x;
+                    _move_v = _step_h_y - _start_y;
+                    
+                    // update the collision target distance
+                    _ray_target_h = point_distance(0, 0, _move_h, _move_v);
+                }
             }
             
             // move the cell to the next intersection along the side of the object
@@ -381,7 +404,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_one_way)
             {
-                if (_ray_delta_v < _ray_collision_v)
+                if (_ray_delta_v < _ray_target_v)
                 {
                     // update collision states
                     _collision_v = true;
@@ -392,14 +415,36 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _move_v = _step_v_y - _start_y;
                     
                     // update the collision target distance
-                    _ray_collision_v = point_distance(0, 0, _move_h, _move_v);
+                    _ray_target_v = point_distance(0, 0, _move_h, _move_v);
                 }
             }
             
             else if (_tile_at_point == _tile_slope_45_1 || _tile_at_point == _tile_slope_45_2)
             {
-                //scr_simulation_9_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, 1, bbox_width, _cell_size, _move_list, _ray_collision_v, _tile_at_point);
-                scr_simulation_9_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, 1, _ray_collision_v, _tile_at_point);
+                raycast_slope_x = _step_v_x;
+                raycast_slope_y = _step_v_y;
+                raycast_collision_slope = false;
+                
+                if (scr_simulation_9_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, _ray_target_v, _tile_at_point))
+                {
+                    raycast_collision_slope = true;
+                    
+                    _step_v_x = raycast_slope_x;
+                    _step_v_y = raycast_slope_y;
+                    
+                    // update collision states
+                    _collision_h = true;
+                    _collision_v = true;
+                    _test_h = false;
+                    _test_v = false;
+                    
+                    // update the movement values
+                    _move_h = _step_v_x - _start_x;
+                    _move_v = _step_v_y - _start_y;
+                    
+                    // update the collision target distance
+                    _ray_target_v = point_distance(0, 0, _move_h, _move_v);
+                }
             }
             
             // move the cell to the next intersection along the side of the object

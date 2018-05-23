@@ -265,23 +265,28 @@ ds_list_clear(global.GUI_BBOX_POINTS);
 
 var rad = ((move_angle + 360) % 360);
 move_angle_rads = degtorad(rad);
+
 move_h = move_distance * cos(move_angle_rads);
 move_v = move_distance * sin(move_angle_rads) * -1;
-
 new_move_h = move_h;
 new_move_v = move_v;
 
 collision_h = false;
 collision_v = false;
+collision_slope = false;
 
 raycast_x = sim_x;
 raycast_y = sim_y;
+
+raycast_slope_x = 0;
+raycast_slope_y = 0;
 
 raycast_move_h = move_h;
 raycast_move_v = move_v;
 
 raycast_collision_h = false;
 raycast_collision_v = false;
+raycast_collision_slope = false;
 
 
 /**
@@ -297,9 +302,10 @@ new_move_v = raycast_move_v;
 
 collision_h = raycast_collision_h;
 collision_v = raycast_collision_v;
+collision_slope = raycast_collision_slope;
 
 // if the first collision check was successful, redirect the object the remaining distance until another collision occurs
-if (collision_h || collision_v)
+if ((collision_h || collision_v) && ! collision_slope)
 {
     raycast_x = sim_x + new_move_h;
     raycast_y = sim_y + new_move_v;

@@ -1,10 +1,9 @@
-/// @function scr_simulation_9_slope(start_x, start_y, cell_x, cell_y, slope, axis, ray_target, tile_at_point);
+/// @function scr_simulation_9_slope(start_x, start_y, cell_x, cell_y, slope, ray_target, tile_at_point);
 /// @param {number} x1          - the starting x position
 /// @param {number} y1          - the starting y position
 /// @param {number} cell_x      - the horizontal cell position
 /// @param {number} cell_y      - the vertical cell position
 /// @param {number} slope       - the starting x position
-/// @param {number} axis        - the axis to test against
 /// @param {real} ray_target    - the maximum distance that can be traveled
 /// @param {real} tile_at_point - the index of the tile that was collided with
 
@@ -23,12 +22,11 @@
 // get values
 var _start_x = argument0;
 var _start_y = argument1;
-var _cell_x = argument2;
-var _cell_y = argument3;
+var _cell_x1 = argument2;
+var _cell_y1 = argument3;
 var _gradient = argument4;
-var _axis = argument5;
-var _ray_target = argument6;
-var _tile_at_point = argument7;
+var _ray_target = argument5;
+var _tile_at_point = argument6;
 
 // movement values
 var _move_h = raycast_move_h;
@@ -42,12 +40,6 @@ if (_move_h == 0 && _move_v == 0)
 {
     exit;
 }
-
-var _cell_slope_x, _cell_slope_y;
-
-// reset collision states
-var _slope_tile_collision = false;
-var _slope_tile_intercept = false;
 
 // slope of the lines
 var _m1 = _gradient;
@@ -97,8 +89,8 @@ var _corner_x1, _corner_y1;
 var _corner_x2, _corner_y2;
 
 // top left point of the cell
-var _x2 = (_cell_x * _cell_size);
-var _y2 = (_cell_y * _cell_size);
+var _x2 = (_cell_x1 * _cell_size);
+var _y2 = (_cell_y1 * _cell_size);
 
 // if colliding with a south east ◢ slope
 if (_tile_at_point == global.TILE_SOLID_45_SE)
@@ -151,30 +143,6 @@ else if (_tile_at_point == global.TILE_SOLID_45_NE)
 // update the cell's point
 _x2 = _corner_x1;
 _y2 = _corner_y1;
-
-
-/*
-    ◤ <---   0
-    
-    ◣ <---   1
-    
-    ---> ◥   0
-    
-    ---> ◢   1
-    
-    
-    0     1
-    
-    ◤    ◥
-    +     +
-    |     |
-    
-    |     |
-    +     +
-    ◣    ◢
-    
-    0     1
-*/
 
 
 /**
@@ -253,6 +221,7 @@ _y1 += _offset_y1;
  */
 
 var _xx, _yy;
+var _tile_intercept = false;
 
 // find the y-intercepts for both lines
 var _b1 = _y1 - (_m1 * _x1);
@@ -282,59 +251,43 @@ else
     _yy = (_m1 * _xx) + _b1;
 }
 
-
-//var _list = ds_list_create();
-//ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
-//ds_list_add(global.GUI_AXIS_POINTS, _list);
-//ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-
-//var _list = ds_list_create();
-//ds_list_add(_list, _x2, _y2, global.COLLISION_V_COLOR);
-//ds_list_add(global.GUI_AXIS_POINTS, _list);
-//ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-
-
 // if colliding with the exact corner of the sloped tile
 // *it could end up calculating into another cell when dividing by the _cell_size
 if ((_xx == _corner_x1 && _yy == _corner_y1) || _xx == _corner_x2 && _yy == _corner_y2)
 {
-    _slope_tile_intercept = true;
+    _tile_intercept = true;
 }
 else
 {
     // find the cell where the lines intercept
-    _cell_slope_x = floor(_xx / _cell_size);
-    _cell_slope_y = floor(_yy / _cell_size);
+    var _cell_x2 = floor(_xx / _cell_size);
+    var _cell_y2 = floor(_yy / _cell_size);
     
-    // if the lines intercept within the cell this slope occupies
-    if (_cell_slope_x == _cell_x && _cell_slope_y == _cell_y)
+    // if the lines intercept within the cell that called this script
+    if (_cell_x2 == _cell_x1 && _cell_y2 == _cell_y1)
     {
         // if the distance to the intercept point does not exceede the maximum target distance
         if (point_distance(_x1, _y1, _xx, _yy) < _ray_target)
         {
-            _slope_tile_intercept = true;
+            _tile_intercept = true;
         }
     }
     
 }
 
 // if the lines intercepted within the sloped tile
-if (_slope_tile_intercept)
+if (_tile_intercept)
 {
-    if (_axis == 0)
-    {
-        //_step_h_x = _xx;
-        //_step_h_y = _yy - (_move_v < 0 ? (_size + 1) : 0);
-    }
-    else if (_axis == 1)
-    {
-        //_step_v_x = _xx - (_move_h < 0 ? (_size + 1) : 0);
-        //_step_v_y = _yy;
-    }
+    raycast_slope_x = _xx - _offset_x1;
+    raycast_slope_y = _yy - _offset_y1;
     
+    // capture the point on the slope where collision occurred
     var _list = ds_list_create();
     ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
     ds_list_add(global.GUI_AXIS_POINTS, _list);
     ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+    
+    return true;
 }
 
+return false;
