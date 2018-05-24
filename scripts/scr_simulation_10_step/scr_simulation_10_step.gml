@@ -1,4 +1,4 @@
-/// @function scr_simulation_9_step()
+/// @function scr_simulation_10_step()
 
 
 /**
@@ -284,6 +284,9 @@ raycast_slope_y = 0;
 raycast_move_h = move_h;
 raycast_move_v = move_v;
 
+raycast_slope_move_h = 0;
+raycast_slope_move_v = 0;
+
 raycast_collision_h = false;
 raycast_collision_v = false;
 raycast_collision_slope = false;
@@ -295,7 +298,7 @@ raycast_collision_slope = false;
  */
 
 // perform a collision test
-scr_simulation_9_raycast();
+scr_simulation_10_raycast();
 
 new_move_h = raycast_move_h;
 new_move_v = raycast_move_v;
@@ -308,6 +311,24 @@ collision_slope = raycast_collision_slope;
 if (collision_slope)
 {
     // redirect the movement along the path of the slope
+    
+    raycast_x = sim_x + new_move_h;
+    raycast_y = sim_y + new_move_v;
+    
+    //raycast_move_h = (collision_v ? move_h - new_move_h : 0);
+    //raycast_move_v = (collision_h ? move_v - new_move_v : 0);
+    raycast_move_h = raycast_slope_move_h;
+    raycast_move_v = raycast_slope_move_v;
+    
+    raycast_collision_h = false;
+    raycast_collision_v = false;
+    
+    // perform another a collision test
+    scr_simulation_10_raycast();
+    
+    new_move_h += raycast_move_h;
+    new_move_v += raycast_move_v;
+    
 }
 
 // else, if the first collision check was successful, redirect the object the remaining distance until another collision occurs
@@ -323,7 +344,7 @@ else if (collision_h || collision_v)
     raycast_collision_v = false;
     
     // perform another a collision test
-    scr_simulation_9_raycast();
+    scr_simulation_10_raycast();
     
     // if the first test found a horizontal collision and the second test found a vertical collision but was unable to move up or down, try another straight horizontal test
     // *since horizontal collision is tested first, there is a false positive that occurs when a tile is directly diagonal and the vertical path is blocked but the horizontal path is clear
@@ -340,7 +361,7 @@ else if (collision_h || collision_v)
         raycast_collision_v = collision_v;
         
         // preform another collision test
-        scr_simulation_9_raycast();
+        scr_simulation_10_raycast();
     }
     
     new_move_h += raycast_move_h;
