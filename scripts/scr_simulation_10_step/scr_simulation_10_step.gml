@@ -338,7 +338,7 @@ if (collision_slope)
     new_move_v += raycast_move_v;
 }
 
-// else, if the collision occurred horizontal or vertically against a flat surface, redirect the object the remaining distance until another collision occurs
+// else, if the collision occurred horizontally or vertically against a flat surface, redirect the object the remaining distance until another collision occurs
 else if (collision_h || collision_v)
 {
     // get the updated position at the point of collision

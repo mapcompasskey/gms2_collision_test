@@ -6,7 +6,7 @@
  *
  */
 
-var tick = global.TICK;
+tick = global.TICK;
 
 
 /**
@@ -42,72 +42,119 @@ last_velocity_y = velocity_y;
 // new x/y positions
 move_h = (velocity_x * tick);
 move_v = (velocity_y * tick);
-
-// if not moving
-if (move_h == 0 && move_v == 0)
-{
-    exit;
-}
-
-// get new move values
 new_move_h = move_h;
 new_move_v = move_v;
-new_move_list[| 0] = new_move_h;
-new_move_list[| 1] = new_move_v;
 
-// the bounding box x position
-var _x1 = (x + sprite_bbox_right + 1);
-if (move_h < 0)
-{
-    _x1 = (x + sprite_bbox_left);
-}
+collision_h = false;
+collision_v = false;
+collision_slope = false;
+collision_slope_falling = false;
+collision_slope_rising = false;
 
-// the bounding box y position
-var _y1 = (y + sprite_bbox_bottom + 1);
-if (move_v < 0)
-{
-    _y1 = (y + sprite_bbox_top);
-}
+raycast_x = x;
+raycast_y = y;
 
-// raycast for tile collision
-scr_simulation_11_entity_raycast(_x1, _y1, new_move_list, collision_tilemap, tile_size, bbox_width, bbox_height, false);
+raycast_slope_x = 0;
+raycast_slope_y = 0;
 
-// update new move values
-new_move_h = new_move_list[| 0];
-new_move_v = new_move_list[| 1];
+raycast_move_h = move_h;
+raycast_move_v = move_v;
+
+raycast_slope_move_h = 0;
+raycast_slope_move_v = 0;
+
+raycast_collision_h = false;
+raycast_collision_v = false;
+raycast_collision_slope = false;
 
 
 /**
- * Update Directional Collision State
+ * Check for Tile Collision and Update Movement Values
  *
- * This is used to determine if the entity was falling and has hit the floor and is now grounded.
- * Can also be used to tell entities they have struck a wall and need to turn around.
- * /
+ */
 
-// reset collision states
-collision_h = false;
-collision_v = false;
+// perform a collision test
+scr_simulation_11_entity_raycast();
 
-// if the horizontal movement changed
-if (new_move_h != move_h)
+new_move_h = raycast_move_h;
+new_move_v = raycast_move_v;
+
+collision_h = raycast_collision_h;
+collision_v = raycast_collision_v;
+collision_slope = raycast_collision_slope;
+
+// if the collision occurred with a sloped tile
+if (collision_slope)
 {
-    // if the new horizontal point is on an intersection
-    if ((_x1 + new_move_h) mod tile_size == 0)
-    {
-        collision_h = true;
-        velocity_x = -(velocity_x);
-    }
+    // update the new collision states
+    // *there is never horizontal collision with a slope and only veritcal collision if falling onto or rising with a slope
+    // *this would be useful in a side scrolling game with gravity
+    collision_h = false;
+    collision_v = (collision_slope_falling || collision_slope_rising);
+    
+    // get the updated position at the point of collision
+    raycast_x = sim_x + new_move_h;
+    raycast_y = sim_y + new_move_v;
+    
+    // redirect the remaining movement along the path of the slope
+    raycast_move_h = raycast_slope_move_h;
+    raycast_move_v = raycast_slope_move_v;
+    
+    // reset the raycast collision states
+    raycast_collision_h = false;
+    raycast_collision_v = false;
+    
+    // perform another a collision test
+    scr_simulation_11_entity_raycast();
+    
+    // update the new movement values
+    new_move_h += raycast_move_h;
+    new_move_v += raycast_move_v;
 }
 
-// if the vertical movement changed
-if (new_move_v != move_v)
+// else, if the collision occurred horizontally or vertically against a flat surface, redirect the object the remaining distance until another collision occurs
+else if (collision_h || collision_v)
 {
-    // if the new vertical point is on an intersection
-    if ((_y1 + new_move_v) mod tile_size == 0)
+    // get the updated position at the point of collision
+    raycast_x = x + new_move_h;
+    raycast_y = y + new_move_v;
+    
+    // redirect the remaining movement either straight horizontal or vertical
+    raycast_move_h = (collision_v ? move_h - new_move_h : 0);
+    raycast_move_v = (collision_h ? move_v - new_move_v : 0);
+    
+    // reset the raycast collision states
+    raycast_collision_h = false;
+    raycast_collision_v = false;
+    
+    // perform another a collision test
+    scr_simulation_11_entity_raycast();
+    
+    // if the first test found a horizontal collision and the second test found a vertical collision but was unable to move up or down, try another straight horizontal test
+    // *since horizontal collision is tested first, there is a false positive that occurs when a tile is directly diagonal and the vertical path is blocked but the horizontal path is clear
+    if (collision_h && raycast_collision_v && raycast_move_h == 0 && raycast_move_v == 0)
     {
+        // add the remaining movement distance
+        raycast_move_h = move_h - new_move_h;
+        raycast_move_v = 0;
+        
+        // we know there was a vertical collision
+        collision_h = false;
         collision_v = true;
-        velocity_y = -(velocity_y);
+        raycast_collision_h = collision_h;
+        raycast_collision_v = collision_v;
+        
+        // preform another collision test to find whether the horizontal path is open
+        scr_simulation_11_entity_raycast();
     }
+    
+    // update the new movement values
+    new_move_h += raycast_move_h;
+    new_move_v += raycast_move_v;
+    
+    // update the new collision states with the previous ones
+    collision_h = (collision_h ? collision_h : raycast_collision_h);
+    collision_v = (collision_v ? collision_v : raycast_collision_v);
 }
 
 

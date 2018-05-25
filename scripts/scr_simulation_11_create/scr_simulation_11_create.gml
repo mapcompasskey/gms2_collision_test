@@ -1,8 +1,9 @@
 /// @function scr_simulation_11_create()
 
 
+
 /**
- * Set Instance Variables
+ * Globals for Helper Function
  *
  */
 
@@ -10,23 +11,29 @@ show_debug_overlay(true);
 
 // values
 global.TICK = 0;
-global.TILE_SIZE = 10;
 
+// tiles
+global.TILE_SIZE = 10;
 global.TILE_SOLID = 1;
 global.TILE_SOLID_WEST = 2;
 global.TILE_SOLID_EAST = 3;
 global.TILE_SOLID_SOUTH = 4;
-global.TILE_SOLID_NORTH = 2;
+global.TILE_SOLID_NORTH = 5;
 
-global.TILE_SOLID_45_SE = 6;
-global.TILE_SOLID_45_SW = 7;
-global.TILE_SOLID_45_NE = 8;
-global.TILE_SOLID_45_NW = 9;
-
+global.TILE_SOLID_45_SE = 6; // ◢
+global.TILE_SOLID_45_SW = 7; // ◣
+global.TILE_SOLID_45_NE = 8; // ◥
+global.TILE_SOLID_45_NW = 9; // ◤
 
 // collision tilemap
 collision_tilemap_layer_id = layer_get_id("Collision_Tiles");
 global.COLLISION_TILEMAP = layer_tilemap_get_id(collision_tilemap_layer_id);
+
+
+/**
+ * Set Instance Variables
+ *
+ */
 
 // instances layer
 instances_layer_id = layer_get_id("Instances");
