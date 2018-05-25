@@ -314,7 +314,7 @@ if (collision_slope)
 {
     // update the new collision states
     // *there is never horizontal collision with a slope and only veritcal collision if falling onto or rising with a slope
-    // *this is only useful in a side scrolling game with gravity
+    // *this would be useful in a side scrolling game with gravity
     collision_h = false;
     collision_v = (collision_slope_falling || collision_slope_rising);
     
