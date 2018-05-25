@@ -274,6 +274,8 @@ new_move_v = move_v;
 collision_h = false;
 collision_v = false;
 collision_slope = false;
+collision_slope_falling = false;
+collision_slope_rising = false;
 
 raycast_x = sim_x;
 raycast_y = sim_y;
@@ -307,39 +309,47 @@ collision_h = raycast_collision_h;
 collision_v = raycast_collision_v;
 collision_slope = raycast_collision_slope;
 
-// if the collision was with a sloped tile
+// if the collision occurred with a sloped tile
 if (collision_slope)
 {
-    // redirect the movement along the path of the slope
+    // update the new collision states
+    // *there is never horizontal collision with a slope and only veritcal collision if falling onto or rising with a slope
+    // *this is only useful in a side scrolling game with gravity
+    collision_h = false;
+    collision_v = (collision_slope_falling || collision_slope_rising);
     
+    // get the updated position at the point of collision
     raycast_x = sim_x + new_move_h;
     raycast_y = sim_y + new_move_v;
     
-    //raycast_move_h = (collision_v ? move_h - new_move_h : 0);
-    //raycast_move_v = (collision_h ? move_v - new_move_v : 0);
+    // redirect the remaining movement along the path of the slope
     raycast_move_h = raycast_slope_move_h;
     raycast_move_v = raycast_slope_move_v;
     
+    // reset the raycast collision states
     raycast_collision_h = false;
     raycast_collision_v = false;
     
     // perform another a collision test
     scr_simulation_10_raycast();
     
+    // update the new movement values
     new_move_h += raycast_move_h;
     new_move_v += raycast_move_v;
-    
 }
 
-// else, if the first collision check was successful, redirect the object the remaining distance until another collision occurs
+// else, if the collision occurred horizontal or vertically against a flat surface, redirect the object the remaining distance until another collision occurs
 else if (collision_h || collision_v)
 {
+    // get the updated position at the point of collision
     raycast_x = sim_x + new_move_h;
     raycast_y = sim_y + new_move_v;
     
+    // redirect the remaining movement either straight horizontal or vertical
     raycast_move_h = (collision_v ? move_h - new_move_h : 0);
     raycast_move_v = (collision_h ? move_v - new_move_v : 0);
     
+    // reset the raycast collision states
     raycast_collision_h = false;
     raycast_collision_v = false;
     
@@ -360,10 +370,11 @@ else if (collision_h || collision_v)
         raycast_collision_h = collision_h;
         raycast_collision_v = collision_v;
         
-        // preform another collision test
+        // preform another collision test to find whether the horizontal path is open
         scr_simulation_10_raycast();
     }
     
+    // update the new movement values
     new_move_h += raycast_move_h;
     new_move_v += raycast_move_v;
     

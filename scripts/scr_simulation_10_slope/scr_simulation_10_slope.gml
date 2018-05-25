@@ -315,7 +315,7 @@ else
 // if the lines intercepted within the sloped tile
 if (_tile_intercept)
 {
-    // the distance from the starting point to where the collision occurred
+    // find the distance from the starting point to where the collision occurred
     var _distance = point_distance(_x1, _y1, _xx, _yy);
     
     // if the distance to the intercept point does not exceede the maximum target distance
@@ -332,10 +332,12 @@ if (_tile_intercept)
             if (_move_h > 0)
             {
                 _radians = degtorad(45);
+                collision_slope_rising = true;
             }
             else if (_move_h <= 0)
             {
                 _radians = degtorad(-135);
+                collision_slope_falling = true;
             }
         }
         
@@ -345,10 +347,12 @@ if (_tile_intercept)
             if (_move_h < 0)
             {
                 _radians = degtorad(135);
+                collision_slope_rising = true;
             }
             else if (_move_h >= 0)
             {
                 _radians = degtorad(-45);
+                collision_slope_falling = true;
             }
         }
         
@@ -378,6 +382,7 @@ if (_tile_intercept)
             }
         }
         
+        // redirect the movement along the slope
         raycast_slope_move_h = (_ray_target - _distance) * cos(_radians);
         raycast_slope_move_v = (_ray_target - _distance) * sin(_radians) * -1;
         
