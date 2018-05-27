@@ -93,6 +93,43 @@ var _ray_target = point_distance(0, 0, raycast_move_h, raycast_move_v);
 var _ray_target_h = _ray_target;
 var _ray_target_v = _ray_target;
 
+
+
+
+// find the cell this point occupies
+_cell_x = floor(_start_x / _cell_size);
+_cell_y = floor(_start_y / _cell_size);
+
+// check if the current tile being occupied is a sloped tile
+_tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
+//scr_output(_tile_at_point, tile_solid_45_se, tile_solid_45_sw, tile_solid_45_ne, tile_solid_45_nw);
+if (_tile_at_point == tile_solid_45_se || _tile_at_point == tile_solid_45_sw || _tile_at_point == tile_solid_45_ne || _tile_at_point == tile_solid_45_nw)
+{
+    scr_output(_tile_at_point);
+    raycast_slope_x = _start_x
+    raycast_slope_y = _start_y;
+    raycast_collision_slope = false;
+    
+    if (scr_simulation_11_entity_slope(_start_x, _start_y, _cell_x, _cell_y, _gradient, _ray_target, _tile_at_point))
+    {
+        // update movement values
+        raycast_move_h = raycast_slope_x - _start_x;
+        raycast_move_v = raycast_slope_y - _start_y;
+        
+        // update collision states
+        raycast_collision_h = false;
+        raycast_collision_v = false;
+        raycast_collision_slope = true;
+        
+        exit;
+    }
+}
+
+
+
+
+
+
 // the point to check horizontally
 var _step_h_x = _start_x;
 var _step_h_y = _start_y;
@@ -193,8 +230,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
     if (_test_h && ( ! _test_v || _ray_delta_h <= _ray_delta_v))
     {
         _tile_one_way = (raycast_move_h > 0 ? tile_solid_east : tile_solid_west);
-        _tile_slope_45_1 = (raycast_move_h > 0 ? tile_solild_45_se : tile_solild_45_sw);
-        _tile_slope_45_2 = (raycast_move_h > 0 ? tile_solild_45_ne : tile_solild_45_nw);
+        _tile_slope_45_1 = (raycast_move_h > 0 ? tile_solid_45_se : tile_solid_45_sw);
+        _tile_slope_45_2 = (raycast_move_h > 0 ? tile_solid_45_ne : tile_solid_45_nw);
 
         // find the cell this point occupies
         _cell_x = round(_step_h_x / _cell_size);
@@ -314,8 +351,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
     else if  (_test_v && ( ! _test_h || _ray_delta_v <= _ray_delta_h))
     {
         _tile_one_way = (raycast_move_v > 0 ? tile_solid_south : tile_solid_north);
-        _tile_slope_45_1 = (raycast_move_v > 0 ? tile_solild_45_se : tile_solild_45_ne);
-        _tile_slope_45_2 = (raycast_move_v > 0 ? tile_solild_45_sw : tile_solild_45_nw);
+        _tile_slope_45_1 = (raycast_move_v > 0 ? tile_solid_45_se : tile_solid_45_ne);
+        _tile_slope_45_2 = (raycast_move_v > 0 ? tile_solid_45_sw : tile_solid_45_nw);
 
         // find the cell this point occupies
         _cell_x = floor(_step_v_x / _cell_size);

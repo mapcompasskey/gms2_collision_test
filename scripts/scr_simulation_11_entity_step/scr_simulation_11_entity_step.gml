@@ -93,8 +93,8 @@ if (collision_slope)
     collision_v = (collision_slope_falling || collision_slope_rising);
     
     // get the updated position at the point of collision
-    raycast_x = sim_x + new_move_h;
-    raycast_y = sim_y + new_move_v;
+    raycast_x = x + new_move_h;
+    raycast_y = y + new_move_v;
     
     // redirect the remaining movement along the path of the slope
     raycast_move_h = raycast_slope_move_h;

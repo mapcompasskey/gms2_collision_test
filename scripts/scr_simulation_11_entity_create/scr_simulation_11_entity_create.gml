@@ -10,13 +10,13 @@
 tile_size = global.TILE_SIZE;
 tile_solid = global.TILE_SOLID;
 tile_solid_west = global.TILE_SOLID_WEST;
-tile_solid_east = global.TILE_SOLID_EAST
-tile_solid_south = global.TILE_SOLID_SOUTH
-tile_solid_north = global.TILE_SOLID_NORTH
-tile_solild_45_se = global.TILE_SOLID_45_SE = 6; // ◢
-tile_solild_45_sw = global.TILE_SOLID_45_SW = 7; // ◣
-tile_solild_45_ne = global.TILE_SOLID_45_NE = 8; // ◥
-tile_solild_45_nw = global.TILE_SOLID_45_NW = 9; // ◤
+tile_solid_east = global.TILE_SOLID_EAST;
+tile_solid_south = global.TILE_SOLID_SOUTH;
+tile_solid_north = global.TILE_SOLID_NORTH;
+tile_solid_45_se = global.TILE_SOLID_45_SE; // ◢
+tile_solid_45_sw = global.TILE_SOLID_45_SW; // ◣
+tile_solid_45_ne = global.TILE_SOLID_45_NE; // ◥
+tile_solid_45_nw = global.TILE_SOLID_45_NW; // ◤
 
 // collision tilemap
 collision_tilemap = global.COLLISION_TILEMAP;
@@ -63,10 +63,9 @@ raycast_collision_slope = false;
 // drawing
 // the_sprite = spr_simulation_15px;
 the_sprite = spr_simulation_10px;
-// the_sprite = spr_simulation_10px;
 // the_sprite = spr_simulation_8x6px;
 // the_sprite = spr_simulation_6px;
-// the_sprite = spr_simulation_1px;
+//the_sprite = spr_simulation_1px;
 
 sprite_index = the_sprite;
 mask_index = the_sprite;

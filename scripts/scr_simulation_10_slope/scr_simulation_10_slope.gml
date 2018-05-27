@@ -251,47 +251,6 @@ else
     _yy = (_m1 * _xx) + _b1;
 }
 
-/*
-// if colliding with the exact corner of the sloped tile
-// *it could end up calculating into another cell when dividing by the _cell_size
-if ((_xx == _corner_x1 && _yy == _corner_y1) || _xx == _corner_x2 && _yy == _corner_y2)
-{
-    _tile_intercept = true;
-}
-else
-{
-    // find the cell where the lines intercept
-    var _cell_x2 = floor(_xx / _cell_size);
-    var _cell_y2 = floor(_yy / _cell_size);
-    
-    // if the lines intercept within the cell that called this script
-    if (_cell_x2 == _cell_x1 && _cell_y2 == _cell_y1)
-    {
-        // if the distance to the intercept point does not exceede the maximum target distance
-        if (point_distance(_x1, _y1, _xx, _yy) < _ray_target)
-        {
-            _tile_intercept = true;
-        }
-    }
-    
-}
-
-// if the lines intercepted within the sloped tile
-if (_tile_intercept)
-{
-    raycast_slope_x = _xx - _offset_x1;
-    raycast_slope_y = _yy - _offset_y1;
-    
-    // capture the point on the slope where collision occurred
-    var _list = ds_list_create();
-    ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
-    ds_list_add(global.GUI_AXIS_POINTS, _list);
-    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-    
-    return true;
-}
-*/
-
 // if colliding with the exact corner of the sloped tile
 // *it could end up calculating into another cell when dividing by the _cell_size
 if ((_xx == _corner_x1 && _yy == _corner_y1) || _xx == _corner_x2 && _yy == _corner_y2)

@@ -1,4 +1,4 @@
-/// @function scr_simulation_101_entity_slope(start_x, start_y, cell_x, cell_y, slope, ray_target, tile_at_point);
+/// @function scr_simulation_11_entity_slope(start_x, start_y, cell_x, cell_y, slope, ray_target, tile_at_point);
 /// @param {number} x1          - the starting x position
 /// @param {number} y1          - the starting y position
 /// @param {number} cell_x      - the horizontal cell position
@@ -57,14 +57,14 @@ var _y1 = _start_y;
  */
 
 // if colliding with a south east ◢ or north west ◤ slope
-if (_tile_at_point == tile_solild_45_se || _tile_at_point == tile_solild_45_nw)
+if (_tile_at_point == tile_solid_45_se || _tile_at_point == tile_solid_45_nw)
 {
     // update the slope of this line
     _m2 = -1;
 }
 
 // if colliding with a south west ◣ or north east ◥ slope
-else if (_tile_at_point == tile_solild_45_sw || _tile_at_point == tile_solild_45_ne)
+else if (_tile_at_point == tile_solid_45_sw || _tile_at_point == tile_solid_45_ne)
 {
     // update the slope of this line
     _m2 = 1;
@@ -93,7 +93,7 @@ var _x2 = (_cell_x1 * _cell_size);
 var _y2 = (_cell_y1 * _cell_size);
 
 // if colliding with a south east ◢ slope
-if (_tile_at_point == tile_solild_45_se)
+if (_tile_at_point == tile_solid_45_se)
 {
     // top right
     _corner_x1 = _x2 + _cell_size;
@@ -105,7 +105,7 @@ if (_tile_at_point == tile_solild_45_se)
 }
 
 // else, if colliding with a south west ◣ slope
-else if (_tile_at_point == tile_solild_45_sw)
+else if (_tile_at_point == tile_solid_45_sw)
 {
     // top left
     _corner_x1 = _x2;
@@ -117,7 +117,7 @@ else if (_tile_at_point == tile_solild_45_sw)
 }
 
 // else, if colliding with a north west ◤ slope
-else if (_tile_at_point == tile_solild_45_nw)
+else if (_tile_at_point == tile_solid_45_nw)
 {
     // top right
     _corner_x1 = _x2 + _cell_size;
@@ -129,7 +129,7 @@ else if (_tile_at_point == tile_solild_45_nw)
 }
 
 // else, if colliding with a north east ◥ slope
-else if (_tile_at_point == tile_solild_45_ne)
+else if (_tile_at_point == tile_solid_45_ne)
 {
     // top left
     _corner_x1 = _x2;
@@ -154,7 +154,7 @@ _y2 = _corner_y1;
 var _offset_x1 = 0;
 
 // if colliding with a north west ◤ or south west ◣ slope
-if (_tile_at_point == tile_solild_45_nw || _tile_at_point == tile_solild_45_sw)
+if (_tile_at_point == tile_solid_45_nw || _tile_at_point == tile_solid_45_sw)
 {
     // if the horizontal movement is zero or positive
     // *these rays are cast from the right side of the bounding box, reposition it to the left side of the object
@@ -165,7 +165,7 @@ if (_tile_at_point == tile_solild_45_nw || _tile_at_point == tile_solild_45_sw)
 }
 
 // else, if colliding with a north east ◥ or south east ◢ slope
-else if (_tile_at_point == tile_solild_45_ne || _tile_at_point == tile_solild_45_se)
+else if (_tile_at_point == tile_solid_45_ne || _tile_at_point == tile_solid_45_se)
 {
     // if the horizontal movement is negative
     // *these rays are cast from the left side of the bounding box, reposition it to the right side of the object
@@ -188,7 +188,7 @@ _x1 += _offset_x1;
 var _offset_y1 = 0;
 
 // if colliding with a south west ◣ or south east ◢ slope
-if (_tile_at_point == tile_solild_45_sw || _tile_at_point == tile_solild_45_se)
+if (_tile_at_point == tile_solid_45_sw || _tile_at_point == tile_solid_45_se)
 {
     // if the vertical movement is negative
     // *these rays are cast from the top of the bounding box, reposition it to the bottom of the object
@@ -200,7 +200,7 @@ if (_tile_at_point == tile_solild_45_sw || _tile_at_point == tile_solild_45_se)
 }
 
 // else, if colliding with a north west ◤ or north east ◥ slope
-else if (_tile_at_point == tile_solild_45_nw || _tile_at_point == tile_solild_45_ne)
+else if (_tile_at_point == tile_solid_45_nw || _tile_at_point == tile_solid_45_ne)
 {
     // if the vertical movement is zero or positive
     // *these rays are cast from the bottom of the boudning box, reposition it to the top of the object
@@ -286,7 +286,7 @@ if (_tile_intercept)
         var _radians = 0;
         
         // if colliding with a south east ◢ slope
-        if (_tile_at_point == tile_solild_45_se)
+        if (_tile_at_point == tile_solid_45_se)
         {
             if (_move_h > 0)
             {
@@ -301,7 +301,7 @@ if (_tile_intercept)
         }
         
         // else, if colliding with a south west ◣ slope
-        else if (_tile_at_point == tile_solild_45_sw)
+        else if (_tile_at_point == tile_solid_45_sw)
         {
             if (_move_h < 0)
             {
@@ -316,7 +316,7 @@ if (_tile_intercept)
         }
         
         // else, if colliding with a north west ◤ slope
-        else if (_tile_at_point == tile_solild_45_nw)
+        else if (_tile_at_point == tile_solid_45_nw)
         {
             if (_move_h > 0 || (_move_h == 0 && _move_v < 0))
             {
@@ -329,7 +329,7 @@ if (_tile_intercept)
         }
         
         // else, if colliding with a north east ◥ slope
-        else if (_tile_at_point == tile_solild_45_ne)
+        else if (_tile_at_point == tile_solid_45_ne)
         {
             if (_move_h > 0)
             {
