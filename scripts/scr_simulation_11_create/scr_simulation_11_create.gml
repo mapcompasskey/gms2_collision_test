@@ -46,10 +46,10 @@ instances_layer_id = layer_get_id("Instances");
  */
 
 // get window size
-view_scale = 1;
+view_scale = 5;
 window_width = window_get_width();
 window_height = window_get_height();
-
+/*
 var width_slope = window_width / room_width;
 var height_slope = window_height / room_height;
 if (width_slope < height_slope)
@@ -60,12 +60,15 @@ else
 {
     view_scale = height_slope;
 }
+*/
 
 // camera size
 camera_x = 0;
 camera_y = 0;
 camera_width = (window_width / view_scale);
 camera_height = (window_height / view_scale);
+global.CAMERA_WIDTH_HALF = (camera_width / 2);
+global.CAMERA_HEIGHT_HALF = (camera_height / 2)
 
 // camera offsets
 if (camera_width > room_width)
@@ -80,6 +83,7 @@ if (camera_height > room_height)
 
 // create the camera
 camera = camera_create();
+global.CAMERA = camera;
 
 // update camera properties
 camera_set_view_pos(camera, camera_x, camera_y);
@@ -121,5 +125,6 @@ for (var i = 0; i < 50; i++)
 
 var pos_x = (room_width / 2);
 var pos_y = (room_height / 2);
-instance_create_layer(pos_x, pos_y, instances_layer_id, obj_simulation_11_entity);
+var _player = instance_create_layer(pos_x, pos_y, instances_layer_id, obj_simulation_11_entity);
+//camera_set_view_target(camera, _player);
 

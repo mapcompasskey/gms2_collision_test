@@ -14,25 +14,64 @@ tick = global.TICK;
  *
  */
 
-velocity_x = 0;
-velocity_y = 0;
+if (has_gravity)
+{
+    // apply gravity
+    var _gravity = 500;
+    velocity_y += (_gravity * tick);
+    
+    // reset horizontal velocity
+    velocity_x = 0;
+    
+    // if moving left
+    if (keyboard_check(ord("A")))
+    {
+        velocity_x = -(speed_h);
+    }
+    // else, if moving right
+    else if (keyboard_check(ord("D")))
+    {
+        velocity_x = speed_h;
+    }
+    
+    // if jumping
+    if (keyboard_check_pressed(ord("W")))
+    {
+        velocity_y = -(speed_v * 4);
+        is_jumping = true;
+    }
+    
+}
+else
+{
+    velocity_x = 0;
+    velocity_y = 0;
 
-if (keyboard_check(ord("A")))
-{
-    velocity_x = -(speed_h);
-}
-else if (keyboard_check(ord("D")))
-{
-    velocity_x = speed_h;
-}
+    if (keyboard_check(ord("A")))
+    {
+        velocity_x = -(speed_h);
+    }
+    else if (keyboard_check(ord("D")))
+    {
+        velocity_x = speed_h;
+    }
 
-if (keyboard_check(ord("W")))
-{
-    velocity_y = -(speed_v);
-}
-else if (keyboard_check(ord("S")))
-{
-    velocity_y = speed_v;
+    if (keyboard_check(ord("W")))
+    {
+        velocity_y = -(speed_v);
+    }
+    else if (keyboard_check(ord("S")))
+    {
+        velocity_y = speed_v;
+    }
+
+    // reduce diagonal speed
+    if (velocity_x != 0 && velocity_y != 0)
+    {
+        velocity_x *= 0.70710678118 // sin of 45 degrees
+        velocity_y *= 0.70710678118 // cos of 45 degrees
+    }
+    
 }
 
 // store velocities
@@ -157,6 +196,28 @@ else if (collision_h || collision_v)
     collision_v = (collision_v ? collision_v : raycast_collision_v);
 }
 
+if (has_gravity)
+{
+    // reset grounded state
+    is_grounded = false;
+    
+    // if veritcal collision occurred
+    if (collision_v)
+    {
+        // reset vertical velocity
+        velocity_y = 0;
+        
+        // if entity was falling
+        if (move_v > 0)
+        {
+            // update grounded state
+            is_grounded = true;
+        }
+        
+    }
+    
+}
+
 
 /**
  * Update Position
@@ -165,4 +226,7 @@ else if (collision_h || collision_v)
 
 x += new_move_h;
 y += new_move_v;
+
+// update the camera's position
+camera_set_view_pos(camera, x - camera_width_half, y - camera_height_half);
 

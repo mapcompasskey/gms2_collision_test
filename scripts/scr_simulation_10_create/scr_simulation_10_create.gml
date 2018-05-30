@@ -172,7 +172,7 @@ view_set_yport(view_index, 0);
  *
  */
 
-if (true)
+if (false)
 {
     sim_x = 27 * global.TILE_SIZE;
     sim_y = 13 * global.TILE_SIZE;
@@ -195,5 +195,18 @@ if (false)
     // update the camera position
     camera_x = (global.TILE_SIZE * 0);
     camera_y = (global.TILE_SIZE * 0);
+    camera_set_view_pos(camera, camera_x, camera_y);
+}
+
+if (true)
+{
+    sim_x = 27 * global.TILE_SIZE;
+    sim_y = 4 * global.TILE_SIZE;
+    move_angle = -10;
+    move_distance = 40;
+    
+    // update the camera position
+    camera_x = (global.TILE_SIZE * 22);
+    camera_y = (global.TILE_SIZE * -4);
     camera_set_view_pos(camera, camera_x, camera_y);
 }

@@ -7,6 +7,9 @@
  */
 
 // values
+camera = global.CAMERA;
+camera_width_half = global.CAMERA_WIDTH_HALF;
+camera_height_half = global.CAMERA_HEIGHT_HALF;
 tile_size = global.TILE_SIZE;
 tile_solid = global.TILE_SOLID;
 tile_solid_west = global.TILE_SOLID_WEST;
@@ -35,6 +38,11 @@ move_h = 0;
 move_v = 0;
 new_move_h = 0;
 new_move_v = 0;
+
+// states
+has_gravity = true;
+is_jumping = false;
+is_grounded = false;
 
 // collision states
 collision_h = false;
