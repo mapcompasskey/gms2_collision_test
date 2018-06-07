@@ -308,7 +308,7 @@ new_move_v = raycast_move_v;
 collision_h = raycast_collision_h;
 collision_v = raycast_collision_v;
 collision_slope = raycast_collision_slope;
-
+/*
 // if the collision occurred with a sloped tile
 if (collision_slope)
 {
@@ -382,7 +382,7 @@ else if (collision_h || collision_v)
     collision_h = (collision_h ? collision_h : raycast_collision_h);
     collision_v = (collision_v ? collision_v : raycast_collision_v);
 }
-
+*/
 
 /**
  * Update the GUI Axes

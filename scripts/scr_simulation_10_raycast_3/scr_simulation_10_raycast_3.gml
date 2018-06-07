@@ -1,4 +1,4 @@
-/// @function scr_simulation_10_raycast();
+/// @function scr_simulation_10_raycast_3();
 
 
 /**
@@ -264,17 +264,6 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             
             // increase the distance traveled
             _size_delta += _cell_size;
-        }
-        
-        
-        // if a collision occurred during this step
-        if (_collision_h == true)
-        {
-            // if colliding directly with a cell's corner
-            if (_step_h_x mod _cell_size == 0 && _step_h_y mod _cell_size == 0)
-            {
-                scr_output("hit", _step_h_x, _step_h_y);
-            }
         }
         
         // if no collision occurred during this step
