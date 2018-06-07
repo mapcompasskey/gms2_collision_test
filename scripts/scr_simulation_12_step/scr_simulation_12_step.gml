@@ -1,4 +1,4 @@
-/// @function scr_simulation_10_step()
+/// @function scr_simulation_12_step()
 
 
 /**
@@ -300,7 +300,7 @@ raycast_collision_slope = false;
  */
 
 // perform a collision test
-scr_simulation_10_raycast();
+scr_simulation_12_raycast();
 
 new_move_h = raycast_move_h;
 new_move_v = raycast_move_v;
@@ -331,7 +331,7 @@ if (collision_slope)
     raycast_collision_v = false;
     
     // perform another a collision test
-    scr_simulation_10_raycast();
+    scr_simulation_12_raycast();
     
     // update the new movement values
     new_move_h += raycast_move_h;
@@ -354,7 +354,7 @@ else if (collision_h || collision_v)
     raycast_collision_v = false;
     
     // perform another a collision test
-    scr_simulation_10_raycast();
+    scr_simulation_12_raycast();
     
     // if the first test found a horizontal collision and the second test found a vertical collision but was unable to move up or down, try another straight horizontal test
     // *since horizontal collision is tested first, there is a false positive that occurs when a tile is directly diagonal and the vertical path is blocked but the horizontal path is clear
@@ -371,7 +371,7 @@ else if (collision_h || collision_v)
         raycast_collision_v = collision_v;
         
         // preform another collision test to find whether the horizontal path is open
-        scr_simulation_10_raycast();
+        scr_simulation_12_raycast();
     }
     
     // update the new movement values
