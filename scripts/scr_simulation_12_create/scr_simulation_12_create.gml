@@ -198,7 +198,7 @@ if (false)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (true)
+if (false)
 {
     sim_x = 27 * global.TILE_SIZE;
     sim_y = 4 * global.TILE_SIZE;
@@ -208,5 +208,32 @@ if (true)
     // update the camera position
     camera_x = (global.TILE_SIZE * 22);
     camera_y = (global.TILE_SIZE * -4);
+    camera_set_view_pos(camera, camera_x, camera_y);
+}
+
+if (false)
+{
+    sim_x = -5 * global.TILE_SIZE;
+    sim_y = 5 * global.TILE_SIZE + 5;
+    move_angle = -180;
+    move_distance = 40;
+    
+    // update the camera position
+    camera_x = (global.TILE_SIZE * -12);
+    camera_y = (global.TILE_SIZE * 0);
+    camera_set_view_pos(camera, camera_x, camera_y);
+}
+
+if (true)
+{
+    sim_x = -5 * global.TILE_SIZE;
+    sim_y = 5 * global.TILE_SIZE;
+    move_angle = -405;
+    move_angle = -45;
+    move_distance = 40;
+    
+    // update the camera position
+    camera_x = (global.TILE_SIZE * -12);
+    camera_y = (global.TILE_SIZE * 0);
     camera_set_view_pos(camera, camera_x, camera_y);
 }

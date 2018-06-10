@@ -263,11 +263,25 @@ ds_list_clear(global.GUI_BBOX_POINTS);
  *
  */
 
-var rad = ((move_angle + 360) % 360);
-move_angle_rads = degtorad(rad);
+//var rad = ((move_angle + 360) % 360);
+//move_angle_rads = degtorad(rad);
+
+//move_h = move_distance * cos(move_angle_rads);
+//move_v = move_distance * sin(move_angle_rads) * -1;
+
+//var rad = ((move_angle + 360) % 360);
+//move_angle_rads = degtorad(rad);
+
+if (move_angle < 0)
+{
+    move_angle = 360 + move_angle;
+}
+move_angle = (move_angle mod 360);
+move_angle_rads = degtorad(move_angle );
 
 move_h = move_distance * cos(move_angle_rads);
 move_v = move_distance * sin(move_angle_rads) * -1;
+
 new_move_h = move_h;
 new_move_v = move_v;
 
