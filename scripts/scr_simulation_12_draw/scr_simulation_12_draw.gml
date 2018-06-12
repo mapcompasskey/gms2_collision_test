@@ -7,7 +7,7 @@
  */
 
 draw_sprite(sprite_index, 0, sim_x, sim_y);
-draw_sprite_ext(sprite_index, 0, (sim_x + new_move_h), (sim_y + new_move_v), 1, 1, 0, c_red, 0.3);
+draw_sprite_ext(sprite_index, 0, (sim_x + new_move_h), (sim_y + new_move_v), 1, 1, 0, c_red, 0.8);
 
 
 /**
