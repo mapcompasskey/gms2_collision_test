@@ -32,115 +32,6 @@ if (raycast_move_h == 0 && raycast_move_v == 0)
 
 
 /**
- * Find the Corner to Raycast From
- *
- * Always cast the ray from the point that would collide first with a tile.
- * Straight horizontal test are always cast from the bottom left or bottom right of the boudning box.
- * Straight vertical test are cast from the top right or bottom right of the bounding box.
- * /
-
-// *minimum values are only being used for displaying the rays in the GUI
-
-var _x_min = (_start_x + sprite_bbox_left);
-var _x_max = (_start_x + sprite_bbox_right + 1);
-if (raycast_move_h < 0)
-{
-    _x_min = (_start_x + sprite_bbox_right + 1);
-    _x_max = (_start_x + sprite_bbox_left);
-}
-
-var _y_min = (_start_y + sprite_bbox_top);
-var _y_max = (_start_y + sprite_bbox_bottom + 1);
-if (raycast_move_v < 0)
-{
-    _y_min = (_start_y + sprite_bbox_bottom + 1);
-    _y_max = (_start_y + sprite_bbox_top);
-}
-
-_start_x = _x_max;
-_start_y = _y_max;
-
-// horizontal ray (only added as a visual marker)
-if (raycast_move_h != 0)
-{
-    var _temp_list = ds_list_create();
-    ds_list_add(_temp_list, _x_max, _y_min, (_x_max + raycast_move_h), (_y_min + raycast_move_v), global.COLLISION_H_COLOR);
-    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
-    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
-}
-
-// vertical ray (only added as a visual marker)
-if (raycast_move_v != 0)
-{
-    var _temp_list = ds_list_create();
-    ds_list_add(_temp_list, _x_min, _y_max, (_x_min + raycast_move_h), (_y_max + raycast_move_v), global.COLLISION_V_COLOR);
-    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
-    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
-}
-
-// the ray to cast
-var _temp_list = ds_list_create();
-ds_list_add(_temp_list, _x_max, _y_max, (_x_max + raycast_move_h), (_y_max + raycast_move_v), global.COLLISION_HV_COLOR);
-ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
-ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
-
-
-/**
- * Find the Corner to Raycast From
- *
- * Always cast the ray from the point that would collide first with a tile.
- * Straight horizontal test are always cast from the bottom left or bottom right of the boudning box.
- * Straight vertical test are cast from the top right or bottom right of the bounding box.
- */
-
-// *minimum values are only being used for displaying the rays in the GUI
-
-/*
-var _x_min = (_start_x + sprite_bbox_right + 1);
-var _x_max = (_start_x + sprite_bbox_left);
-if (raycast_move_h > 0)
-{
-    _x_min = (_start_x + sprite_bbox_left);
-    _x_max = (_start_x + sprite_bbox_right + 1);    
-}
-
-var _y_min = (_start_y + sprite_bbox_bottom + 1);
-var _y_max = (_start_y + sprite_bbox_top);
-if (raycast_move_v > 0)
-{
-    _y_min = (_start_y + sprite_bbox_top);
-    _y_max = (_start_y + sprite_bbox_bottom + 1);    
-}
-
-_start_x = _x_max;
-_start_y = _y_max;
-
-// horizontal ray (only added as a visual marker)
-if (raycast_move_h != 0)
-{
-    var _temp_list = ds_list_create();
-    ds_list_add(_temp_list, _x_max, _y_min, (_x_max + raycast_move_h), (_y_min + raycast_move_v), global.COLLISION_H_COLOR);
-    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
-    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
-}
-
-// vertical ray (only added as a visual marker)
-if (raycast_move_v != 0)
-{
-    var _temp_list = ds_list_create();
-    ds_list_add(_temp_list, _x_min, _y_max, (_x_min + raycast_move_h), (_y_max + raycast_move_v), global.COLLISION_V_COLOR);
-    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
-    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
-}
-
-// the ray to cast
-var _temp_list = ds_list_create();
-ds_list_add(_temp_list, _x_max, _y_max, (_x_max + raycast_move_h), (_y_max + raycast_move_v), global.COLLISION_HV_COLOR);
-ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
-ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
-*/
-
-/**
  * Find the X and Y Offsets
  *
  * Always cast the ray starting from the top left point on the bounding box.
@@ -235,12 +126,19 @@ var _tile_offset_y = (raycast_move_v > 0 ? 1 : 0);
 // tile values
 var _tile_at_point;
 var _tile_solid = global.TILE_SOLID;
+
 var _tile_h_one_way = (raycast_move_h > 0 ? global.TILE_SOLID_EAST : global.TILE_SOLID_WEST);
+
 var _tile_h_slope_45_1 = (raycast_move_h > 0 ? global.TILE_SOLID_45_SE : global.TILE_SOLID_45_SW);
 var _tile_h_slope_45_2 = (raycast_move_h > 0 ? global.TILE_SOLID_45_NE : global.TILE_SOLID_45_NW);
+var _tile_h_solid_45_1 = (raycast_move_h > 0 ? global.TILE_SOLID_45_SW : global.TILE_SOLID_45_SE);
+var _tile_h_solid_45_2 = (raycast_move_h > 0 ? global.TILE_SOLID_45_NW : global.TILE_SOLID_45_NE);
+
 var _tile_v_one_way = (raycast_move_v > 0 ? global.TILE_SOLID_SOUTH : global.TILE_SOLID_NORTH);
 var _tile_v_slope_45_1 = (raycast_move_v > 0 ? global.TILE_SOLID_45_SE : global.TILE_SOLID_45_NE);
 var _tile_v_slope_45_2 = (raycast_move_v > 0 ? global.TILE_SOLID_45_SW : global.TILE_SOLID_45_NW);
+var _tile_v_solid_45_1 = (raycast_move_v > 0 ? global.TILE_SOLID_45_NE : global.TILE_SOLID_45_SE);
+var _tile_v_solid_45_2 = (raycast_move_v > 0 ? global.TILE_SOLID_45_NW : global.TILE_SOLID_45_SW);
 
 
 /**
@@ -315,7 +213,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             
             // if collision with a solid tile has occurred
             // *if inside a solid tile (for some reason), then the entity will be stuck
-            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
+            //if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
+            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way || _tile_at_point == _tile_h_solid_45_1 || _tile_at_point == _tile_h_solid_45_2)
             {
                 if (_ray_delta_h < _ray_target_h)
                 {
@@ -331,6 +230,21 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     // update the collision target distance
                     _ray_target_h = point_distance(0, 0, _move_h, _move_v);
                 }
+            }
+            
+            //if (_tile_at_point == _tile_h_one_way || _tile_at_point == _tile_h_slope_45_1 || _tile_at_point == _tile_h_slope_45_2)
+            //{
+            //    scr_simulation_12_tile_def(_tile_at_point, _start_x, _start_y, _move_h, _move_v, _width, _height, _tile_x, _tile_y);
+            //}
+            
+            // else, if collision with a sloped tile has occurred
+            else if (_tile_at_point == _tile_h_slope_45_1 || _tile_at_point == _tile_h_slope_45_2)
+            {
+                raycast_slope_x = _step_h_x;
+                raycast_slope_y = _step_h_y;
+                raycast_collision_slope = false;
+                
+                scr_simulation_12_slope_2(_start_x, _start_y, _tile_x, _tile_step_y, _gradient, _ray_target_h, _tile_at_point);
             }
             
         }
@@ -426,7 +340,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             
             // if collision with a solid tile has occurred
             // *if inside a solid tile (for some reason), then the entity will be stuck
-            if ((_tile_at_point == _tile_solid || _tile_at_point == _tile_v_one_way))
+            //if ((_tile_at_point == _tile_solid || _tile_at_point == _tile_v_one_way))
+            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_v_one_way || _tile_at_point == _tile_v_solid_45_1 || _tile_at_point == _tile_v_solid_45_2)
             {
                 if (_ray_delta_v < _ray_target_v)
                 {
@@ -443,6 +358,16 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 }
             }
             
+            // else, if collision with a sloped tile has occurred
+            else if (_tile_at_point == _tile_v_slope_45_1 || _tile_at_point == _tile_v_slope_45_2)
+            {
+                raycast_slope_x = _step_v_x;
+                raycast_slope_y = _step_v_y;
+                raycast_collision_slope = false;
+                
+                scr_simulation_12_slope_2(_start_x, _start_y, _tile_step_x, _tile_y, _gradient, _ray_target_v, _tile_at_point);
+            }
+            
         }
         
         // if no collision occurred during this step
@@ -454,8 +379,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             // if there is slope
             if (_gradient != 0)
             {
-                // find the new x point
-                //_step_v_x = ((_step_v_y - _start_y) / _gradient ) + _start_x;
+                // find the new y point
                 _step_v_x = ((_step_v_y - (_start_y + _offset_y)) / _gradient ) + _start_x;
                 
                 // if the x position is off a horizontal intersection by a tiny amount, round towards the intersection

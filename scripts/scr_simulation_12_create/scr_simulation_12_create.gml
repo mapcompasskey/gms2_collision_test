@@ -26,6 +26,7 @@ global.GUI_BBOX_POINTS = ds_list_create();
 // tiles
 global.TILE_SIZE = 10;
 global.TILE_SOLID = 1;
+
 global.TILE_SOLID_WEST = 2;
 global.TILE_SOLID_EAST = 3;
 global.TILE_SOLID_SOUTH = 4;
@@ -172,7 +173,7 @@ view_set_yport(view_index, 0);
  *
  */
 
-if (false)
+if (true)
 {
     sim_x = 27 * global.TILE_SIZE;
     sim_y = 13 * global.TILE_SIZE;
@@ -185,7 +186,7 @@ if (false)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (true)
+if (false)
 {
     sim_x = 5 * global.TILE_SIZE;
     sim_y = 5 * global.TILE_SIZE;
