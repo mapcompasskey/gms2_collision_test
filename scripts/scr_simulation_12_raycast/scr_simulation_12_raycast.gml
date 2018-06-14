@@ -244,7 +244,24 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 raycast_slope_y = _step_h_y;
                 raycast_collision_slope = false;
                 
-                scr_simulation_12_slope_2(_start_x, _start_y, _tile_x, _tile_step_y, _gradient, _ray_target_h, _tile_at_point);
+                if (scr_simulation_12_slope_2(_start_x, _start_y, _tile_x, _tile_step_y, _gradient, _ray_target_h, _tile_at_point))
+                {
+                    raycast_collision_slope = true;
+                    
+                    // update collision states
+                    //_collision_h = true;
+                    _collision_v = true;
+                    //_test_h = false;
+                    _test_v = false;
+                    
+                    // update the movement values
+                    _move_h = raycast_slope_x - _start_x;
+                    _move_v = raycast_slope_y - _start_y;
+                    
+                    // update the collision target distance
+                    _ray_target_h = point_distance(0, 0, _move_h, _move_v);
+                }
+                
             }
             
         }
@@ -365,7 +382,24 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 raycast_slope_y = _step_v_y;
                 raycast_collision_slope = false;
                 
-                scr_simulation_12_slope_2(_start_x, _start_y, _tile_step_x, _tile_y, _gradient, _ray_target_v, _tile_at_point);
+                if (scr_simulation_12_slope_2(_start_x, _start_y, _tile_step_x, _tile_y, _gradient, _ray_target_v, _tile_at_point))
+                {
+                    raycast_collision_slope = true;
+                    
+                    // update collision states
+                    //_collision_h = true;
+                    _collision_v = true;
+                    //_test_h = false;
+                    _test_v = false;
+                    
+                    // update the movement values
+                    _move_h = raycast_slope_x - _start_x;
+                    _move_v = raycast_slope_y - _start_y;
+                    
+                    // update the collision target distance
+                    _ray_target_v = point_distance(0, 0, _move_h, _move_v);
+                }
+                
             }
             
         }

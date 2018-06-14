@@ -86,7 +86,7 @@ if (_m1 == _m2)
  * Find the Corner Points of the Slope in the Tile
  *
  * Normally, the top left point of a tile is used to determine its point in world (pixel) space and in the tile matrix.
- * But, depending the gradient of the sloped tile, the point needs to be moved so its on the tile's line.
+ * But, depending on the gradient of the sloped tile, the point needs to be moved so its on the tile's line.
  * Then, the corner points can be used to determine if the point of intersection occurs exactly on the tile's edge, which could be mistaken for another tile.
  */
 
@@ -151,79 +151,9 @@ _y2 = _corner_y1;
 
 
 /**
- * Update the Horizontal Offset
- *
- * Depending on the direction of the ray and the tile, the x position of the ray may need to be offset by the width of the object.
- * /
-
-var _offset_x1 = 0;
-
-// if colliding with a north west ◤ or south west ◣ slope
-if (_tile_at_point == global.TILE_SOLID_45_NW || _tile_at_point == global.TILE_SOLID_45_SW)
-{
-    // if the horizontal movement is zero or positive
-    // *these rays are cast from the right side of the bounding box, reposition it to the left side of the object
-    if (_move_h >= 0)
-    {
-        _offset_x1 = -(bbox_width + 1);
-    }
-}
-
-// else, if colliding with a north east ◥ or south east ◢ slope
-else if (_tile_at_point == global.TILE_SOLID_45_NE || _tile_at_point == global.TILE_SOLID_45_SE)
-{
-    // if the horizontal movement is negative
-    // *these rays are cast from the left side of the bounding box, reposition it to the right side of the object
-    if (_move_h < 0)
-    {
-        _offset_x1 = (bbox_width + 1);
-    }
-}
-
-// update the x position
-_x1 += _offset_x1;
-
-
-/**
- * Update the Vertical Offset
- *
- * Depending on the direction of the ray and the tile, the y position of the ray may need to be offset by the height of the object.
- * /
-
-var _offset_y1 = 0;
-
-// if colliding with a south west ◣ or south east ◢ slope
-if (_tile_at_point == global.TILE_SOLID_45_SW || _tile_at_point == global.TILE_SOLID_45_SE)
-{
-    // if the vertical movement is negative
-    // *these rays are cast from the top of the bounding box, reposition it to the bottom of the object
-    if (_move_v < 0)
-    {
-        //_offset_y1 = (_size + 1);
-        _offset_y1 = (bbox_height + 1);
-    }
-}
-
-// else, if colliding with a north west ◤ or north east ◥ slope
-else if (_tile_at_point == global.TILE_SOLID_45_NW || _tile_at_point == global.TILE_SOLID_45_NE)
-{
-    // if the vertical movement is zero or positive
-    // *these rays are cast from the bottom of the boudning box, reposition it to the top of the object
-    if (_move_v >= 0)
-    {
-        //_offset_y1 = -(_size + 1);
-        _offset_y1 = -(bbox_height + 1);
-    }
-}
-
-// update the y position
-_y1 += _offset_y1;
-
-
-/**
  * Update the Offset
  *
- * Depending on the direction of the ray and the tile, the x position of the ray may need to be offset by the width of the object.
+ * Depending on the sloped tile being tested against, offset the point to be the position that would be the first to collide into the tile.
  */
 
 var _offset_x1 = 0;
@@ -303,14 +233,9 @@ var _d2 = ((_x1 - _corner_x1) * (_corner_y2 - _corner_y1)) - ((_y1 - _corner_y1)
 //var _d3 = (((_corner_x1 - 1) - _corner_x1) * (_corner_y2 - _corner_y1)) - ((_corner_y1 - _corner_y1) * (_corner_x2 - _corner_x1));
 //scr_output(_d1, _d2, _d3);
 
-// if the point falls on the line
-if (_d2 == 0)
-{
-    return false;
-}
-
-// else, if the point is on the "solid" side of the line
-else if (sign(_d2) != sign(_d1))
+// if the point is not on the line
+// and if the point is on the "solid" side of the line
+if (_d2 != 0 && sign(_d2) != sign(_d1))
 {
     return false;
 }
@@ -324,59 +249,72 @@ else if (sign(_d2) != sign(_d1))
 var _xx, _yy;
 var _tile_intercept = false;
 
-// find the y-intercepts for both lines
-var _b1 = _y1 - (_m1 * _x1);
-var _b2 = _y2 - (_m2 * _x2);
-
-// if a vertical line
-// *the ray's x position is always x1, so just plug x into the second line's equation and solve for y
-if (_move_h == 0)
+// if the point falls on the sloped line
+if (_d2 == 0)
 {
     _xx = _x1;
-    _yy = (_m2 * _xx) + _b2;
-}
-
-// else, if a horizontal line
-// *the ray's y position is always y1, so just plug y into the second line's equation and solve for x
-else if (_move_v == 0)
-{
     _yy = _y1;
-    _xx = (_yy - _b2) / _m2;
-}
-
-// else, both lines are sloped
-else
-{
-    // find the point where the lines intersect
-    _xx = (_b2 - _b1) / (_m1 - _m2);
-    _yy = (_m1 * _xx) + _b1;
-}
-
-// capture the point on the slope where collision occurred
-//var _list = ds_list_create();
-//ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
-//ds_list_add(global.GUI_AXIS_POINTS, _list);
-//ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-//return false;
-
-// if colliding with the exact corner of the sloped tile
-// *it could end up calculating into another tile when dividing by the _tile_size
-if ((_xx == _corner_x1 && _yy == _corner_y1) || _xx == _corner_x2 && _yy == _corner_y2)
-{
     _tile_intercept = true;
 }
+
+// else, the starting point is in the "non-solid" side of the line
 else
 {
-    // find the tile where the lines intercept
-    var _tile_x2 = floor(_xx / _tile_size);
-    var _tile_y2 = floor(_yy / _tile_size);
+    // find the y-intercepts for both lines
+    var _b1 = _y1 - (_m1 * _x1);
+    var _b2 = _y2 - (_m2 * _x2);
+
+    // if a vertical line
+    // *the ray's x position is always x1, so just plug x1 into the second line's equation and solve for y
+    if (_move_h == 0)
+    {
+        _xx = _x1;
+        _yy = (_m2 * _xx) + _b2;
+    }
+
+    // else, if a horizontal line
+    // *the ray's y position is always y1, so just plug y1 into the second line's equation and solve for x
+    else if (_move_v == 0)
+    {
+        _yy = _y1;
+        _xx = (_yy - _b2) / _m2;
+    }
+
+    // else, both lines are sloped
+    else
+    {
+        // find the point where the lines intersect
+        _xx = (_b2 - _b1) / (_m1 - _m2);
+        _yy = (_m1 * _xx) + _b1;
+    }
     
-    // if the lines intercept within the tile that called this script
-    if (_tile_x2 == _tile_x1 && _tile_y2 == _tile_y1)
+    // capture the point on the slope where collision occurred
+    //var _list = ds_list_create();
+    //ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
+    //ds_list_add(global.GUI_AXIS_POINTS, _list);
+    //ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+    //return false;
+    
+    // if colliding with the exact corner of the sloped tile
+    // *it could end up calculating into another tile when dividing by the _tile_size
+    if ((_xx == _corner_x1 && _yy == _corner_y1) || _xx == _corner_x2 && _yy == _corner_y2)
     {
         _tile_intercept = true;
     }
-    
+    else
+    {
+        // find the tile where the lines intercept
+        var _tile_x2 = floor(_xx / _tile_size);
+        var _tile_y2 = floor(_yy / _tile_size);
+        
+        // if the lines intercept within this tile
+        if (_tile_x2 == _tile_x1 && _tile_y2 == _tile_y1)
+        {
+            _tile_intercept = true;
+        }
+        
+    }
+
 }
 
 // if the lines intercepted within the sloped tile
@@ -388,71 +326,27 @@ if (_tile_intercept)
     // if the distance to the intercept point does not exceede the maximum target distance
     if (_distance < _ray_target)
     {
+        // get the point of collision (minus the offsets)
         raycast_slope_x = _xx - _offset_x1;
         raycast_slope_y = _yy - _offset_y1;
-        /*
+        
         var _radians = 0;
         
-        // if colliding with a south east ◢ slope
-        if (_tile_at_point == global.TILE_SOLID_45_SE)
+        // if colliding with a south west ◣ or north east ◥ slope
+        if (_m2 == 1)
         {
-            if (_move_h > 0)
-            {
-                _radians = degtorad(45);
-                collision_slope_rising = true;
-            }
-            else if (_move_h <= 0)
-            {
-                _radians = degtorad(-135);
-                collision_slope_falling = true;
-            }
+            _radians = degtorad(_move_h >= 0 ? -45 : 135);
         }
         
-        // else, if colliding with a south west ◣ slope
-        else if (_tile_at_point == global.TILE_SOLID_45_SW)
+        // if colliding with a south east ◢ or north west ◤ slope
+        if (_m2 == -1)
         {
-            if (_move_h < 0)
-            {
-                _radians = degtorad(135);
-                collision_slope_rising = true;
-            }
-            else if (_move_h >= 0)
-            {
-                _radians = degtorad(-45);
-                collision_slope_falling = true;
-            }
-        }
-        
-        // else, if colliding with a north west ◤ slope
-        else if (_tile_at_point == global.TILE_SOLID_45_NW)
-        {
-            if (_move_h > 0 || (_move_h == 0 && _move_v < 0))
-            {
-                _radians = degtorad(45);
-            }
-            else if (_move_h <= 0)
-            {
-                _radians = degtorad(-135);
-            }
-        }
-        
-        // else, if colliding with a north east ◥ slope
-        else if (_tile_at_point == global.TILE_SOLID_45_NE)
-        {
-            if (_move_h > 0)
-            {
-                _radians = degtorad(-45);
-            }
-            else if (_move_h <= 0)
-            {
-                _radians = degtorad(135);
-            }
+            _radians = degtorad(_move_h > 0 ? 45 : -135);
         }
         
         // redirect the movement along the slope
         raycast_slope_move_h = (_ray_target - _distance) * cos(_radians);
         raycast_slope_move_v = (_ray_target - _distance) * sin(_radians) * -1;
-        */
         
         // capture the point on the slope where collision occurred
         var _list = ds_list_create();

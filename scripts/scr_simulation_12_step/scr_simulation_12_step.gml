@@ -323,6 +323,18 @@ collision_h = raycast_collision_h;
 collision_v = raycast_collision_v;
 collision_slope = raycast_collision_slope;
 
+// if the collision occurred with a sloped tile
+if (collision_slope)
+{
+    // if there is horizontal movement
+    if (move_h != 0)
+    {
+        // apply the redirected slope movement vectors
+        new_move_h += raycast_slope_move_h;
+        new_move_v += raycast_slope_move_v;
+    }
+}
+
 /*
 // if the collision occurred with a sloped tile
 if (collision_slope)
