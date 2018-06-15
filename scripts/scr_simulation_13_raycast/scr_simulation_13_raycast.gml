@@ -8,13 +8,19 @@
  * At each intersection, move away from the point, the length of the bounding box, checking for collisions with adjacent tiles.
  */
 
-// the starting position
-var _start_x = raycast_x;
-var _start_y = raycast_y;
+// if there is no movement
+if (raycast_move_h == 0 && raycast_move_v == 0)
+{
+    exit;
+}
 
 // movement values
 var _move_h = raycast_move_h;
 var _move_v = raycast_move_v;
+
+// the starting position (always the top left corner of the bounding box)
+var _start_x = raycast_x + sprite_bbox_left;
+var _start_y = raycast_y + sprite_bbox_top;
 
 // the collision states
 var _collision_h = false;
@@ -24,30 +30,19 @@ var _collision_v = false;
 var _collision_tilemap = collision_tilemap;
 var _tile_size = global.TILE_SIZE;
 
-// if there is no movement
-if (raycast_move_h == 0 && raycast_move_v == 0)
-{
-    exit;
-}
-
 
 /**
  * Find the X and Y Offsets
  *
- * Always cast the ray starting from the top left point on the bounding box.
  * Apply offsets when the ray should be shifted to the right side or bottom side of the bounding box.
  * Always add one since the width and height of GML boudning boxes are off by one pixel.
  */
 
-// set the starting position to the top left corner of the boudning box
-_start_x = _start_x + sprite_bbox_left;
-_start_y = _start_y + sprite_bbox_top;
-
-// get the offsets and sizes
-var _offset_x = (raycast_move_h > 0 ? bbox_width + 1 : 0);
-var _offset_y = (raycast_move_v > 0 ? bbox_height + 1 : 0);
+// get the size of the bounding box and offsets
 var _height = (bbox_height + 1);
 var _width = (bbox_width + 1);
+var _offset_x = (raycast_move_h > 0 ? _width : 0);
+var _offset_y = (raycast_move_v > 0 ? _height : 0);
 
 // horizontal rays
 if (raycast_move_h != 0)
@@ -213,46 +208,35 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             
             // if collision with a solid tile has occurred
             // *if inside a solid tile (for some reason), then the entity will be stuck
-            //if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way || _tile_at_point == _tile_h_solid_45_1 || _tile_at_point == _tile_h_solid_45_2)
             {
-                if (_ray_delta_h < _ray_target_h)
-                {
-                    scr_output(_step_h_x, (_start_x + _offset_x));
-                    // update collision states
-                    _collision_h = true;
-                    _test_h = false;
-                    
-                    // update the movement values
-                    _move_h = _step_h_x - (_start_x + _offset_x);
-                    _move_v = _step_h_y - _start_y;
-                    
-                    // update the collision target distance
-                    _ray_target_h = point_distance(0, 0, _move_h, _move_v);
-                }
+                // update collision states
+                _collision_h = true;
+                _test_h = false;
+                
+                // update the movement values
+                _move_h = _step_h_x - (_start_x + _offset_x);
+                _move_v = _step_h_y - _start_y;
+                
+                // update the collision target distance
+                _ray_target_h = point_distance(0, 0, _move_h, _move_v);
             }
-            
-            //if (_tile_at_point == _tile_h_one_way || _tile_at_point == _tile_h_slope_45_1 || _tile_at_point == _tile_h_slope_45_2)
-            //{
-            //    scr_simulation_13_tile_def(_tile_at_point, _start_x, _start_y, _move_h, _move_v, _width, _height, _tile_x, _tile_y);
-            //}
             
             // else, if collision with a sloped tile has occurred
             else if (_tile_at_point == _tile_h_slope_45_1 || _tile_at_point == _tile_h_slope_45_2)
             {
+                // prepare the slope collision test
                 raycast_slope_x = _step_h_x;
                 raycast_slope_y = _step_h_y;
                 raycast_collision_slope = false;
                 
-                if (scr_simulation_13_slope(_start_x, _start_y, _tile_x, _tile_step_y, _gradient, _ray_target_h, _tile_at_point))
+                // if a point on the sloped tile was found
+                if (scr_simulation_13_slope(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
                 {
-                    raycast_collision_slope = true;
-                    
                     // update collision states
-                    //_collision_h = true;
-                    _collision_v = true;
-                    //_test_h = false;
-                    _test_v = false;
+                    raycast_collision_slope = true;
+                    _collision_h = true;
+                    _test_h = false;
                     
                     // update the movement values
                     _move_h = raycast_slope_x - _start_x;
@@ -357,39 +341,34 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             
             // if collision with a solid tile has occurred
             // *if inside a solid tile (for some reason), then the entity will be stuck
-            //if ((_tile_at_point == _tile_solid || _tile_at_point == _tile_v_one_way))
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_v_one_way || _tile_at_point == _tile_v_solid_45_1 || _tile_at_point == _tile_v_solid_45_2)
             {
-                if (_ray_delta_v < _ray_target_v)
-                {
-                    // update collision states
-                    _collision_v = true;
-                    _test_v = false;
-                    
-                    // update the movement values
-                    _move_h = _step_v_x - _start_x;
-                    _move_v = _step_v_y - (_start_y + _offset_y);
-                    
-                    // update the collision target distance
-                    _ray_target_v = point_distance(0, 0, _move_h, _move_v);
-                }
+                // update collision states
+                _collision_v = true;
+                _test_v = false;
+                
+                // update the movement values
+                _move_h = _step_v_x - _start_x;
+                _move_v = _step_v_y - (_start_y + _offset_y);
+                
+                // update the collision target distance
+                _ray_target_v = point_distance(0, 0, _move_h, _move_v);
             }
             
             // else, if collision with a sloped tile has occurred
             else if (_tile_at_point == _tile_v_slope_45_1 || _tile_at_point == _tile_v_slope_45_2)
             {
+                // prepare the slope collision test
                 raycast_slope_x = _step_v_x;
                 raycast_slope_y = _step_v_y;
                 raycast_collision_slope = false;
                 
-                if (scr_simulation_13_slope(_start_x, _start_y, _tile_step_x, _tile_y, _gradient, _ray_target_v, _tile_at_point))
+                // if a point on the sloped tile was found
+                if (scr_simulation_13_slope(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
                 {
-                    raycast_collision_slope = true;
-                    
                     // update collision states
-                    //_collision_h = true;
+                    raycast_collision_slope = true;
                     _collision_v = true;
-                    //_test_h = false;
                     _test_v = false;
                     
                     // update the movement values
