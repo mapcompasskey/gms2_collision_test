@@ -332,6 +332,7 @@ if (collision_slope)
         // apply the redirected slope movement vectors
         new_move_h += raycast_slope_move_h;
         new_move_v += raycast_slope_move_v;
+        //scr_output(raycast_slope_move_h, raycast_slope_move_v)
     }
 }
 

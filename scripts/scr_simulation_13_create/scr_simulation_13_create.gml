@@ -23,19 +23,40 @@ global.GUI_ROOM_Y_AXIS = ds_list_create();
 global.GUI_AXIS_POINTS = ds_list_create();
 global.GUI_BBOX_POINTS = ds_list_create();
 
-// tiles
+
+/**
+ * Tiles
+ *
+ */
+
 global.TILE_SIZE = 10;
 global.TILE_SOLID = 1;
 
-global.TILE_SOLID_WEST = 2;
-global.TILE_SOLID_EAST = 3;
-global.TILE_SOLID_SOUTH = 4;
-global.TILE_SOLID_NORTH = 5;
+// one sided
+global.TILE_SOLID_WEST = 2;  //  --|
+global.TILE_SOLID_EAST = 3;  // |--
+global.TILE_SOLID_SOUTH = 4; // ---
+global.TILE_SOLID_NORTH = 5; // ___
 
-global.TILE_SOLID_45_SE = 6; // ◢
-global.TILE_SOLID_45_SW = 7; // ◣
-global.TILE_SOLID_45_NE = 8; // ◥
-global.TILE_SOLID_45_NW = 9; // ◤
+// 45 degress
+global.TILE_SOLID_45_SE = 10; // ◢
+global.TILE_SOLID_45_SW = 30; // ◣
+global.TILE_SOLID_45_NE = 20; // ◥
+global.TILE_SOLID_45_NW = 40; // ◤
+
+// 22 degress
+global.TILE_SOLID_22_SE_1 = 11; // ◢
+global.TILE_SOLID_22_SE_2 = 12; // ◢
+
+global.TILE_SOLID_22_SW_1 = 31; // ◣
+global.TILE_SOLID_22_SW_2 = 32; // ◣
+
+global.TILE_SOLID_22_NE_1 = 21; // ◥
+global.TILE_SOLID_22_NE_2 = 22; // ◥
+
+global.TILE_SOLID_22_NW_1 = 41; // ◤
+global.TILE_SOLID_22_NW_2 = 42; // ◤
+
 
 
 /**
@@ -173,7 +194,7 @@ view_set_yport(view_index, 0);
  *
  */
 
-if (true)
+if (false)
 {
     sim_x = 27 * global.TILE_SIZE;
     sim_y = 13 * global.TILE_SIZE;
@@ -236,5 +257,18 @@ if (false)
     // update the camera position
     camera_x = (global.TILE_SIZE * -12);
     camera_y = (global.TILE_SIZE * 0);
+    camera_set_view_pos(camera, camera_x, camera_y);
+}
+
+if (true)
+{
+    sim_x = 26 * global.TILE_SIZE + 4;
+    sim_y = 24 * global.TILE_SIZE + 5;
+    move_angle = 315;
+    move_distance = 40;
+    
+    // update the camera position
+    camera_x = (global.TILE_SIZE * 20);
+    camera_y = (global.TILE_SIZE * 17);
     camera_set_view_pos(camera, camera_x, camera_y);
 }

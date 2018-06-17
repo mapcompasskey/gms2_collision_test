@@ -123,17 +123,27 @@ var _tile_at_point;
 var _tile_solid = global.TILE_SOLID;
 
 var _tile_h_one_way = (raycast_move_h > 0 ? global.TILE_SOLID_EAST : global.TILE_SOLID_WEST);
+var _tile_v_one_way = (raycast_move_v > 0 ? global.TILE_SOLID_SOUTH : global.TILE_SOLID_NORTH);
 
 var _tile_h_slope_45_1 = (raycast_move_h > 0 ? global.TILE_SOLID_45_SE : global.TILE_SOLID_45_SW);
 var _tile_h_slope_45_2 = (raycast_move_h > 0 ? global.TILE_SOLID_45_NE : global.TILE_SOLID_45_NW);
 var _tile_h_solid_45_1 = (raycast_move_h > 0 ? global.TILE_SOLID_45_SW : global.TILE_SOLID_45_SE);
 var _tile_h_solid_45_2 = (raycast_move_h > 0 ? global.TILE_SOLID_45_NW : global.TILE_SOLID_45_NE);
 
-var _tile_v_one_way = (raycast_move_v > 0 ? global.TILE_SOLID_SOUTH : global.TILE_SOLID_NORTH);
 var _tile_v_slope_45_1 = (raycast_move_v > 0 ? global.TILE_SOLID_45_SE : global.TILE_SOLID_45_NE);
 var _tile_v_slope_45_2 = (raycast_move_v > 0 ? global.TILE_SOLID_45_SW : global.TILE_SOLID_45_NW);
 var _tile_v_solid_45_1 = (raycast_move_v > 0 ? global.TILE_SOLID_45_NE : global.TILE_SOLID_45_SE);
 var _tile_v_solid_45_2 = (raycast_move_v > 0 ? global.TILE_SOLID_45_NW : global.TILE_SOLID_45_SW);
+
+var _tile_h_slope_22_1a = (raycast_move_h > 0 ? global.TILE_SOLID_22_SE_1 : global.TILE_SOLID_22_SW_1);
+var _tile_h_slope_22_1b = (raycast_move_h > 0 ? global.TILE_SOLID_22_SE_2 : global.TILE_SOLID_22_SW_2);
+var _tile_h_slope_22_2a = (raycast_move_h > 0 ? global.TILE_SOLID_22_NE_1 : global.TILE_SOLID_22_NW_1);
+var _tile_h_slope_22_2b = (raycast_move_h > 0 ? global.TILE_SOLID_22_NE_2 : global.TILE_SOLID_22_NW_2);
+
+var _tile_v_slope_22_1a = (raycast_move_v > 0 ? global.TILE_SOLID_22_SE_1 : global.TILE_SOLID_22_NE_1);
+var _tile_v_slope_22_1b = (raycast_move_v > 0 ? global.TILE_SOLID_22_SE_2 : global.TILE_SOLID_22_NE_2);
+var _tile_v_slope_22_2a = (raycast_move_v > 0 ? global.TILE_SOLID_22_SW_1 : global.TILE_SOLID_22_NW_1);
+var _tile_v_slope_22_2b = (raycast_move_v > 0 ? global.TILE_SOLID_22_SW_2 : global.TILE_SOLID_22_NW_2);
 
 
 /**
@@ -223,7 +233,11 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             }
             
             // else, if collision with a sloped tile has occurred
-            else if (_tile_at_point == _tile_h_slope_45_1 || _tile_at_point == _tile_h_slope_45_2)
+            //else if (_tile_at_point == _tile_h_slope_45_1 || _tile_at_point == _tile_h_slope_45_2)
+            else if (
+                _tile_at_point == _tile_h_slope_45_1 || _tile_at_point == _tile_h_slope_45_2 ||
+                _tile_at_point == _tile_h_slope_22_1a || _tile_at_point == _tile_h_slope_22_1b || _tile_at_point == _tile_h_slope_22_2a || _tile_at_point == _tile_h_slope_22_2b
+            )
             {
                 // prepare the slope collision test
                 raycast_slope_x = _step_h_x;
@@ -244,6 +258,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     
                     // update the collision target distance
                     _ray_target_h = point_distance(0, 0, _move_h, _move_v);
+                    
+                    break;
                 }
                 
             }
@@ -356,7 +372,11 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             }
             
             // else, if collision with a sloped tile has occurred
-            else if (_tile_at_point == _tile_v_slope_45_1 || _tile_at_point == _tile_v_slope_45_2)
+            //else if (_tile_at_point == _tile_v_slope_45_1 || _tile_at_point == _tile_v_slope_45_2)
+            else if (
+                _tile_at_point == _tile_v_slope_45_1 || _tile_at_point == _tile_v_slope_45_2 ||
+                _tile_at_point == _tile_v_slope_22_1a || _tile_at_point == _tile_v_slope_22_1b || _tile_at_point == _tile_v_slope_22_2a || _tile_at_point == _tile_v_slope_22_2b
+            )
             {
                 // prepare the slope collision test
                 raycast_slope_x = _step_v_x;
@@ -377,6 +397,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     
                     // update the collision target distance
                     _ray_target_v = point_distance(0, 0, _move_h, _move_v);
+                    
+                    break;
                 }
                 
             }

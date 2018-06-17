@@ -1,4 +1,4 @@
-/// @function scr_simulation_13_slope(tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
+/// @function scr_simulation_13_slope_3(tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
 /// @param {real} tile_at_point  - the index of the tile that was collided with
 /// @param {number} cell_x       - the tile's horizontal cell position
 /// @param {number} cell_y       - the tile's vertical cell position
@@ -51,7 +51,6 @@ var _tile_size = global.TILE_SIZE;
  * Normally, the top left point of a tile is used to determine its point in world (pixel) space and in the tile matrix.
  * But, depending on the gradient of the sloped tile, the point needs to be moved so its on the tile's line.
  * Then, the corner points can be used to determine if the point of intersection occurs exactly on the tile's edge, which could be mistaken for another tile.
- * (_tile_x1, _tile_y1) needs to be the left most point and (_tile_x2, _tile_y2) needs to be the right most point.
  */
 
 var _tile_x1, _tile_y1;
@@ -59,7 +58,6 @@ var _tile_x2, _tile_y2;
 var _tile_gradient = _ray_gradient;
 var _tile_degrees = 0;
 
-// 45 degrees
 switch (_tile_at_point)
 {
     // south east ◢ or north west ◤
@@ -70,13 +68,13 @@ switch (_tile_at_point)
         _tile_gradient = -1;
         _tile_degrees = (_move_h > 0 ? 45 : -135);
         
-        // bottom left
-        _tile_x1 = (_cell_x + 0) * _tile_size;
-        _tile_y1 = (_cell_y + 1) * _tile_size;
-        
         // top right
-        _tile_x2 = (_cell_x + 1) * _tile_size;
-        _tile_y2 = (_cell_y + 0) * _tile_size;
+        _tile_x1 = (_cell_x + 1) * _tile_size;
+        _tile_y1 = (_cell_y + 0) * _tile_size;
+        
+        // bottom left
+        _tile_x2 = (_cell_x + 0) * _tile_size;
+        _tile_y2 = (_cell_y + 1) * _tile_size;
         
         break;
     
@@ -88,66 +86,16 @@ switch (_tile_at_point)
         _tile_gradient = 1;
         _tile_degrees = (_move_h >= 0 ? -45 : 135);
         
-        // bottom right
-        _tile_x1 = (_cell_x + 1) * _tile_size;
-        _tile_y1 = (_cell_y + 1) * _tile_size;
-        
         // top left
-        _tile_x2 = (_cell_x + 0) * _tile_size;
-        _tile_y2 = (_cell_y + 0) * _tile_size;
+        _tile_x1 = (_cell_x + 0) * _tile_size;
+        _tile_y1 = (_cell_y + 0) * _tile_size;
+        
+        // bottom right
+        _tile_x2 = (_cell_x + 1) * _tile_size;
+        _tile_y2 = (_cell_y + 1) * _tile_size;
         
         break;
 }
-
-// 22 degrees
-switch (_tile_at_point)
-{
-    // south east ◢ (1) or north west ◤ (1)
-    case global.TILE_SOLID_22_SE_1:
-    case global.TILE_SOLID_22_NW_1:
-        
-        // update the angle
-        _tile_gradient = -0.5;
-        _tile_degrees = (_move_h > 0 ? 22.5 : -157.5);
-        
-        // bottom left
-        _tile_x1 = (_cell_x + 0) * _tile_size;
-        _tile_y1 = (_cell_y + 1) * _tile_size;
-        
-        // middle right
-        _tile_x2 = (_cell_x + 1) * _tile_size;
-        _tile_y2 = (_cell_y + 0.5) * _tile_size;
-        
-        break;
-        
-    // south east ◢ (2) or north west ◤ (2)
-    case global.TILE_SOLID_22_SE_2:
-    case global.TILE_SOLID_22_NW_2:
-    
-        // update the angle
-        _tile_gradient = -0.5;
-        _tile_degrees = (_move_h > 0 ? 22.5 : -157.5);
-        
-        // middle left
-        _tile_x1 = (_cell_x + 0) * _tile_size;
-        _tile_y1 = (_cell_y + 0.5) * _tile_size;
-        
-        // top right
-        _tile_x2 = (_cell_x + 1) * _tile_size;
-        _tile_y2 = (_cell_y + 0) * _tile_size;
-        
-        break;
-        
-}
-
-/*
-global.TILE_SOLID_22_SW_1 = 31; // ◣
-global.TILE_SOLID_22_SW_2 = 32; // ◣
-
-global.TILE_SOLID_22_NE_1 = 21; // ◥
-global.TILE_SOLID_22_NE_2 = 22; // ◥
-*/
-
 
 // if the slopes are the same the lines would never cross
 if (_ray_gradient == _tile_gradient)
@@ -167,53 +115,32 @@ var _offset_x = 0;
 var _offset_y = 0;
 var _d1 = 0;
 
-// 45 degrees
 switch (_tile_at_point)
 {
     // south east ◢
     case global.TILE_SOLID_45_SE:
         _offset_x = _width;
         _offset_y = _height;
-        _d1 = 1;
+        _d1 = -1;
         break;
         
     // north west ◤
     case global.TILE_SOLID_45_NW:
         _offset_x = 0;
         _offset_y = 0;
-        _d1 = -1;
+        _d1 = 1;
         break;
         
     // south west ◣
     case global.TILE_SOLID_45_SW:
         _offset_x = 0;
         _offset_y = _height;
-        _d1 = -1;
+        _d1 = 1;
         break;
         
     // north east ◥
     case global.TILE_SOLID_45_NE:
         _offset_x = _width;
-        _offset_y = 0;
-        _d1 = 1;
-        break;
-}
-
-// 22 degrees
-switch (_tile_at_point)
-{
-    // south east ◢ (1) (2)
-    case global.TILE_SOLID_22_SE_1:
-    case global.TILE_SOLID_22_SE_2:
-        _offset_x = _width;
-        _offset_y = _height;
-        _d1 = 1;
-        break;
-        
-    // north west ◤ (1) (2)
-    case global.TILE_SOLID_22_NW_1:
-    case global.TILE_SOLID_22_NW_2:
-        _offset_x = 0;
         _offset_y = 0;
         _d1 = -1;
         break;
@@ -332,27 +259,16 @@ if (_tile_intercept)
     
     // update the movement to rediret along the slope
     // *in a top down game, horizontal and veritcal distances are treated equally, so the distance remaining needs to be redirected
-    var _radians = degtorad(_tile_degrees);
-    raycast_slope_move_h = (_ray_target - _distance) * cos(_radians);
-    raycast_slope_move_v = (_ray_target - _distance) * sin(_radians) * -1;
-    
-    if (_tile_degrees == 22.5)
-    {
-        raycast_slope_move_h = (_ray_target - _distance) * 0.92387953251;
-        raycast_slope_move_v = (_ray_target - _distance) * 0.38268343236 * -1;
-    }
-    else if (_tile_degrees == -157.5)
-    {
-        raycast_slope_move_h = (_ray_target - _distance) * -0.92387953251;
-        raycast_slope_move_v = (_ray_target - _distance) * -0.38268343236 * -1;
-    }
+    //var _radians = degtorad(_tile_degrees);
+    //raycast_slope_move_h = (_ray_target - _distance) * cos(_radians);
+    //raycast_slope_move_v = (_ray_target - _distance) * sin(_radians) * -1;
     
     // update the movement to rediret along the slope
     // *in a side scroller, we only care about the horizontal movement along the slope, so only the remaining horizontal distance needs to be redirected
-    //var _distance_h = abs(_start_x + _move_h - _xx);
-    //var _radians = degtorad(_tile_degrees);
-    //raycast_slope_move_h = _distance_h * cos(_radians);
-    //raycast_slope_move_v = _distance_h * sin(_radians) * -1;
+    var _distance_h = abs(_start_x + _move_h - _xx);
+    var _radians = degtorad(_tile_degrees);
+    raycast_slope_move_h = _distance_h * cos(_radians);
+    raycast_slope_move_v = _distance_h * sin(_radians) * -1;
     
     // capture the point on the slope where collision occurred
     var _list = ds_list_create();

@@ -247,6 +247,14 @@
             }
         },
         {
+            "Key": "1cd2c8f6-d16b-4551-905d-93c66c2dc368",
+            "Value": {
+                "id": "3bfa6ee8-3bca-48f2-89ca-888508ce401a",
+                "resourcePath": "tilesets\\ts_collision_2_10px\\ts_collision_2_10px.yy",
+                "resourceType": "GMTileSet"
+            }
+        },
+        {
             "Key": "1e39e498-f6c4-4d34-adbf-2d98248220a4",
             "Value": {
                 "id": "cad49149-4dad-4d03-8257-cec63a81e3ea",
@@ -452,6 +460,14 @@
                 "id": "1ea19852-798c-4a2e-b9f4-cd9ccf04f8f5",
                 "resourcePath": "scripts\\scr_simulation_2_step\\scr_simulation_2_step.yy",
                 "resourceType": "GMScript"
+            }
+        },
+        {
+            "Key": "4cfedd5a-426d-467c-80d7-9f15f6e83dae",
+            "Value": {
+                "id": "1cd075a8-fefa-4b2b-adae-c29d31c9db26",
+                "resourcePath": "sprites\\spr_collision_tiles_2_10px\\spr_collision_tiles_2_10px.yy",
+                "resourceType": "GMSprite"
             }
         },
         {
@@ -807,6 +823,14 @@
             }
         },
         {
+            "Key": "91a183ff-f1b0-49be-9928-274cbfc133cc",
+            "Value": {
+                "id": "5c3eb4be-4935-425d-b96c-4e827e612d07",
+                "resourcePath": "scripts\\scr_simulation_13_slope_3\\scr_simulation_13_slope_3.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "97939e67-c6b2-43aa-bd13-d58eae649f17",
             "Value": {
                 "id": "ee582905-4237-4c53-a8dd-95115e7e554f",
@@ -980,6 +1004,14 @@
                 "id": "dcf6e07d-2a6e-4a8a-9f17-76dd5faf53f8",
                 "resourcePath": "objects\\obj_simulation_12\\obj_simulation_12.yy",
                 "resourceType": "GMObject"
+            }
+        },
+        {
+            "Key": "bd89f385-98be-4e77-94af-db901142eb22",
+            "Value": {
+                "id": "c5da1673-d0cb-4568-81a4-0e928cbbf97f",
+                "resourcePath": "sprites\\sprite9\\sprite9.yy",
+                "resourceType": "GMSprite"
             }
         },
         {
@@ -1387,6 +1419,7 @@
         "06a1f9fe-07ec-4bdf-b6e6-bf17150168db",
         "89c17d4d-6ce7-4156-9542-41315907542e",
         "38f5e6be-2f79-4415-bfb2-02982d033721",
+        "91a183ff-f1b0-49be-9928-274cbfc133cc",
         "6e942d13-940b-43cb-9f4a-30373aa823cb",
         "704b18c7-5ea2-49b3-a722-976db98a7ad1",
         "9d94dcbb-e2c1-40de-a6ca-c540eeec5b24"
