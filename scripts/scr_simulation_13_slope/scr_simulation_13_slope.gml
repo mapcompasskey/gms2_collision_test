@@ -58,6 +58,7 @@ var _tile_x1, _tile_y1;
 var _tile_x2, _tile_y2;
 var _tile_gradient = _ray_gradient;
 var _tile_degrees = 0;
+var _tile_radians = 0;
 
 // 45 degrees
 switch (_tile_at_point)
@@ -69,6 +70,7 @@ switch (_tile_at_point)
         // update the angle
         _tile_gradient = -1;
         _tile_degrees = (_move_h > 0 ? 45 : -135);
+        _tile_radians = (_move_h > 0 ? 0.70710678118 : -0.70710678118);
         
         // bottom left
         _tile_x1 = (_cell_x + 0) * _tile_size;
@@ -87,14 +89,15 @@ switch (_tile_at_point)
         // update the angle
         _tile_gradient = 1;
         _tile_degrees = (_move_h >= 0 ? -45 : 135);
-        
-        // bottom right
-        _tile_x1 = (_cell_x + 1) * _tile_size;
-        _tile_y1 = (_cell_y + 1) * _tile_size;
+        _tile_radians = (_move_h >= 0 ? 0.70710678118 : -0.70710678118);
         
         // top left
-        _tile_x2 = (_cell_x + 0) * _tile_size;
-        _tile_y2 = (_cell_y + 0) * _tile_size;
+        _tile_x1 = (_cell_x + 0) * _tile_size;
+        _tile_y1 = (_cell_y + 0) * _tile_size;
+        
+        // bottom right
+        _tile_x2 = (_cell_x + 1) * _tile_size;
+        _tile_y2 = (_cell_y + 1) * _tile_size;
         
         break;
 }
@@ -109,6 +112,7 @@ switch (_tile_at_point)
         // update the angle
         _tile_gradient = -0.5;
         _tile_degrees = (_move_h > 0 ? 22.5 : -157.5);
+        _tile_radians = (_move_h > 0 ? 0.92387953251 : -0.92387953251);
         
         // bottom left
         _tile_x1 = (_cell_x + 0) * _tile_size;
@@ -127,6 +131,7 @@ switch (_tile_at_point)
         // update the angle
         _tile_gradient = -0.5;
         _tile_degrees = (_move_h > 0 ? 22.5 : -157.5);
+        _tile_radians = (_move_h > 0 ? 0.92387953251 : -0.92387953251);
         
         // middle left
         _tile_x1 = (_cell_x + 0) * _tile_size;
@@ -137,16 +142,46 @@ switch (_tile_at_point)
         _tile_y2 = (_cell_y + 0) * _tile_size;
         
         break;
+    
+    // south west ◣ (1) or north east ◥ (1)
+    case global.TILE_SOLID_22_SW_1:
+    case global.TILE_SOLID_22_NE_1:
+        
+        // update the angle
+        _tile_gradient = 0.5;
+        _tile_degrees = (_move_h > 0 ? -22.5 : 157.5);
+        _tile_radians = (_move_h > 0 ? 0.92387953251 : -0.92387953251);
+        
+        // top left
+        _tile_x1 = (_cell_x + 0) * _tile_size;
+        _tile_y1 = (_cell_y + 0) * _tile_size;
+        
+        // middle right
+        _tile_x2 = (_cell_x + 1)   * _tile_size;
+        _tile_y2 = (_cell_y + 0.5) * _tile_size;
+        
+        break;
+    
+    // south west ◣ (2) or north east ◥ (2)
+    case global.TILE_SOLID_22_SW_2:
+    case global.TILE_SOLID_22_NE_2:
+    
+        // update the angle
+        _tile_gradient = 0.5;
+        _tile_degrees = (_move_h > 0 ? -22.5 : 157.5);
+        _tile_radians = (_move_h > 0 ? 0.92387953251 : -0.92387953251);
+        
+        // middle left
+        _tile_x1 = (_cell_x + 0)   * _tile_size;
+        _tile_y1 = (_cell_y + 0.5) * _tile_size;
+        
+        // bottom right
+        _tile_x2 = (_cell_x + 1) * _tile_size;
+        _tile_y2 = (_cell_y + 1) * _tile_size;
+        
+        break;
         
 }
-
-/*
-global.TILE_SOLID_22_SW_1 = 31; // ◣
-global.TILE_SOLID_22_SW_2 = 32; // ◣
-
-global.TILE_SOLID_22_NE_1 = 21; // ◥
-global.TILE_SOLID_22_NE_2 = 22; // ◥
-*/
 
 
 // if the slopes are the same the lines would never cross
@@ -167,42 +202,11 @@ var _offset_x = 0;
 var _offset_y = 0;
 var _d1 = 0;
 
-// 45 degrees
+// 45 degrees, 22 degrees
 switch (_tile_at_point)
 {
     // south east ◢
     case global.TILE_SOLID_45_SE:
-        _offset_x = _width;
-        _offset_y = _height;
-        _d1 = 1;
-        break;
-        
-    // north west ◤
-    case global.TILE_SOLID_45_NW:
-        _offset_x = 0;
-        _offset_y = 0;
-        _d1 = -1;
-        break;
-        
-    // south west ◣
-    case global.TILE_SOLID_45_SW:
-        _offset_x = 0;
-        _offset_y = _height;
-        _d1 = -1;
-        break;
-        
-    // north east ◥
-    case global.TILE_SOLID_45_NE:
-        _offset_x = _width;
-        _offset_y = 0;
-        _d1 = 1;
-        break;
-}
-
-// 22 degrees
-switch (_tile_at_point)
-{
-    // south east ◢ (1) (2)
     case global.TILE_SOLID_22_SE_1:
     case global.TILE_SOLID_22_SE_2:
         _offset_x = _width;
@@ -210,10 +214,29 @@ switch (_tile_at_point)
         _d1 = 1;
         break;
         
-    // north west ◤ (1) (2)
+    // north west ◤
+    case global.TILE_SOLID_45_NW:
     case global.TILE_SOLID_22_NW_1:
     case global.TILE_SOLID_22_NW_2:
         _offset_x = 0;
+        _offset_y = 0;
+        _d1 = -1;
+        break;
+        
+    // south west ◣
+    case global.TILE_SOLID_45_SW:
+    case global.TILE_SOLID_22_SW_1:
+    case global.TILE_SOLID_22_SW_2:
+        _offset_x = 0;
+        _offset_y = _height;
+        _d1 = 1;
+        break;
+        
+    // north east ◥
+    case global.TILE_SOLID_45_NE:
+    case global.TILE_SOLID_22_NE_1:
+    case global.TILE_SOLID_22_NE_2:
+        _offset_x = _width;
         _offset_y = 0;
         _d1 = -1;
         break;
@@ -253,6 +276,10 @@ if (_d2 != 0 && sign(_d2) != sign(_d1))
 var _xx, _yy;
 var _tile_intercept = false;
 
+// get the y-intercepts of both lines
+var _b1 = _start_y - (_ray_gradient * _start_x);
+var _b2 = _tile_y1 - (_tile_gradient * _tile_x1);
+
 // if the starting point falls on the tile's slope
 if (_d2 == 0)
 {
@@ -265,8 +292,8 @@ if (_d2 == 0)
 else
 {
     // get the y-intercepts of both lines
-    var _b1 = _start_y - (_ray_gradient * _start_x);
-    var _b2 = _tile_y1 - (_tile_gradient * _tile_x1);
+    //_b1 = _start_y - (_ray_gradient * _start_x);
+    //_b2 = _tile_y1 - (_tile_gradient * _tile_x1);
 
     // if the ray is a vertical line
     // *the ray's x position is always _start_x, so just plug _start_x into the second line's equation and solve for y
@@ -332,27 +359,24 @@ if (_tile_intercept)
     
     // update the movement to rediret along the slope
     // *in a top down game, horizontal and veritcal distances are treated equally, so the distance remaining needs to be redirected
-    var _radians = degtorad(_tile_degrees);
-    raycast_slope_move_h = (_ray_target - _distance) * cos(_radians);
-    raycast_slope_move_v = (_ray_target - _distance) * sin(_radians) * -1;
-    
-    if (_tile_degrees == 22.5)
-    {
-        raycast_slope_move_h = (_ray_target - _distance) * 0.92387953251;
-        raycast_slope_move_v = (_ray_target - _distance) * 0.38268343236 * -1;
-    }
-    else if (_tile_degrees == -157.5)
-    {
-        raycast_slope_move_h = (_ray_target - _distance) * -0.92387953251;
-        raycast_slope_move_v = (_ray_target - _distance) * -0.38268343236 * -1;
-    }
+    //var _radians = degtorad(_tile_degrees);
+    //raycast_slope_move_h = (_ray_target - _distance) * cos(_radians);
+    //raycast_slope_move_v = (_ray_target - _distance) * sin(_radians) * -1;
     
     // update the movement to rediret along the slope
     // *in a side scroller, we only care about the horizontal movement along the slope, so only the remaining horizontal distance needs to be redirected
     //var _distance_h = abs(_start_x + _move_h - _xx);
     //var _radians = degtorad(_tile_degrees);
     //raycast_slope_move_h = _distance_h * cos(_radians);
-    //raycast_slope_move_v = _distance_h * sin(_radians) * -1;
+    //raycast_slope_move_v = _distance_h * sin(_radians) * -1; <---- THIS DOESN'T APPEAR TO CALCULATE THE CORRECT Y POSITION WITH 22 DEGREES
+    
+    // update the movement to rediret along the slope
+    // *in a side scroller, we only care about the horizontal movement along the slope, so only the remaining horizontal distance needs to be redirected
+    // *just use the line equation to find the y position
+    //raycast_slope_move_h = (_ray_target - _distance) * _tile_radians;
+    //var temp_x = _xx + raycast_slope_move_h;
+    //var temp_y = (_tile_gradient * temp_x) + _b2;
+    //raycast_slope_move_v = temp_y - _yy;
     
     // capture the point on the slope where collision occurred
     var _list = ds_list_create();

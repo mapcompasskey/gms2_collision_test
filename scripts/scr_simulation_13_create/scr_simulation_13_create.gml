@@ -265,7 +265,7 @@ if (true)
     sim_x = 26 * global.TILE_SIZE + 4;
     sim_y = 24 * global.TILE_SIZE + 5;
     move_angle = 315;
-    move_distance = 40;
+    move_distance = 20;//40;
     
     // update the camera position
     camera_x = (global.TILE_SIZE * 20);
