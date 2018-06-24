@@ -1,4 +1,4 @@
-/// @function scr_simulation_13_slope(tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
+/// @function scr_simulation_13_slope_4(tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
 /// @param {real} tile_at_point  - the index of the tile that was collided with
 /// @param {number} cell_x       - the tile's horizontal cell position
 /// @param {number} cell_y       - the tile's vertical cell position
@@ -252,158 +252,14 @@ ds_list_add(global.GUI_AXIS_POINTS, _list);
 ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
 
 // find which side of the tile the starting point is on using: d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
-//var _d2 = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
+var _d2 = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
 
 // if the point is not on the line
 // and if the point is on the "solid" side of the line
-//if (_d2 != 0 && sign(_d2) != sign(_d1))
-//{
-//    return false;
-//}
-
-
-/**
- * Find the Point of Intersection
- *
- */
-
-/*
-https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-// Returns 1 if the lines intersect, otherwise 0. In addition, if the lines 
-// intersect the intersection point may be stored in the floats i_x and i_y.
-char get_line_intersection(float p0_x, float p0_y, float p1_x, float p1_y, float p2_x, float p2_y, float p3_x, float p3_y, float *i_x, float *i_y)
-{
-    float s1_x, s1_y, s2_x, s2_y;
-    s1_x = p1_x - p0_x;     s1_y = p1_y - p0_y;
-    s2_x = p3_x - p2_x;     s2_y = p3_y - p2_y;
-
-    float s, t;
-    s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
-    t = ( s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y);
-
-    if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
-    {
-        // Collision detected
-        if (i_x != NULL)
-            *i_x = p0_x + (t * s1_x);
-        if (i_y != NULL)
-            *i_y = p0_y + (t * s1_y);
-        return 1;
-    }
-
-    return 0; // No collision
-}
-*/
-
-
-/*
-var p0_x = _start_x;
-var p0_y = _start_y;
-
-var p1_x = _start_x + _move_h;
-var p1_y = _start_y + _move_v;
-
-var p2_x = _tile_x1;
-var p2_y = _tile_y1;
-
-var p3_x = _tile_x2;
-var p3_y = _tile_y2;
-
-
-
-
-var s1_x = p1_x - p0_x;
-var s1_y = p1_y - p0_y;
-
-var s2_x = p3_x - p2_x;
-var s2_y = p3_y - p2_y;
-
-var s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
-var t = ( s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y);
-
-if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
-{
-    var i_x = p0_x + (t * s1_x);
-    var i_y = p0_y + (t * s1_y);
-    
-    // capture the point on the slope where collision occurred
-    var _list = ds_list_create();
-    ds_list_add(_list, i_x, i_y, global.COLLISION_SLOPE_COLOR);
-    ds_list_add(global.GUI_AXIS_POINTS, _list);
-    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-    
-}
-
-return false;
-*/
-
-
-
-/*
-var s1_x = _move_h;
-var s1_y = _move_v;
-
-var s2_x = _tile_x2 - _tile_x1;
-var s2_y = _tile_y2 - _tile_y1;
-
-
-var s = (-s1_y * (_start_x - _tile_x1) + s1_x * (_start_y - _tile_y1)) / (-s2_x * s1_y + s1_x * s2_y);
-var t = ( s2_x * (_start_y - _tile_y1) - s2_y * (_start_x - _tile_x1)) / (-s2_x * s1_y + s1_x * s2_y);
-
-
-if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
-{
-    var i_x = _start_x + (t * s1_x);
-    var i_y = _start_y + (t * s1_y);
-    
-    // capture the point on the slope where collision occurred
-    var _list = ds_list_create();
-    ds_list_add(_list, i_x, i_y, global.COLLISION_SLOPE_COLOR);
-    ds_list_add(global.GUI_AXIS_POINTS, _list);
-    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-    
-}
-
-return false;
-*/
-
-var _s1_x = _move_h;
-var _s1_y = _move_v;
-
-var _s2_x = _tile_x2 - _tile_x1;
-var _s2_y = _tile_y2 - _tile_y1;
-
-// if the denominator equals zero
-// *the lines would be collinear or never intersect (I think)
-var _denominator = (-_s2_x * _s1_y + _s1_x * _s2_y);
-if (_denominator == 0)
+if (_d2 != 0 && sign(_d2) != sign(_d1))
 {
     return false;
 }
-
-var _s = (-_s1_y * (_start_x - _tile_x1) + _s1_x * (_start_y - _tile_y1)) / _denominator;
-var _t = ( _s2_x * (_start_y - _tile_y1) - _s2_y * (_start_x - _tile_x1)) / _denominator;
-
-if (_s >= 0 && _s <= 1 && _t >= 0 && _t <= 1)
-{
-    var _xx = _start_x + (_t * _s1_x);
-    var _yy = _start_y + (_t * _s1_y);
-    
-    // update the point of collision (minus the offsets)
-    raycast_slope_x = _xx - _offset_x;
-    raycast_slope_y = _yy - _offset_y;
-    
-    // capture the point on the slope where collision occurred
-    var _list = ds_list_create();
-    ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
-    ds_list_add(global.GUI_AXIS_POINTS, _list);
-    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-    
-    return true;
-}
-
-return false;
-
 
 
 /**
@@ -415,7 +271,7 @@ return false;
  * 
  * line equation: y = mx + b
  * y-intercept: b = y - mx
- * /
+ */
 
 var _xx, _yy;
 var _tile_intercept = false;

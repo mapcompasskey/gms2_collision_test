@@ -1,4 +1,4 @@
-/// @function scr_simulation_13_draw_gui()
+/// @function scr_simulation_14_draw_gui()
 
 
 // set the font
@@ -143,7 +143,7 @@ for (var i = 0; i < ds_list_size(global.GUI_AXIS_POINTS); i++)
  */
 
 var txt = "";
-txt += "Simulation 13" + "\n";
+txt += "Simulation 14" + "\n";
 txt += "p1: (" + string(sim_x) + ", " + string(sim_y) + ")" + "\n";
 txt += "p2: (" + string(sim_x + new_move_h) + ", " + string(sim_y + new_move_v) + ")" + "\n";
 txt += "angle Deg: " + string_format(move_angle, 1, 5) + "\n";

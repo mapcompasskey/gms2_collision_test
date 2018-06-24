@@ -1,0 +1,1 @@
+scr_simulation_14_draw();
