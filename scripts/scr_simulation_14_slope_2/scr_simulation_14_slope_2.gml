@@ -46,8 +46,6 @@ var _tile_size = global.TILE_SIZE;
 /**
  * Get the Tile's Information
  *
- * The "sign of the determinant" is used to determine if the starting point is on the open side of the sloped tile
- *
  * 0: gradient
  * 1: radians
  * 2: x1
@@ -56,7 +54,7 @@ var _tile_size = global.TILE_SIZE;
  * 5: y2
  * 6: offset_x
  * 7: offset_y 
- * 8: sign of the determinant
+ *
  */
 
 // if not an array
@@ -66,7 +64,7 @@ if ( ! is_array(tile_definitions))
 }
 
 // if this entry of the array does not have the correct length
-if (array_length_2d(tile_definitions, _tile_at_point) != 9)
+if (array_length_2d(tile_definitions, _tile_at_point) != 8)
 {
     return false;
 }
@@ -74,50 +72,30 @@ if (array_length_2d(tile_definitions, _tile_at_point) != 9)
 // get the slope value of this angle
 var _tile_gradient = tile_definitions[_tile_at_point, 0];
 
-// if the slopes are the same the lines would never cross
-// or they are the same line and touch infinity (collinear)
+// if the slopes are the same the lines would never cross, or they could be collinear
 if (_ray_gradient == _tile_gradient)
 {
     return;
 }
 
-// get the value for the radian measure of the angle
+// get the value for the radian value of this angle
 var _tile_radians  = tile_definitions[_tile_at_point, 1] * (_move_h > 0 ? 1 : -1);
 
-// get the first (left most) point on the tile
+// get the first (left most) position on the tile
 var _tile_x1 = (_cell_x + tile_definitions[_tile_at_point, 2]) * _tile_size;
 var _tile_y1 = (_cell_y + tile_definitions[_tile_at_point, 3]) * _tile_size;
         
-// get the second (right most) point on the tile
+// get the second (right most) position on the tile
 var _tile_x2 = (_cell_x + tile_definitions[_tile_at_point, 4]) * _tile_size;
 var _tile_y2 = (_cell_y + tile_definitions[_tile_at_point, 5]) * _tile_size;
 
-// get the bounding box offsets
-// *this is the point on the bounding box that would collide first with the sloped line
+// get the boudning box offsets
 var _offset_x = tile_definitions[_tile_at_point, 6] * _width;
 var _offset_y = tile_definitions[_tile_at_point, 7] * _height;
 
 // update the starting position
 _start_x += _offset_x;
 _start_y += _offset_y;
-
-// get the value that represents the side that is "open space'
-var _d1 = tile_definitions[_tile_at_point, 8];
-
-// find the side of the tile the starting point is on: d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
-var _d2 = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
-
-// if the point is on the line
-if (_d2 == 0)
-{
-    return false;
-}
-
-// if the point is on the "solid" side of the line
-if (sign(_d2) != _d1)
-{
-    return false;
-}
 
 
 /**
@@ -139,7 +117,8 @@ var _s1_y = _move_v;
 var _s2_x = _tile_x2 - _tile_x1;
 var _s2_y = _tile_y2 - _tile_y1;
 
-// if the denominator equals zero the lines would be collinear or never intersect (I think)
+// if the denominator equals zero
+// *the lines would be collinear or never intersect (I think)
 var _denominator = (-_s2_x * _s1_y + _s1_x * _s2_y);
 if (_denominator == 0)
 {

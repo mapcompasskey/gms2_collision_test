@@ -116,7 +116,7 @@ global.TILE_DEFINITIONS[| global.TILE_SOLID_22_NE_2] = [0.5, _radians_22, 0, 0.5
  * 6: offset_x
  * 7: offset_y 
  *
- */
+ * /
 
 var _idx = 0;
 var _radians_45 = 0.70710678118;
@@ -253,6 +253,174 @@ global.TILE_DEFINITIONS[_idx, 4] = 1;
 global.TILE_DEFINITIONS[_idx, 5] = 1;
 global.TILE_DEFINITIONS[_idx, 6] = 1;
 global.TILE_DEFINITIONS[_idx, 7] = 0;
+/**/
+
+
+/**
+ * Sloped Tiles Information
+ *
+ * The "sign of the determinant" is used to determine if a point is on the open side of a sloped tile.
+ *
+ * 0: gradient
+ * 1: radians
+ * 2: x1
+ * 3: y1
+ * 4: x2
+ * 5: y2
+ * 6: offset_x
+ * 7: offset_y 
+ * 8: sign of the determinant
+ */
+
+var _idx = 0;
+var _radians_45 = 0.70710678118;
+var _radians_22 = 0.92387953251;
+
+// 45 degrees, south east ◢
+_idx = global.TILE_SOLID_45_SE;
+global.TILE_DEFINITIONS[_idx, 0] = -1;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_45;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 1;
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 0;
+global.TILE_DEFINITIONS[_idx, 6] = 1;
+global.TILE_DEFINITIONS[_idx, 7] = 1;
+global.TILE_DEFINITIONS[_idx, 8] = 1;
+
+// 45 degrees, north west ◤
+_idx = global.TILE_SOLID_45_NW;
+global.TILE_DEFINITIONS[_idx, 0] = -1;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_45;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 1;
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 0;
+global.TILE_DEFINITIONS[_idx, 6] = 0;
+global.TILE_DEFINITIONS[_idx, 7] = 0;
+global.TILE_DEFINITIONS[_idx, 8] = -1;
+
+// 45 degrees, south west ◣
+_idx = global.TILE_SOLID_45_SW;
+global.TILE_DEFINITIONS[_idx, 0] = 1;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_45;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 0;
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 1;
+global.TILE_DEFINITIONS[_idx, 6] = 0;
+global.TILE_DEFINITIONS[_idx, 7] = 1;
+global.TILE_DEFINITIONS[_idx, 8] = 1;
+
+// 45 degrees, north east ◥
+_idx = global.TILE_SOLID_45_NE;
+global.TILE_DEFINITIONS[_idx, 0] = 1;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_45;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 0;
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 1;
+global.TILE_DEFINITIONS[_idx, 6] = 1;
+global.TILE_DEFINITIONS[_idx, 7] = 0;
+global.TILE_DEFINITIONS[_idx, 8] = -1;
+
+// 22 degrees, south east ◢ (1)
+_idx = global.TILE_SOLID_22_SE_1;
+global.TILE_DEFINITIONS[_idx, 0] = -0.5;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_22;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 1;
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 0.5;
+global.TILE_DEFINITIONS[_idx, 6] = 1;
+global.TILE_DEFINITIONS[_idx, 7] = 1;
+global.TILE_DEFINITIONS[_idx, 8] = 1;
+
+// 22 degrees, south east ◢ (2)
+_idx = global.TILE_SOLID_22_SE_2;
+global.TILE_DEFINITIONS[_idx, 0] = -0.5;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_22;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 0.5;
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 0;
+global.TILE_DEFINITIONS[_idx, 6] = 1;
+global.TILE_DEFINITIONS[_idx, 7] = 1;
+global.TILE_DEFINITIONS[_idx, 8] = 1;
+//global.TILE_DEFINITIONS[_idx, 8] = 1;
+//global.TILE_DEFINITIONS[_idx, 9] = 1;
+
+// 22 degrees, north west ◤ (1)
+_idx = global.TILE_SOLID_22_NW_1;
+global.TILE_DEFINITIONS[_idx, 0] = -0.5;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_22;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 1; 
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 0.5;
+global.TILE_DEFINITIONS[_idx, 6] = 0;
+global.TILE_DEFINITIONS[_idx, 7] = 0;
+global.TILE_DEFINITIONS[_idx, 8] = -1;
+
+// 22 degrees, north west ◤ (2)
+_idx = global.TILE_SOLID_22_NW_2;
+global.TILE_DEFINITIONS[_idx, 0] = -0.5;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_22;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 0.5;
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 0;
+global.TILE_DEFINITIONS[_idx, 6] = 0;
+global.TILE_DEFINITIONS[_idx, 7] = 0;
+global.TILE_DEFINITIONS[_idx, 8] = -1;
+
+// 22 degrees, south west ◣ (1)
+_idx = global.TILE_SOLID_22_SW_1;
+global.TILE_DEFINITIONS[_idx, 0] = 0.5;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_22;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 0;
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 0.5;
+global.TILE_DEFINITIONS[_idx, 6] = 0;
+global.TILE_DEFINITIONS[_idx, 7] = 1;
+global.TILE_DEFINITIONS[_idx, 8] = 1;
+
+// 22 degrees, south west ◣ (2)
+_idx = global.TILE_SOLID_22_SW_2;
+global.TILE_DEFINITIONS[_idx, 0] = 0.5;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_22;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 0.5;
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 1;
+global.TILE_DEFINITIONS[_idx, 6] = 0;
+global.TILE_DEFINITIONS[_idx, 7] = 1;
+global.TILE_DEFINITIONS[_idx, 8] = 1;
+
+// 22 degrees, north east ◥ (1)
+_idx = global.TILE_SOLID_22_NE_1;
+global.TILE_DEFINITIONS[_idx, 0] = 0.5;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_22;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 0;
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 0.5;
+global.TILE_DEFINITIONS[_idx, 6] = 1;
+global.TILE_DEFINITIONS[_idx, 7] = 0;
+global.TILE_DEFINITIONS[_idx, 8] = -1;
+
+// 22 degrees, north east ◥ (2)
+_idx = global.TILE_SOLID_22_NE_2;
+global.TILE_DEFINITIONS[_idx, 0] = 0.5;
+global.TILE_DEFINITIONS[_idx, 1] = _radians_22;
+global.TILE_DEFINITIONS[_idx, 2] = 0;
+global.TILE_DEFINITIONS[_idx, 3] = 0.5;
+global.TILE_DEFINITIONS[_idx, 4] = 1;
+global.TILE_DEFINITIONS[_idx, 5] = 1;
+global.TILE_DEFINITIONS[_idx, 6] = 1;
+global.TILE_DEFINITIONS[_idx, 7] = 0;
+global.TILE_DEFINITIONS[_idx, 8] = -1;
 
 
 /**

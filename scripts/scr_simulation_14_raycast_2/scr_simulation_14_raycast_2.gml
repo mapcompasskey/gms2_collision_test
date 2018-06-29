@@ -1,4 +1,4 @@
-/// @function scr_simulation_14_raycast();
+/// @function scr_simulation_14_raycast_2();
 
 
 /**
@@ -125,6 +125,26 @@ var _tile_solid = global.TILE_SOLID;
 var _tile_h_one_way = (raycast_move_h > 0 ? global.TILE_SOLID_EAST : global.TILE_SOLID_WEST);
 var _tile_v_one_way = (raycast_move_v > 0 ? global.TILE_SOLID_SOUTH : global.TILE_SOLID_NORTH);
 
+var _tile_h_slope_45_1 = (raycast_move_h > 0 ? global.TILE_SOLID_45_SE : global.TILE_SOLID_45_SW);
+var _tile_h_slope_45_2 = (raycast_move_h > 0 ? global.TILE_SOLID_45_NE : global.TILE_SOLID_45_NW);
+var _tile_h_solid_45_1 = (raycast_move_h > 0 ? global.TILE_SOLID_45_SW : global.TILE_SOLID_45_SE);
+var _tile_h_solid_45_2 = (raycast_move_h > 0 ? global.TILE_SOLID_45_NW : global.TILE_SOLID_45_NE);
+
+var _tile_v_slope_45_1 = (raycast_move_v > 0 ? global.TILE_SOLID_45_SE : global.TILE_SOLID_45_NE);
+var _tile_v_slope_45_2 = (raycast_move_v > 0 ? global.TILE_SOLID_45_SW : global.TILE_SOLID_45_NW);
+var _tile_v_solid_45_1 = (raycast_move_v > 0 ? global.TILE_SOLID_45_NE : global.TILE_SOLID_45_SE);
+var _tile_v_solid_45_2 = (raycast_move_v > 0 ? global.TILE_SOLID_45_NW : global.TILE_SOLID_45_SW);
+
+var _tile_h_slope_22_1a = (raycast_move_h > 0 ? global.TILE_SOLID_22_SE_1 : global.TILE_SOLID_22_SW_1);
+var _tile_h_slope_22_1b = (raycast_move_h > 0 ? global.TILE_SOLID_22_SE_2 : global.TILE_SOLID_22_SW_2);
+var _tile_h_slope_22_2a = (raycast_move_h > 0 ? global.TILE_SOLID_22_NE_1 : global.TILE_SOLID_22_NW_1);
+var _tile_h_slope_22_2b = (raycast_move_h > 0 ? global.TILE_SOLID_22_NE_2 : global.TILE_SOLID_22_NW_2);
+
+var _tile_v_slope_22_1a = (raycast_move_v > 0 ? global.TILE_SOLID_22_SE_1 : global.TILE_SOLID_22_NE_1);
+var _tile_v_slope_22_1b = (raycast_move_v > 0 ? global.TILE_SOLID_22_SE_2 : global.TILE_SOLID_22_NE_2);
+var _tile_v_slope_22_2a = (raycast_move_v > 0 ? global.TILE_SOLID_22_SW_1 : global.TILE_SOLID_22_NW_1);
+var _tile_v_slope_22_2b = (raycast_move_v > 0 ? global.TILE_SOLID_22_SW_2 : global.TILE_SOLID_22_NW_2);
+
 
 /**
  * Move Along the Ray Testing for Collisions
@@ -196,8 +216,9 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             // get the tile at this position
             _tile_at_point = tilemap_get(_collision_tilemap, _tile_x, _tile_step_y) & tile_index_mask;
             
-            // if colliding with a solid tile or one that is solid from this side
-            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
+            // if collision with a solid tile has occurred
+            // *if inside a solid tile (for some reason), then the entity will be stuck
+            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way || _tile_at_point == _tile_h_solid_45_1 || _tile_at_point == _tile_h_solid_45_2)
             {
                 // update collision states
                 _collision_h = true;
@@ -211,15 +232,19 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 _ray_target_h = point_distance(0, 0, _move_h, _move_v);
             }
             
-            // else, if the tile is not empty space
-            else if (_tile_at_point != 0)
+            // else, if collision with a sloped tile has occurred
+            //else if (_tile_at_point == _tile_h_slope_45_1 || _tile_at_point == _tile_h_slope_45_2)
+            else if (
+                _tile_at_point == _tile_h_slope_45_1 || _tile_at_point == _tile_h_slope_45_2 ||
+                _tile_at_point == _tile_h_slope_22_1a || _tile_at_point == _tile_h_slope_22_1b || _tile_at_point == _tile_h_slope_22_2a || _tile_at_point == _tile_h_slope_22_2b
+            )
             {
                 // prepare the slope collision test
                 raycast_slope_x = _step_h_x;
                 raycast_slope_y = _step_h_y;
                 raycast_collision_slope = false;
                 
-                // if a sloped tile, and a point on the slope was found
+                // if a point on the sloped tile was found
                 if (scr_simulation_14_slope(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
                 {
                     // update collision states
@@ -330,8 +355,9 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             // get the tile at this position
             _tile_at_point = tilemap_get(_collision_tilemap, _tile_step_x, _tile_y) & tile_index_mask;
             
-            // if colliding with a solid tile or one that is solid from this side
-            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_v_one_way)
+            // if collision with a solid tile has occurred
+            // *if inside a solid tile (for some reason), then the entity will be stuck
+            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_v_one_way || _tile_at_point == _tile_v_solid_45_1 || _tile_at_point == _tile_v_solid_45_2)
             {
                 // update collision states
                 _collision_v = true;
@@ -345,15 +371,19 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 _ray_target_v = point_distance(0, 0, _move_h, _move_v);
             }
             
-            // else, if the tile is not empty space
-            else if (_tile_at_point != 0)
+            // else, if collision with a sloped tile has occurred
+            //else if (_tile_at_point == _tile_v_slope_45_1 || _tile_at_point == _tile_v_slope_45_2)
+            else if (
+                _tile_at_point == _tile_v_slope_45_1 || _tile_at_point == _tile_v_slope_45_2 ||
+                _tile_at_point == _tile_v_slope_22_1a || _tile_at_point == _tile_v_slope_22_1b || _tile_at_point == _tile_v_slope_22_2a || _tile_at_point == _tile_v_slope_22_2b
+            )
             {
                 // prepare the slope collision test
                 raycast_slope_x = _step_v_x;
                 raycast_slope_y = _step_v_y;
                 raycast_collision_slope = false;
                 
-                // if a sloped tile, and a point on the slope was found
+                // if a point on the sloped tile was found
                 if (scr_simulation_14_slope(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
                 {
                     // update collision states
@@ -370,6 +400,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     
                     break;
                 }
+                
             }
             
         }
