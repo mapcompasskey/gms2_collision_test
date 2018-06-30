@@ -211,40 +211,6 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 continue;
             }
             
-            /*
-            // if colliding with a solid tile or one that is solid from this side
-            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
-            {
-                // if this is the first horizontal test, and the point is on a horizontal intersection
-                // *this occurs when the ray starts on the corner of a tile directly diagonal to the starting point
-                if (_ray_delta_h == 0 && _remainder_x == 0 && _remainder_y == 0 && _move_v != 0)
-                {
-                    // need to check if the tile directly next to this entity is a solid tile
-                    // if it isn't solid, then the ray should be cast straight horizontally
-                    var _tile_at_point_2 = tilemap_get(_collision_tilemap, _tile_x, _tile_step_y + (_move_v > 0 ? -1 : 1)) & tile_index_mask;
-                    if (_tile_at_point_2 != _tile_solid)
-                    {
-                        
-                    }
-                }
-                
-                if (_ray_delta_h != 0 || _remainder_x == 0)
-                {
-                    // update collision states
-                    _collision_h = true;
-                    _test_h = false;
-                    
-                    // update the movement values
-                    _move_h = _step_h_x - (_start_x + _offset_x);
-                    _move_v = _step_h_y - _start_y;
-                    
-                    // update the collision target distance
-                    _ray_target_h = point_distance(0, 0, _move_h, _move_v);
-                }
-                
-            }
-            */
-            
             // if colliding with a solid tile or one that is solid from this side
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
             {
@@ -258,6 +224,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _move_h = _step_h_x - (_start_x + _offset_x);
                     _move_v = _step_h_y - _start_y;
                     
+                    // update the movement values for another test
                     _next_move_h = 0;
                     _next_move_v = (raycast_move_v - _move_v);
                     
@@ -295,6 +262,10 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     // update the movement values
                     _move_h = raycast_slope_x - _start_x;
                     _move_v = raycast_slope_y - _start_y;
+                    
+                    // update the movement values for another test
+                    _next_move_h = raycast_slope_move_h;
+                    _next_move_v = raycast_slope_move_v;
                     
                     // update the collision target distance
                     _ray_target_h = point_distance(0, 0, _move_h, _move_v);
@@ -418,6 +389,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _move_h = _step_v_x - _start_x;
                     _move_v = _step_v_y - (_start_y + _offset_y);
                     
+                    // update the movement values for another test
                     _next_move_h = (raycast_move_h - _move_h);
                     _next_move_v = 0;
                     
@@ -455,6 +427,10 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     // update the movement values
                     _move_h = raycast_slope_x - _start_x;
                     _move_v = raycast_slope_y - _start_y;
+                    
+                    // update the movement values for another test
+                    _next_move_h = raycast_slope_move_h;
+                    _next_move_v = raycast_slope_move_v;
                     
                     // update the collision target distance
                     _ray_target_v = point_distance(0, 0, _move_h, _move_v);

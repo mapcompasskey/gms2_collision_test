@@ -159,6 +159,7 @@ var _yy = _start_y + (_t * _s1_y);
 raycast_slope_x = _xx - _offset_x;
 raycast_slope_y = _yy - _offset_y;
 
+    
 // update the movement to rediret along the slope
 // *in a top down game, horizontal and veritcal distances are treated equally, so the distance remaining needs to be redirected
 //var _radians = degtorad(_tile_degrees);
@@ -172,13 +173,19 @@ raycast_slope_y = _yy - _offset_y;
 //raycast_slope_move_h = _distance_h * cos(_radians);
 //raycast_slope_move_v = _distance_h * sin(_radians) * -1; <---- THIS DOESN'T APPEAR TO CALCULATE THE CORRECT Y POSITION WITH 22 DEGREES
 
+// get the y-intercepts of the tile
+var _b2 = _tile_y1 - (_tile_gradient * _tile_x1);
+
+// get the distance to the point of collision
+var _distance = point_distance(_start_x, _start_y, _xx, _yy);
+
 // update the movement to rediret along the slope
 // *in a side scroller, we only care about the horizontal movement along the slope, so only the remaining horizontal distance needs to be redirected
 // *just use the line equation to find the y position
-//raycast_slope_move_h = (_ray_target - _distance) * _tile_radians;
-//var temp_x = _xx + raycast_slope_move_h;
-//var temp_y = (_tile_gradient * temp_x) + _b2;
-//raycast_slope_move_v = temp_y - _yy;
+raycast_slope_move_h = (_ray_target - _distance) * _tile_radians;
+var _temp_x = _xx + raycast_slope_move_h;
+var _temp_y = (_tile_gradient * _temp_x) + _b2;
+raycast_slope_move_v = _temp_y - _yy;
 
 // capture the point on the slope where collision occurred
 var _list = ds_list_create();
