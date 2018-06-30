@@ -574,7 +574,7 @@ if (false)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (false)
+if (true)
 {
     sim_x = 5 * global.TILE_SIZE;
     sim_y = 5 * global.TILE_SIZE;
@@ -627,7 +627,7 @@ if (false)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (true)
+if (false)
 {
     sim_x = 26 * global.TILE_SIZE + 4;
     sim_y = 24 * global.TILE_SIZE + 5;

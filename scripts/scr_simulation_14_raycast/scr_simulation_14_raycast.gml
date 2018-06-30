@@ -196,6 +196,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             // get the tile at this position
             _tile_at_point = tilemap_get(_collision_tilemap, _tile_x, _tile_step_y) & tile_index_mask;
             
+            /*
             // if colliding with a solid tile or one that is solid from this side
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
             {
@@ -213,6 +214,62 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             
             // else, if the tile is not empty space
             else if (_tile_at_point != 0)
+            {
+                // prepare the slope collision test
+                raycast_slope_x = _step_h_x;
+                raycast_slope_y = _step_h_y;
+                raycast_collision_slope = false;
+                
+                // if a sloped tile, and a point on the slope was found
+                if (scr_simulation_14_slope(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
+                {
+                    // update collision states
+                    raycast_collision_slope = true;
+                    _collision_h = true;
+                    _test_h = false;
+                    
+                    // update the movement values
+                    _move_h = raycast_slope_x - _start_x;
+                    _move_v = raycast_slope_y - _start_y;
+                    
+                    // update the collision target distance
+                    _ray_target_h = point_distance(0, 0, _move_h, _move_v);
+                    
+                    break;
+                }
+                
+            }
+            */
+            
+            // if this tile is empty space
+            if (_tile_at_point == 0)
+            {
+                continue;
+            }
+            
+            // if colliding with a solid tile or one that is solid from this side
+            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
+            {
+                if (_ray_delta_h == 0 && _step_h_x mod _tile_size != 0)
+                {
+                    // first step, and not on the edge of a tile
+                }
+                else
+                {
+                    // update collision states
+                    _collision_h = true;
+                    _test_h = false;
+                
+                    // update the movement values
+                    _move_h = _step_h_x - (_start_x + _offset_x);
+                    _move_v = _step_h_y - _start_y;
+                
+                    // update the collision target distance
+                    _ray_target_h = point_distance(0, 0, _move_h, _move_v);
+                }
+            }
+            
+            if ( ! _collision_h)
             {
                 // prepare the slope collision test
                 raycast_slope_x = _step_h_x;
@@ -330,6 +387,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             // get the tile at this position
             _tile_at_point = tilemap_get(_collision_tilemap, _tile_step_x, _tile_y) & tile_index_mask;
             
+            /*
             // if colliding with a solid tile or one that is solid from this side
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_v_one_way)
             {
@@ -370,6 +428,62 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     
                     break;
                 }
+            }
+            */
+            
+            // if this tile is empty space
+            if (_tile_at_point == 0)
+            {
+                continue;
+            }
+            
+            // if colliding with a solid tile or one that is solid from this side
+            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_v_one_way)
+            {
+                if (_ray_delta_v == 0 && _step_v_y mod _tile_size != 0)
+                {
+                    // first step, and not on the edge of a tile
+                }
+                else
+                {
+                    // update collision states
+                    _collision_v = true;
+                    _test_v = false;
+                    
+                    // update the movement values
+                    _move_h = _step_v_x - _start_x;
+                    _move_v = _step_v_y - (_start_y + _offset_y);
+                    
+                    // update the collision target distance
+                    _ray_target_v = point_distance(0, 0, _move_h, _move_v);
+                }
+            }
+            
+            if ( ! _collision_v)
+            {
+                // prepare the slope collision test
+                raycast_slope_x = _step_v_x;
+                raycast_slope_y = _step_v_y;
+                raycast_collision_slope = false;
+                
+                // if a sloped tile, and a point on the slope was found
+                if (scr_simulation_14_slope(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
+                {
+                    // update collision states
+                    raycast_collision_slope = true;
+                    _collision_v = true;
+                    _test_v = false;
+                    
+                    // update the movement values
+                    _move_h = raycast_slope_x - _start_x;
+                    _move_v = raycast_slope_y - _start_y;
+                    
+                    // update the collision target distance
+                    _ray_target_v = point_distance(0, 0, _move_h, _move_v);
+                    
+                    break;
+                }
+                
             }
             
         }
