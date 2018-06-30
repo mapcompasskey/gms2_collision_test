@@ -82,6 +82,7 @@ var _tile_x, _tile_y;
 var _tile_max_x, _tile_max_y;
 var _tile_step_x, _tile_step_y;
 var _size_delta, _size_target;
+var _remainder_x, _remainder_y;
 
 // the test that can be performed
 var _test_h = (raycast_move_h == 0 ? false : true);
@@ -144,16 +145,21 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         _tile_x = floor(_step_h_x / _tile_size);
         _tile_y = floor(_step_h_y / _tile_size);
         
-        // if the horizontal movement is negative and the horizontal point is on a horizontal intersection
+        // find how far from an interseciton the points are
+        // *if the remainder is 0, then they are directly on an intersection
+        _remainder_x = _step_h_x mod _tile_size;
+        _remainder_y = _step_h_y mod _tile_size;
+        
+        // if the horizontal movement is negative and the point is on a horizontal intersection
         // *the entity is moving left, shift the tile's x position left by one
-        if (raycast_move_h < 0 && _step_h_x mod _tile_size == 0)
+        if (raycast_move_h < 0 && _remainder_x == 0)
         {
             _tile_x -= 1;
         }
             
-        // if the vertical movement is negative and the vertical point is on a vertical intersection
+        // if the vertical movement is negative and the point is on a vertical intersection
         // *the entity is moving up, shift the tile's y position up by one
-        if (raycast_move_v < 0 && _step_h_y mod _tile_size == 0)
+        if (raycast_move_v < 0 && _remainder_y == 0)
         {
             _tile_y -= 1; 
         }
@@ -176,7 +182,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         
         // if the vertical movement is positive and the point is on a vertical intersection
         // *the entity is moving down, shift the maximum vertical tile up by one to include the additional tile check
-        if (raycast_move_v > 0 && _step_h_y mod _tile_size == 0)
+        if (raycast_move_v > 0 && _remainder_y == 0)
         {
             _tile_max_y += 1;
         }
@@ -196,51 +202,6 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             // get the tile at this position
             _tile_at_point = tilemap_get(_collision_tilemap, _tile_x, _tile_step_y) & tile_index_mask;
             
-            /*
-            // if colliding with a solid tile or one that is solid from this side
-            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
-            {
-                // update collision states
-                _collision_h = true;
-                _test_h = false;
-                
-                // update the movement values
-                _move_h = _step_h_x - (_start_x + _offset_x);
-                _move_v = _step_h_y - _start_y;
-                
-                // update the collision target distance
-                _ray_target_h = point_distance(0, 0, _move_h, _move_v);
-            }
-            
-            // else, if the tile is not empty space
-            else if (_tile_at_point != 0)
-            {
-                // prepare the slope collision test
-                raycast_slope_x = _step_h_x;
-                raycast_slope_y = _step_h_y;
-                raycast_collision_slope = false;
-                
-                // if a sloped tile, and a point on the slope was found
-                if (scr_simulation_14_slope(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
-                {
-                    // update collision states
-                    raycast_collision_slope = true;
-                    _collision_h = true;
-                    _test_h = false;
-                    
-                    // update the movement values
-                    _move_h = raycast_slope_x - _start_x;
-                    _move_v = raycast_slope_y - _start_y;
-                    
-                    // update the collision target distance
-                    _ray_target_h = point_distance(0, 0, _move_h, _move_v);
-                    
-                    break;
-                }
-                
-            }
-            */
-            
             // if this tile is empty space
             if (_tile_at_point == 0)
             {
@@ -250,26 +211,24 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             // if colliding with a solid tile or one that is solid from this side
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
             {
-                if (_ray_delta_h == 0 && _step_h_x mod _tile_size != 0)
-                {
-                    // first step, and not on the edge of a tile
-                }
-                else
+                if (_ray_delta_h != 0 || _remainder_x == 0)
                 {
                     // update collision states
                     _collision_h = true;
                     _test_h = false;
-                
+                    
                     // update the movement values
                     _move_h = _step_h_x - (_start_x + _offset_x);
                     _move_v = _step_h_y - _start_y;
-                
+                    
                     // update the collision target distance
                     _ray_target_h = point_distance(0, 0, _move_h, _move_v);
                 }
+                
             }
             
-            if ( ! _collision_h)
+            // if colliding with another type of tile
+            if (_tile_at_point != _tile_solid && _tile_at_point != _tile_h_one_way)
             {
                 // prepare the slope collision test
                 raycast_slope_x = _step_h_x;
@@ -308,14 +267,13 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             if (_gradient != 0)
             {
                 // find the new y point
-                //_step_h_y = (_gradient * (_step_h_x - _offset_x - _start_x)) + _start_y;
                 _step_h_y = (_gradient * (_step_h_x - (_start_x + _offset_x))) + _start_y;
                 
                 // if the y position is off a vertical intersection by a tiny amount, round towards the intersection
                 // *GameMaker returns inconsistent solutions when calculating the sin/cos of an angle
-                var _remainder_h_y = (_step_h_y mod _tile_size);
-                if (_remainder_h_y < 0.0001) _step_h_y = floor(_step_h_y);
-                if (_tile_size - _remainder_h_y < 0.0001) _step_h_y = ceil(_step_h_y);
+                //var _remainder_h_y = (_step_h_y mod _tile_size);
+                //if (_remainder_h_y < 0.0001) _step_h_y = floor(_step_h_y);
+                //if (_tile_size - _remainder_h_y < 0.0001) _step_h_y = ceil(_step_h_y);
             }
             
             // update the distance to the next vertical intersection
@@ -335,16 +293,21 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         _tile_x = floor(_step_v_x / _tile_size);
         _tile_y = floor(_step_v_y / _tile_size);
         
-        // if the horizontal movement is negative and the horizontal point is on a horizontal intersection
+        // find how far from an interseciton the points are
+        // *if the remainder is 0, then they are directly on an intersection
+        _remainder_x = _step_v_x mod _tile_size;
+        _remainder_y = _step_v_y mod _tile_size;
+        
+        // if the horizontal movement is negative and the point is on a horizontal intersection
         // *the entity is moving left, shift the tile's x position left by one
-        if (raycast_move_h < 0 && _step_v_x mod _tile_size == 0)
+        if (raycast_move_h < 0 && _remainder_x == 0)
         {
             _tile_x -= 1;
         }
             
-        // if the vertical movement is negative and the vertical point is on a vertical intersection
+        // if the vertical movement is negative and the point is on a vertical intersection
         // *the entity is moving up, shift the tile's y position up by one
-        if (raycast_move_v < 0 && _step_v_y mod _tile_size == 0)
+        if (raycast_move_v < 0 && _remainder_y == 0)
         {
             _tile_y -= 1; 
         }
@@ -367,7 +330,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         
         // if the horizontal movement is positive and the point is on a horizontal intersection
         // *the entity is moving right, shift the maximum horizontal tile over by one to include the additional tile check
-        if (raycast_move_h > 0 && _step_v_x mod _tile_size == 0)
+        if (raycast_move_h > 0 && _remainder_x == 0)
         {
             _tile_max_x += 1;
         }
@@ -387,50 +350,6 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             // get the tile at this position
             _tile_at_point = tilemap_get(_collision_tilemap, _tile_step_x, _tile_y) & tile_index_mask;
             
-            /*
-            // if colliding with a solid tile or one that is solid from this side
-            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_v_one_way)
-            {
-                // update collision states
-                _collision_v = true;
-                _test_v = false;
-                
-                // update the movement values
-                _move_h = _step_v_x - _start_x;
-                _move_v = _step_v_y - (_start_y + _offset_y);
-                
-                // update the collision target distance
-                _ray_target_v = point_distance(0, 0, _move_h, _move_v);
-            }
-            
-            // else, if the tile is not empty space
-            else if (_tile_at_point != 0)
-            {
-                // prepare the slope collision test
-                raycast_slope_x = _step_v_x;
-                raycast_slope_y = _step_v_y;
-                raycast_collision_slope = false;
-                
-                // if a sloped tile, and a point on the slope was found
-                if (scr_simulation_14_slope(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
-                {
-                    // update collision states
-                    raycast_collision_slope = true;
-                    _collision_v = true;
-                    _test_v = false;
-                    
-                    // update the movement values
-                    _move_h = raycast_slope_x - _start_x;
-                    _move_v = raycast_slope_y - _start_y;
-                    
-                    // update the collision target distance
-                    _ray_target_v = point_distance(0, 0, _move_h, _move_v);
-                    
-                    break;
-                }
-            }
-            */
-            
             // if this tile is empty space
             if (_tile_at_point == 0)
             {
@@ -440,11 +359,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             // if colliding with a solid tile or one that is solid from this side
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_v_one_way)
             {
-                if (_ray_delta_v == 0 && _step_v_y mod _tile_size != 0)
-                {
-                    // first step, and not on the edge of a tile
-                }
-                else
+                if (_ray_delta_v != 0 || _remainder_y == 0)
                 {
                     // update collision states
                     _collision_v = true;
@@ -459,7 +374,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 }
             }
             
-            if ( ! _collision_v)
+            // if colliding with another type of tile
+            if (_tile_at_point != _tile_solid && _tile_at_point != _tile_v_one_way)
             {
                 // prepare the slope collision test
                 raycast_slope_x = _step_v_x;
@@ -502,9 +418,9 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 
                 // if the x position is off a horizontal intersection by a tiny amount, round towards the intersection
                 // *GameMaker returns inconsistent solutions when calculating the sin/cos of an angle
-                var _remainder_v_x = (_step_v_x mod _tile_size);
-                if (_remainder_v_x < 0.0001) _step_v_x = floor(_step_v_x);
-                if (_tile_size - _remainder_v_x < 0.0001) _step_v_x = ceil(_step_v_x);
+                //var _remainder_v_x = (_step_v_x mod _tile_size);
+                //if (_remainder_v_x < 0.0001) _step_v_x = floor(_step_v_x);
+                //if (_tile_size - _remainder_v_x < 0.0001) _step_v_x = ceil(_step_v_x);
             }
             
             // update the distance to the next vertical intersection

@@ -107,14 +107,8 @@ var _d1 = tile_definitions[_tile_at_point, 8];
 // find the side of the tile the starting point is on: d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
 var _d2 = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
 
-// if the point is on the line
-if (_d2 == 0)
-{
-    return false;
-}
-
-// if the point is on the "solid" side of the line
-if (sign(_d2) != _d1)
+// if the point is not on the line, and is on the "solid" side of the line
+if (_d2 != 0 && sign(_d2) != _d1)
 {
     return false;
 }
