@@ -18,6 +18,9 @@ if (raycast_move_h == 0 && raycast_move_v == 0)
 var _move_h = raycast_move_h;
 var _move_v = raycast_move_v;
 
+var _next_move_h = 0;
+var _next_move_v = 0;
+
 // the starting position (always the top left corner of the bounding box)
 var _start_x = raycast_x + sprite_bbox_left;
 var _start_y = raycast_y + sprite_bbox_top;
@@ -190,7 +193,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         // check every vertical tile the entity would pass through at this horizontal step
         for (_tile_step_y = _tile_y; _tile_step_y < _tile_max_y; _tile_step_y++)
         {
-            if (true)
+            if (false)
             {
                 // capture the tile
                 var _list = ds_list_create();
@@ -208,9 +211,23 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 continue;
             }
             
+            /*
             // if colliding with a solid tile or one that is solid from this side
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
             {
+                // if this is the first horizontal test, and the point is on a horizontal intersection
+                // *this occurs when the ray starts on the corner of a tile directly diagonal to the starting point
+                if (_ray_delta_h == 0 && _remainder_x == 0 && _remainder_y == 0 && _move_v != 0)
+                {
+                    // need to check if the tile directly next to this entity is a solid tile
+                    // if it isn't solid, then the ray should be cast straight horizontally
+                    var _tile_at_point_2 = tilemap_get(_collision_tilemap, _tile_x, _tile_step_y + (_move_v > 0 ? -1 : 1)) & tile_index_mask;
+                    if (_tile_at_point_2 != _tile_solid)
+                    {
+                        
+                    }
+                }
+                
                 if (_ray_delta_h != 0 || _remainder_x == 0)
                 {
                     // update collision states
@@ -225,6 +242,38 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _ray_target_h = point_distance(0, 0, _move_h, _move_v);
                 }
                 
+            }
+            */
+            
+            // if colliding with a solid tile or one that is solid from this side
+            if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
+            {
+                if (_ray_delta_h != 0 || _remainder_x == 0)
+                {
+                    // update collision states
+                    _collision_h = true;
+                    _test_h = false;
+                    
+                    // update the movement values
+                    _move_h = _step_h_x - (_start_x + _offset_x);
+                    _move_v = _step_h_y - _start_y;
+                    
+                    _next_move_h = 0;
+                    _next_move_v = (raycast_move_v - _move_v);
+                    
+                    // update the collision target distance
+                    _ray_target_h = point_distance(0, 0, _move_h, _move_v);
+                    
+                    if (true)
+                    {
+                        // capture the tile
+                        var _list = ds_list_create();
+                        ds_list_add(_list, (_tile_x * _tile_size), (_tile_step_y * _tile_size), global.COLLISION_H_COLOR);
+                        ds_list_add(global.DRAW_CELLS, _list);
+                        ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                    }
+            
+                }
             }
             
             // if colliding with another type of tile
@@ -271,9 +320,9 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 
                 // if the y position is off a vertical intersection by a tiny amount, round towards the intersection
                 // *GameMaker returns inconsistent solutions when calculating the sin/cos of an angle
-                //var _remainder_h_y = (_step_h_y mod _tile_size);
-                //if (_remainder_h_y < 0.0001) _step_h_y = floor(_step_h_y);
-                //if (_tile_size - _remainder_h_y < 0.0001) _step_h_y = ceil(_step_h_y);
+                var _remainder_h_y = (_step_h_y mod _tile_size);
+                if (_remainder_h_y < 0.0001) _step_h_y = floor(_step_h_y);
+                if (_tile_size - _remainder_h_y < 0.0001) _step_h_y = ceil(_step_h_y);
             }
             
             // update the distance to the next vertical intersection
@@ -338,7 +387,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         // check every horizontal tile the entity would pass through at this vertical step
         for (_tile_step_x = _tile_x; _tile_step_x < _tile_max_x; _tile_step_x++)
         {
-            if (true)
+            if (false)
             {
                 // capture the tile
                 var _list = ds_list_create();
@@ -369,8 +418,21 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _move_h = _step_v_x - _start_x;
                     _move_v = _step_v_y - (_start_y + _offset_y);
                     
+                    _next_move_h = (raycast_move_h - _move_h);
+                    _next_move_v = 0;
+                    
                     // update the collision target distance
                     _ray_target_v = point_distance(0, 0, _move_h, _move_v);
+                    
+                    if (true)
+                    {
+                        // capture the tile
+                        var _list = ds_list_create();
+                        ds_list_add(_list, (_tile_step_x * _tile_size), (_tile_y * _tile_size), global.COLLISION_V_COLOR);
+                        ds_list_add(global.DRAW_CELLS, _list);
+                        ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                    }
+                    
                 }
             }
             
@@ -418,9 +480,9 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 
                 // if the x position is off a horizontal intersection by a tiny amount, round towards the intersection
                 // *GameMaker returns inconsistent solutions when calculating the sin/cos of an angle
-                //var _remainder_v_x = (_step_v_x mod _tile_size);
-                //if (_remainder_v_x < 0.0001) _step_v_x = floor(_step_v_x);
-                //if (_tile_size - _remainder_v_x < 0.0001) _step_v_x = ceil(_step_v_x);
+                var _remainder_v_x = (_step_v_x mod _tile_size);
+                if (_remainder_v_x < 0.0001) _step_v_x = floor(_step_v_x);
+                if (_tile_size - _remainder_v_x < 0.0001) _step_v_x = ceil(_step_v_x);
             }
             
             // update the distance to the next vertical intersection
@@ -449,6 +511,9 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
 // update movement values
 raycast_move_h = _move_h;
 raycast_move_v = _move_v;
+
+raycast_next_move_h = _next_move_h;
+raycast_next_move_v = _next_move_v;
 
 // update collision states
 raycast_collision_h = _collision_h;

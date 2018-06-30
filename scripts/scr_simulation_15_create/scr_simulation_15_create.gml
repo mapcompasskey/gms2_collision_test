@@ -471,6 +471,9 @@ raycast_slope_y = 0;
 raycast_move_h = 0;
 raycast_move_v = 0;
 
+raycast_next_move_h = 0;
+raycast_next_move_v = 0;
+
 raycast_slope_move_h = 0;
 raycast_slope_move_v = 0;
 
@@ -578,7 +581,7 @@ if (true)
 {
     sim_x = 5 * global.TILE_SIZE;
     sim_y = 5 * global.TILE_SIZE;
-    move_angle = -10;
+    move_angle = -45;
     move_distance = 40;
     
     // update the camera position

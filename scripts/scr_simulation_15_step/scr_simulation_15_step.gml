@@ -282,30 +282,11 @@ move_angle_rads = degtorad(move_angle );
 move_h = move_distance * cos(move_angle_rads);
 move_v = move_distance * sin(move_angle_rads) * -1;
 
-new_move_h = move_h;
-new_move_v = move_v;
-
 collision_h = false;
 collision_v = false;
 collision_slope = false;
 collision_slope_falling = false;
 collision_slope_rising = false;
-
-raycast_x = sim_x;
-raycast_y = sim_y;
-
-raycast_slope_x = 0;
-raycast_slope_y = 0;
-
-raycast_move_h = move_h;
-raycast_move_v = move_v;
-
-raycast_slope_move_h = 0;
-raycast_slope_move_v = 0;
-
-raycast_collision_h = false;
-raycast_collision_v = false;
-raycast_collision_slope = false;
 
 
 /**
@@ -313,50 +294,26 @@ raycast_collision_slope = false;
  *
  */
 
-// perform a collision test
-scr_simulation_15_raycast();
+new_move_h = 0;
+new_move_v = 0;
 
-new_move_h = raycast_move_h;
-new_move_v = raycast_move_v;
+raycast_next_move_h = move_h;
+raycast_next_move_v = move_v;
 
-collision_h = raycast_collision_h;
-collision_v = raycast_collision_v;
-collision_slope = raycast_collision_slope;
-
-// if the collision occurred with a sloped tile
-if (collision_slope)
+for (var i = 0; i < 2; i++)
 {
-    // if there is horizontal movement
-    if (move_h != 0)
-    {
-        // apply the redirected slope movement vectors
-        new_move_h += raycast_slope_move_h;
-        new_move_v += raycast_slope_move_v;
-        //scr_output(raycast_slope_move_h, raycast_slope_move_v)
-    }
-}
-
-/*
-// if the collision occurred with a sloped tile
-if (collision_slope)
-{
-    // update the new collision states
-    // *there is never horizontal collision with a slope and only veritcal collision if falling onto or rising with a slope
-    // *this would be useful in a side scrolling game with gravity
-    collision_h = false;
-    collision_v = (collision_slope_falling || collision_slope_rising);
-    
-    // get the updated position at the point of collision
+    // update the starting position to the point of collision
     raycast_x = sim_x + new_move_h;
     raycast_y = sim_y + new_move_v;
     
-    // redirect the remaining movement along the path of the slope
-    raycast_move_h = raycast_slope_move_h;
-    raycast_move_v = raycast_slope_move_v;
+    // get the remaining movement
+    raycast_move_h = raycast_next_move_h;
+    raycast_move_v = raycast_next_move_v;
     
     // reset the raycast collision states
     raycast_collision_h = false;
     raycast_collision_v = false;
+    raycast_collision_slope = false;
     
     // perform another a collision test
     scr_simulation_15_raycast();
@@ -364,53 +321,11 @@ if (collision_slope)
     // update the new movement values
     new_move_h += raycast_move_h;
     new_move_v += raycast_move_v;
-}
-
-// else, if the collision occurred horizontally or vertically against a flat surface, redirect the object the remaining distance until another collision occurs
-else if (collision_h || collision_v)
-{
-    // get the updated position at the point of collision
-    raycast_x = sim_x + new_move_h;
-    raycast_y = sim_y + new_move_v;
     
-    // redirect the remaining movement either straight horizontal or vertical
-    raycast_move_h = (collision_v ? move_h - new_move_h : 0);
-    raycast_move_v = (collision_h ? move_v - new_move_v : 0);
-    
-    // reset the raycast collision states
-    raycast_collision_h = false;
-    raycast_collision_v = false;
-    
-    // perform another a collision test
-    scr_simulation_15_raycast();
-    
-    // if the first test found a horizontal collision and the second test found a vertical collision but was unable to move up or down, try another straight horizontal test
-    // *since horizontal collision is tested first, there is a false positive that occurs when a tile is directly diagonal and the vertical path is blocked but the horizontal path is clear
-    if (collision_h && raycast_collision_v && raycast_move_h == 0 && raycast_move_v == 0)
-    {
-        // add the remaining movement distance
-        raycast_move_h = move_h - new_move_h;
-        raycast_move_v = 0;
-        
-        // we know there was a vertical collision
-        collision_h = false;
-        collision_v = true;
-        raycast_collision_h = collision_h;
-        raycast_collision_v = collision_v;
-        
-        // preform another collision test to find whether the horizontal path is open
-        scr_simulation_15_raycast();
-    }
-    
-    // update the new movement values
-    new_move_h += raycast_move_h;
-    new_move_v += raycast_move_v;
-    
-    // update the new collision states with the previous ones
+    // merge collision states
     collision_h = (collision_h ? collision_h : raycast_collision_h);
     collision_v = (collision_v ? collision_v : raycast_collision_v);
 }
-*/
 
 
 /**
