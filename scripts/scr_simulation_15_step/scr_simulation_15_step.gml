@@ -300,7 +300,7 @@ new_move_v = 0;
 raycast_next_move_h = move_h;
 raycast_next_move_v = move_v;
 
-for (var i = 0; i < 2; i++)
+for (var i = 0; i < 3; i++)
 {
     // update the starting position to the point of collision
     raycast_x = sim_x + new_move_h;
@@ -325,7 +325,15 @@ for (var i = 0; i < 2; i++)
     // merge collision states
     collision_h = (collision_h ? collision_h : raycast_collision_h);
     collision_v = (collision_v ? collision_v : raycast_collision_v);
+    
+    // if no collision occurred
+    //if ( ! collision_h && ! collision_v) break;
+    
+    // if horizontal and vertical collision have occurred
+    //if (collision_h && collision_v) break;
+    
 }
+scr_output("---");
 
 
 /**

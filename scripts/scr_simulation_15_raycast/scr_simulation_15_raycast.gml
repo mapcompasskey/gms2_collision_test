@@ -211,9 +211,37 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 continue;
             }
             
+            // if moving up and this is the first collision step
+            // or if moving down and this is the last collision step
+            if ((_move_v < 0 && _tile_step_y == _tile_y) || (_move_v > 0 && _tile_step_y == (_tile_max_y - 1)))
+            {
+                // if colliding with the exact corner of a tile
+                // *because horizontal collisino is checked first, this would result in a horizontal collision
+                // *but if the path above (or below) the tile is clear horizontally, then it should be resolved as a vertical collision and continue horizontally
+                if (_tile_at_point == _tile_solid && _remainder_x == 0 && _remainder_y == 0 && _move_v != 0)
+                {
+                    // shift the current tile one above or below depending on the vertical movement
+                    _tile_at_point = tilemap_get(_collision_tilemap, _tile_x, _tile_step_y + (_move_v > 0 ? -1 : 1)) & tile_index_mask;
+                    
+                    // capture the tile
+                    var _list = ds_list_create();
+                    ds_list_add(_list, (_tile_x * _tile_size), (_tile_step_y + (_move_v > 0 ? -1 : 1) * _tile_size), global.COLLISION_HV_COLOR);
+                    ds_list_add(global.DRAW_CELLS, _list);
+                    ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                    
+                    // if this tile is empty space
+                    if (_tile_at_point == 0)
+                    {
+                        continue;
+                    }
+                    
+                }
+            }
+            
             // if colliding with a solid tile or one that is solid from this side
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
             {
+                // if not the first horizontal test, or if the point is on a horizontal intersection
                 if (_ray_delta_h != 0 || _remainder_x == 0)
                 {
                     // update collision states
@@ -239,7 +267,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                         ds_list_add(global.DRAW_CELLS, _list);
                         ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
                     }
-            
+                    
+                    break;
                 }
             }
             
