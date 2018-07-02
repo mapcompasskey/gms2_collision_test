@@ -216,7 +216,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             if ((_move_v < 0 && _tile_step_y == _tile_y) || (_move_v > 0 && _tile_step_y == (_tile_max_y - 1)))
             {
                 // if colliding with the exact corner of a tile
-                // *because horizontal collisino is checked first, this would result in a horizontal collision
+                // *because horizontal collision is checked first, this would result in a horizontal collision
                 // *but if the path above (or below) the tile is clear horizontally, then it should be resolved as a vertical collision and continue horizontally
                 if (_tile_at_point == _tile_solid && _remainder_x == 0 && _remainder_y == 0 && _move_v != 0)
                 {
@@ -225,7 +225,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     
                     // capture the tile
                     var _list = ds_list_create();
-                    ds_list_add(_list, (_tile_x * _tile_size), (_tile_step_y + (_move_v > 0 ? -1 : 1) * _tile_size), global.COLLISION_HV_COLOR);
+                    ds_list_add(_list, (_tile_x * _tile_size), ((_tile_step_y + (_move_v > 0 ? -1 : 1)) * _tile_size), global.COLLISION_HV_COLOR);
                     ds_list_add(global.DRAW_CELLS, _list);
                     ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
                     
@@ -259,7 +259,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     // update the collision target distance
                     _ray_target_h = point_distance(0, 0, _move_h, _move_v);
                     
-                    if (true)
+                    if (false)
                     {
                         // capture the tile
                         var _list = ds_list_create();
@@ -425,7 +425,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     // update the collision target distance
                     _ray_target_v = point_distance(0, 0, _move_h, _move_v);
                     
-                    if (true)
+                    if (false)
                     {
                         // capture the tile
                         var _list = ds_list_create();

@@ -1,4 +1,4 @@
-/// @function scr_simulation_15_slope(tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
+/// @function scr_simulation_15_slope_2(tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
 /// @param {real} tile_at_point  - the index of the tile that was intersected
 /// @param {number} cell_x       - the tile's horizontal cell position
 /// @param {number} cell_y       - the tile's vertical cell position
@@ -74,15 +74,17 @@ if (array_length_2d(tile_definitions, _tile_at_point) != 9)
 // get the slope value of this angle
 var _tile_gradient = tile_definitions[_tile_at_point, 0];
 
+/*
 // if the slopes are the same the lines would never cross
 // or they are the same line and touch infinity (collinear)
 if (_ray_gradient == _tile_gradient)
 {
     return;
 }
+*/
 
-// get the value for the cosine of the angle
-var _tile_cosine  = tile_definitions[_tile_at_point, 1] * (_move_h > 0 ? 1 : -1);
+// get the value for the radian measure of the angle
+var _tile_radians  = tile_definitions[_tile_at_point, 1] * (_move_h > 0 ? 1 : -1);
 
 // get the first (left most) point on the tile
 var _tile_x1 = (_cell_x + tile_definitions[_tile_at_point, 2]) * _tile_size;
@@ -101,49 +103,48 @@ var _offset_y = tile_definitions[_tile_at_point, 7] * _height;
 _start_x += _offset_x;
 _start_y += _offset_y;
 
-
-/**
- * Determine the Side of the Tile
- *
- * The "sign of the determinant" is used to determine if the starting and ending points are on the open side of the sloped tile.
- * The ray only need to be redirected if the starting point is on the open side of the tile and the ending point is on the solid side.
- *
- * d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
- */
-
 // get the value that represents the side that is "open space'
-var _tile_determinant = tile_definitions[_tile_at_point, 8];
+var _d1 = tile_definitions[_tile_at_point, 8];
 
-// find the side of the tile the starting point is on
-var _start_determinant = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
+// find the side of the tile the starting point is on: d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
+var _d2 = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
 
-// if the starting point is not on the line
-if (_start_determinant != 0)
+// if the point is not on the line and the slopes are the same
+// *the lines are parallel and will never cross
+if (_d2 != 0 && _ray_gradient == _tile_gradient)
 {
-    // if the starting point is not on the open side of the tile
-    if (sign(_start_determinant) != _tile_determinant)
-    {
-        return false;
-    }
+    return false;
 }
 
-// find the side of the tile the end point is on
-var _end_determinant = (((_start_x + _move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
-
-// if the end point is on the open side of the tile
-if (sign(_end_determinant) == _tile_determinant)
+// if the point is not on the line and is on the "solid" side of the line
+if (_d2 != 0 && sign(_d2) != _d1)
 {
     return false;
 }
 
 
+
 /**
  * Find the Point of Intersection
+ *
+ * point: (x, y)
+ * m: slope
+ * b: y-intercept
+ * line equation: y = mx + b
+ * y-intercept: b = y - mx
  *
  * The following equation to find the intersection of two lines segments was taken from the following page.
  * https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
  */
 
+// if the point is on the line and the slopes are the same, they are the same lines (collinear)
+if (_d2 == 0 && _ray_gradient == _tile_gradient)
+{
+    var _xx = _start_x;
+    var _yy = _start_y;
+}
+else
+{
 var _s1_x = _move_h;
 var _s1_y = _move_v;
 
@@ -152,6 +153,7 @@ var _s2_y = _tile_y2 - _tile_y1;
 
 // if the denominator equals zero the lines would be collinear or never intersect
 var _denominator = (-_s2_x * _s1_y + _s1_x * _s2_y);
+scr_output("denominator", _denominator);
 if (_denominator == 0)
 {
     return false;
@@ -169,49 +171,62 @@ if (_t < 0 || _t > 1)
     return false;
 }
 
-// get the point of intersection
 var _xx = _start_x + (_t * _s1_x);
 var _yy = _start_y + (_t * _s1_y);
-
-if (true)
-{
-    // capture the point on the slope where collision occurred
-    var _list = ds_list_create();
-    ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
-    ds_list_add(global.GUI_AXIS_POINTS, _list);
-    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
 }
 
 // update the point of collision (minus the offsets)
 raycast_slope_x = _xx - _offset_x;
 raycast_slope_y = _yy - _offset_y;
 
+    
+// update the movement to rediret along the slope
+// *in a top down game, horizontal and veritcal distances are treated equally, so the distance remaining needs to be redirected
+//var _radians = degtorad(_tile_degrees);
+//raycast_slope_move_h = (_ray_target - _distance) * cos(_radians);
+//raycast_slope_move_v = (_ray_target - _distance) * sin(_radians) * -1;
 
-/**
- * Redirect the Ray
- *
- * In a side scroller we only care about the horizontal movement along the slope.
- * So only the remaining horizontal distance needs to be redirected.
- *
- * Just use the line equation to find the y position after getting the x position.
- * Using the sin of the angle to find it never seems to put it in the right place.
- *
- * point: (x, y)
- * m: slope
- * b: y-intercept
- * line equation: y = mx + b
- * y-intercept: b = y - mx
- */
+// update the movement to rediret along the slope
+// *in a side scroller, we only care about the horizontal movement along the slope, so only the remaining horizontal distance needs to be redirected
+//var _distance_h = abs(_start_x + _move_h - _xx);
+//var _radians = degtorad(_tile_degrees);
+//raycast_slope_move_h = _distance_h * cos(_radians);
+//raycast_slope_move_v = _distance_h * sin(_radians) * -1; <---- THIS DOESN'T APPEAR TO CALCULATE THE CORRECT Y POSITION WITH 22 DEGREES
+
+
+/*
+// get the y-intercepts of the tile
+var _b2 = _tile_y1 - (_tile_gradient * _tile_x1);
+
+// get the distance to the point of collision
+var _distance = point_distance(_start_x, _start_y, _xx, _yy);
+
+// update the movement to rediret along the slope
+// *in a side scroller, we only care about the horizontal movement along the slope, so only the remaining horizontal distance needs to be redirected
+// *just use the line equation to find the y position
+raycast_slope_move_h = (_ray_target - _distance_h) * _tile_radians;
+var _temp_x = _xx + raycast_slope_move_h;
+var _temp_y = (_tile_gradient * _temp_x) + _b2;
+raycast_slope_move_v = _temp_y - _yy;
+*/
 
 // get the y-intercepts of the tile
 var _tile_y_intercept = _tile_y1 - (_tile_gradient * _tile_x1);
 
-// get the remaining horizontal distance from the point of collision
-var _distance_h = point_distance(_xx, 0, _start_x + _move_h, 0);
+// get the horizontal distance to the point of collision
+var _distance_h = point_distance(_start_x, 0, _xx, 0);
 
 // update the movement to rediret along the slope
-raycast_slope_move_h = _distance_h * _tile_cosine;
+// *in a side scroller, we only care about the horizontal movement along the slope, so only the remaining horizontal distance needs to be redirected
+// *just use the line equation to find the y position
+raycast_slope_move_h = (_move_h - _distance_h) * _tile_radians;
 raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
+
+// capture the point on the slope where collision occurred
+var _list = ds_list_create();
+ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
+ds_list_add(global.GUI_AXIS_POINTS, _list);
+ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
 
 return true;
 

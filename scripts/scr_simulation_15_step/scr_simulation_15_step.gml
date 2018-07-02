@@ -322,9 +322,17 @@ for (var i = 0; i < 3; i++)
     new_move_h += raycast_move_h;
     new_move_v += raycast_move_v;
     
-    // merge collision states
-    collision_h = (collision_h ? collision_h : raycast_collision_h);
-    collision_v = (collision_v ? collision_v : raycast_collision_v);
+    if (raycast_collision_slope)
+    {
+        collision_h = false;
+        collision_v = true;
+    }
+    else
+    {
+        // merge collision states
+        collision_h = (collision_h ? collision_h : raycast_collision_h);
+        collision_v = (collision_v ? collision_v : raycast_collision_v);
+    }
     
     // if no collision occurred
     //if ( ! collision_h && ! collision_v) break;
@@ -333,7 +341,6 @@ for (var i = 0; i < 3; i++)
     //if (collision_h && collision_v) break;
     
 }
-scr_output("---");
 
 
 /**
