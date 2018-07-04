@@ -213,5 +213,31 @@ var _distance_h = point_distance(_xx, 0, _start_x + _move_h, 0);
 raycast_slope_move_h = _distance_h * _tile_cosine;
 raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
 
+// step the distance of a tile across the x-axis, following the slope of the line
+// check each tile until the current tile no longer equals the current one from this test
+if (true)
+{
+    var _step_xx = _xx;
+    var _step_yy = _yy;
+    var _distance_delta = _tile_size;
+    var _distance_target = point_distance(_xx, 0, _xx + raycast_slope_move_h, 0);
+    
+    while (_distance_delta < _distance_target)
+    {
+        _step_xx = _step_xx + (_tile_size * sign(_move_h))
+        _step_yy = (_tile_gradient * _step_xx) + _tile_y_intercept;
+        
+        _distance_delta += _tile_size;
+        
+        // capture this point
+        var _list = ds_list_create();
+        ds_list_add(_list, _step_xx, _step_yy, global.COLLISION_SLOPE_COLOR);
+        ds_list_add(global.GUI_AXIS_POINTS, _list);
+        ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+    }
+    
+}
+
+
 return true;
 
