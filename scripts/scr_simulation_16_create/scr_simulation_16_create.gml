@@ -1,4 +1,4 @@
-/// @function scr_simulation_15_create()
+/// @function scr_simulation_16_create()
 
 
 /**
@@ -6,22 +6,14 @@
  *
  */
 
+show_debug_overlay(true);
+
 // values
-global.DRAW_CELL_INDEX = 0;
+global.TICK = 0;
 
-// colors
-global.COLLISION_H_COLOR = c_orange;
-global.COLLISION_V_COLOR = c_yellow;
-global.COLLISION_HV_COLOR = c_lime;
-global.COLLISION_SLOPE_COLOR = c_lime;
-
-// lists
-global.DRAW_CELLS = ds_list_create();
-global.GUI_ROOM_AXES = ds_list_create();
-global.GUI_ROOM_X_AXIS = ds_list_create();
-global.GUI_ROOM_Y_AXIS = ds_list_create();
-global.GUI_AXIS_POINTS = ds_list_create();
-global.GUI_BBOX_POINTS = ds_list_create();
+// collision tilemap
+collision_tilemap_layer_id = layer_get_id("Collision_Tiles");
+global.COLLISION_TILEMAP = layer_tilemap_get_id(collision_tilemap_layer_id);
 
 
 /**
@@ -152,8 +144,6 @@ global.TILE_DEFINITIONS[_idx, 5] = 0;
 global.TILE_DEFINITIONS[_idx, 6] = 1;
 global.TILE_DEFINITIONS[_idx, 7] = 1;
 global.TILE_DEFINITIONS[_idx, 8] = 1;
-//global.TILE_DEFINITIONS[_idx, 8] = 1;
-//global.TILE_DEFINITIONS[_idx, 9] = 1;
 
 // 22 degrees, north west ◤ (1)
 _idx = global.TILE_SOLID_22_NW_1;
@@ -233,93 +223,8 @@ global.TILE_DEFINITIONS[_idx, 8] = -1;
  *
  */
 
-// values
-tick = 0;
-
-// collision tilemap
-collision_tilemap_layer_id = layer_get_id("Collision_Tiles");
-collision_tilemap = layer_tilemap_get_id(collision_tilemap_layer_id);
-
-// collision tile information
-tile_definitions = global.TILE_DEFINITIONS;
-
-// starting position
-sim_x = 0;
-sim_y = 0;
-
-// movement angle and distance
-move_angle = 0;
-move_angle_rads = 0;
-move_distance = 60;
-
-// movement values
-move_h = 0;
-move_v = 0;
-new_move_h = 0;
-new_move_v = 0;
-
-// collision states
-collision_h = false;
-collision_v = false
-collision_slope = false;
-collision_slope_falling = false;
-collision_slope_rising = false;
-
-// raycasting starting position
-raycast_x = 0;
-raycast_y = 0;
-
-raycast_slope_x = 0;
-raycast_slope_y = 0;
-
-// raycasting movement values
-raycast_move_h = 0;
-raycast_move_v = 0;
-
-raycast_next_move_h = 0;
-raycast_next_move_v = 0;
-
-raycast_slope_move_h = 0;
-raycast_slope_move_v = 0;
-
-// raycasting collision states
-raycast_collision_h = false;
-raycast_collision_v = false;
-raycast_collision_slope = false;
-
-// simulation states
-update_simulation = true;
-is_rotating = false;
-
-// drawing
-//sprite_index = spr_simulation_15px;
-//mask_index = spr_simulation_15px;
-
-sprite_index = spr_simulation_10px;
-mask_index = spr_simulation_10px;
-
-//sprite_index = spr_simulation_8x6px;
-//mask_index = spr_simulation_8x6px;
-
-//sprite_index = spr_simulation_6px;
-//mask_index = spr_simulation_6px;
-
-//sprite_index = spr_simulation_1px;
-//mask_index = spr_simulation_1px;
-
-bbox_width = sprite_get_bbox_right(sprite_index) - sprite_get_bbox_left(sprite_index)
-bbox_height = sprite_get_bbox_bottom(sprite_index) - sprite_get_bbox_top(sprite_index)
-
-sprite_bbox_left = sprite_get_bbox_left(sprite_index) - sprite_get_xoffset(sprite_index);
-sprite_bbox_right = sprite_get_bbox_right(sprite_index) - sprite_get_xoffset(sprite_index);
-sprite_bbox_bottom = sprite_get_bbox_bottom(sprite_index) - sprite_get_yoffset(sprite_index);
-sprite_bbox_top = sprite_get_bbox_top(sprite_index) - sprite_get_yoffset(sprite_index);
-
-// rotation timers
-rotation_time = 0.1;
-rotation_timer = 0;
-rotation_pause_time = 0.5;
-rotation_pause_timer = 0;
+// instances layer
+instances_layer_id = layer_get_id("Instances");
 
 
 /**
@@ -333,14 +238,28 @@ window_width = window_get_width();
 window_height = window_get_height();
 
 // camera size
-camera_x = (global.TILE_SIZE * -2);
-camera_y = (global.TILE_SIZE * -4);
+camera_x = 0;
+camera_y = 0;
 camera_width = (window_width / view_scale);
 camera_height = (window_height / view_scale);
+global.CAMERA_WIDTH_HALF = (camera_width / 2);
+global.CAMERA_HEIGHT_HALF = (camera_height / 2)
+
+// camera offsets
+if (camera_width > room_width)
+{
+    camera_x = -((camera_width - room_width) / 2);
+}
+
+if (camera_height > room_height)
+{
+    camera_y = -((camera_height - room_height) / 2);
+}
 
 // create the camera
 camera = camera_create();
-    
+global.CAMERA = camera;
+
 // update camera properties
 camera_set_view_pos(camera, camera_x, camera_y);
 camera_set_view_size(camera, camera_width, camera_height);
@@ -365,98 +284,22 @@ view_set_yport(view_index, 0);
 
 
 /**
- * Presets
+ * Create Entities
  *
  */
 
-if (false)
-{
-    sim_x = 27 * global.TILE_SIZE;
-    sim_y = 13 * global.TILE_SIZE;
-    move_angle = -10;
-    move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 22);
-    camera_y = (global.TILE_SIZE * 5);
-    camera_set_view_pos(camera, camera_x, camera_y);
-}
+/*
+var pos_x = (room_width / 2);
+var pos_y = (room_height / 2);
 
-if (false)
+for (var i = 0; i < 50; i++)
 {
-    sim_x = 5 * global.TILE_SIZE;
-    sim_y = 5 * global.TILE_SIZE;
-    move_angle = -45;
-    move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 0);
-    camera_y = (global.TILE_SIZE * 0);
-    camera_set_view_pos(camera, camera_x, camera_y);
+    instance_create_layer(pos_x, pos_y, instances_layer_id, obj_simulation_16_entity);
 }
+*/
 
-if (false)
-{
-    sim_x = 15 * global.TILE_SIZE;
-    sim_y = 5 * global.TILE_SIZE;
-    move_angle = -45;
-    move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 10);
-    camera_y = (global.TILE_SIZE * -2);
-    camera_set_view_pos(camera, camera_x, camera_y);
-}
+var pos_x = (room_width / 2);
+var pos_y = (room_height / 2);
+var _player = instance_create_layer(pos_x, pos_y, instances_layer_id, obj_simulation_16_entity);
+//camera_set_view_target(camera, _player);
 
-if (true)
-{
-    sim_x = 27 * global.TILE_SIZE;
-    sim_y = 4 * global.TILE_SIZE;
-    move_angle = -10;
-    move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 22);
-    camera_y = (global.TILE_SIZE * -4);
-    camera_set_view_pos(camera, camera_x, camera_y);
-}
-
-if (false)
-{
-    sim_x = -5 * global.TILE_SIZE;
-    sim_y = 5 * global.TILE_SIZE + 5;
-    move_angle = -180;
-    move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * -12);
-    camera_y = (global.TILE_SIZE * 0);
-    camera_set_view_pos(camera, camera_x, camera_y);
-}
-
-if (false)
-{
-    sim_x = -5 * global.TILE_SIZE;
-    sim_y = 5 * global.TILE_SIZE;
-    move_angle = -405;
-    move_angle = -45;
-    move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * -12);
-    camera_y = (global.TILE_SIZE * 0);
-    camera_set_view_pos(camera, camera_x, camera_y);
-}
-
-if (false)
-{
-    sim_x = 26 * global.TILE_SIZE + 4;
-    sim_y = 24 * global.TILE_SIZE + 5;
-    move_angle = 315;
-    move_distance = 20;//40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 20);
-    camera_y = (global.TILE_SIZE * 17);
-    camera_set_view_pos(camera, camera_x, camera_y);
-}
