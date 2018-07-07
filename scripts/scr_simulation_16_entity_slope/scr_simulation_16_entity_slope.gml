@@ -263,77 +263,72 @@ if (_tile_intercept)
     raycast_slope_x = _xx - _offset_x;
     raycast_slope_y = _yy - _offset_y;
     
-    if (true)
+    // find the distance from the starting point to where the collision occurred
+    var _distance = point_distance(_start_x, _start_y, _xx, _yy);
+        
+    // if the distance to the intercept point does not exceede the maximum target distance
+    if (_distance < _ray_target)
     {
-        // find the distance from the starting point to where the collision occurred
-        var _distance = point_distance(_start_x, _start_y, _xx, _yy);
-        
-        // if the distance to the intercept point does not exceede the maximum target distance
-        if (_distance < _ray_target)
+        if (_move_h == 0)
         {
-            if (_move_h == 0)
-            {
-                // redirect the movement along the slope
-                raycast_slope_move_h = 0;
-                raycast_slope_move_v = 0;
-            }
-            else
-            {
-                /** /
-                // redirect the movement along the slope
-                raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
-                //raycast_slope_move_v = (_ray_target - _distance) * _tile_sine * -1;
-                raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _b2) - _yy;
-                /**/
-                
-                /**/
-                var _tile_sine = 0;
-                
-                switch (_tile_at_point)
-                {
-                    // 45 degress
-                    case global.TILE_SOLID_45_SE: // ◢
-                    case global.TILE_SOLID_45_NW: // ◤
-                        if (_move_h > 0) _tile_sine =  0.70710678118;
-                        if (_move_h < 0) _tile_sine = -0.70710678118;
-                        break;
-                        
-                    case global.TILE_SOLID_45_SW: // ◣
-                    case global.TILE_SOLID_45_NE: // ◥
-                        if (_move_h > 0) _tile_sine = -0.70710678118;
-                        if (_move_h < 0) _tile_sine =  0.70710678118;
-                        break;
-                        
-                    // 22.5 degress
-                    case global.TILE_SOLID_22_SE_1: // ◢
-                    case global.TILE_SOLID_22_SE_2: // ◢
-                    case global.TILE_SOLID_22_NW_1: // ◤
-                    case global.TILE_SOLID_22_NW_2: // ◤
-                        if (_move_h > 0) _tile_sine =  0.38268343236;
-                        if (_move_h < 0) _tile_sine = -0.38268343236;
-                        break;
-                        
-                    case global.TILE_SOLID_22_SW_1: // ◣
-                    case global.TILE_SOLID_22_SW_2: // ◣
-                    case global.TILE_SOLID_22_NE_1: // ◥
-                    case global.TILE_SOLID_22_NE_2: // ◥
-                        if (_move_h > 0) _tile_sine = -0.38268343236;
-                        if (_move_h < 0) _tile_sine =  0.38268343236;
-                        break;
-                }
-                scr_output(_tile_sine);
-                // redirect the movement along the slope
-                raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
-                raycast_slope_move_v = (_ray_target - _distance) * _tile_sine * -1;
-                /**/
-            }
-            return true;
+            // redirect the movement along the slope
+            raycast_slope_move_h = 0;
+            raycast_slope_move_v = 0;
         }
-        
+        else
+        {
+            /** /
+            // redirect the movement along the slope
+            raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
+            //raycast_slope_move_v = (_ray_target - _distance) * _tile_sine * -1;
+            raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _b2) - _yy;
+            /**/
+                
+            /**/
+            var _tile_sine = 0;
+                
+            switch (_tile_at_point)
+            {
+                // 45 degress
+                case global.TILE_SOLID_45_SE: // ◢
+                case global.TILE_SOLID_45_NW: // ◤
+                    if (_move_h > 0) _tile_sine =  0.70710678118;
+                    if (_move_h < 0) _tile_sine = -0.70710678118;
+                    break;
+                        
+                case global.TILE_SOLID_45_SW: // ◣
+                case global.TILE_SOLID_45_NE: // ◥
+                    if (_move_h > 0) _tile_sine = -0.70710678118;
+                    if (_move_h < 0) _tile_sine =  0.70710678118;
+                    break;
+                        
+                // 22.5 degress
+                case global.TILE_SOLID_22_SE_1: // ◢
+                case global.TILE_SOLID_22_SE_2: // ◢
+                case global.TILE_SOLID_22_NW_1: // ◤
+                case global.TILE_SOLID_22_NW_2: // ◤
+                    if (_move_h > 0) _tile_sine =  0.38268343236;
+                    if (_move_h < 0) _tile_sine = -0.38268343236;
+                    break;
+                        
+                case global.TILE_SOLID_22_SW_1: // ◣
+                case global.TILE_SOLID_22_SW_2: // ◣
+                case global.TILE_SOLID_22_NE_1: // ◥
+                case global.TILE_SOLID_22_NE_2: // ◥
+                    if (_move_h > 0) _tile_sine = -0.38268343236;
+                    if (_move_h < 0) _tile_sine =  0.38268343236;
+                    break;
+            }
+                
+            // redirect the movement along the slope
+            raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
+            raycast_slope_move_v = (_ray_target - _distance) * _tile_sine * -1;
+            /**/
+        }
+        return true;
     }
     
-    if (false)
-    {
+    /*
         var _distance_h = point_distance(_xx, 0, _start_x + _move_h, 0);
     
         // redirect the movement along the slope
@@ -341,7 +336,7 @@ if (_tile_intercept)
         raycast_slope_move_v = _distance_h * sin(_radians) * -1;
         
         return true;
-    }
+    */
     
 }
 

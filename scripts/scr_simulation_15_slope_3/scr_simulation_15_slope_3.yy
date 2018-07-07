@@ -1,8 +1,8 @@
 {
-    "id": "c7b7317c-c8b4-4bb6-9a43-99f6742b6fb9",
+    "id": "01e294ba-f418-48d2-b0df-ff01ab7bc10e",
     "modelName": "GMScript",
     "mvc": "1.0",
-    "name": "scr_simulation_15_slope_2",
+    "name": "scr_simulation_15_slope_3",
     "IsCompatibility": false,
     "IsDnD": false
 }

@@ -408,7 +408,7 @@ if (false)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (true)
+if (false)
 {
     sim_x = 27 * global.TILE_SIZE;
     sim_y = 4 * global.TILE_SIZE;
@@ -448,12 +448,12 @@ if (false)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (false)
+if (true)
 {
-    sim_x = 26 * global.TILE_SIZE + 4;
-    sim_y = 24 * global.TILE_SIZE + 5;
+    sim_x = 26 * global.TILE_SIZE;
+    sim_y = 25 * global.TILE_SIZE;
     move_angle = 315;
-    move_distance = 20;//40;
+    move_distance = 40;
     
     // update the camera position
     camera_x = (global.TILE_SIZE * 20);

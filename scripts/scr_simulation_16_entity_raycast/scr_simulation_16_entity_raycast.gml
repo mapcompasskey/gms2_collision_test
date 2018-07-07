@@ -219,8 +219,6 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 raycast_collision_slope = false;
                 
                 // if a sloped tile, and a point on the slope was found
-                //if (scr_simulation_16_entity_slope(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
-                //if (scr_simulation_16_entity_slope_2(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
                 if (script_execute(_slope_collision_script, _tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
                 {
                     // update collision states
@@ -359,8 +357,6 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 raycast_collision_slope = false;
                 
                 // if a sloped tile, and a point on the slope was found
-                //if (scr_simulation_16_entity_slope(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
-                //if (scr_simulation_16_entity_slope_2(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
                 if (script_execute(_slope_collision_script, _tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
                 {
                     // update collision states

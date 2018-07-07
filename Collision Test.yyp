@@ -42,7 +42,7 @@
             "Key": "01e294ba-f418-48d2-b0df-ff01ab7bc10e",
             "Value": {
                 "id": "013ccdad-2977-4132-8d43-4a335f5d15d7",
-                "resourcePath": "scripts\\scr_simulation_15_slope_2\\scr_simulation_15_slope_2.yy",
+                "resourcePath": "scripts\\scr_simulation_15_slope_3\\scr_simulation_15_slope_3.yy",
                 "resourceType": "GMScript"
             }
         },
@@ -1319,6 +1319,14 @@
             }
         },
         {
+            "Key": "c585c7a5-3a3d-453e-a6c3-05a1cf61c465",
+            "Value": {
+                "id": "c3005442-2e77-4832-8c1f-ef987b9efacd",
+                "resourcePath": "scripts\\scr_simulation_15_slope\\scr_simulation_15_slope.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "c5bb1d4f-c9f7-40b0-a579-5fbea0c01e4d",
             "Value": {
                 "id": "ee9c03d6-9cdf-4ad1-891a-8edd3d62c560",
@@ -1370,7 +1378,7 @@
             "Key": "c7b7317c-c8b4-4bb6-9a43-99f6742b6fb9",
             "Value": {
                 "id": "5e56c1da-c276-4f64-bb50-c30da35eb873",
-                "resourcePath": "scripts\\scr_simulation_15_slope\\scr_simulation_15_slope.yy",
+                "resourcePath": "scripts\\scr_simulation_15_slope_2\\scr_simulation_15_slope_2.yy",
                 "resourceType": "GMScript"
             }
         },
@@ -1715,6 +1723,7 @@
         "b3aee0ed-1ddb-451d-9637-b3576bd4fda6",
         "3259db86-a85f-4b5a-8e11-abfd710bafc1",
         "5b110177-b635-45d0-a439-c2d82d22f3d3",
+        "c585c7a5-3a3d-453e-a6c3-05a1cf61c465",
         "c7b7317c-c8b4-4bb6-9a43-99f6742b6fb9",
         "01e294ba-f418-48d2-b0df-ff01ab7bc10e",
         "1630801c-646e-4766-a010-b8c374e0b7d9",

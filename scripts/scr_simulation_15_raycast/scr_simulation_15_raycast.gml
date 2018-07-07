@@ -33,6 +33,9 @@ var _collision_v = false;
 var _collision_tilemap = collision_tilemap;
 var _tile_size = global.TILE_SIZE;
 
+var _slope_collision_script = scr_simulation_15_slope;
+//var _slope_collision_script = scr_simulation_15_slope_2;
+
 
 /**
  * Find the X and Y Offsets
@@ -281,7 +284,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 raycast_collision_slope = false;
                 
                 // if a sloped tile, and a point on the slope was found
-                if (scr_simulation_15_slope(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
+                //if (scr_simulation_15_slope(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
+                if (script_execute(_slope_collision_script, _tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
                 {
                     // update collision states
                     raycast_collision_slope = true;
@@ -434,6 +438,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                         ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
                     }
                     
+                    break;
                 }
             }
             
@@ -446,7 +451,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 raycast_collision_slope = false;
                 
                 // if a sloped tile, and a point on the slope was found
-                if (scr_simulation_15_slope(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
+                //if (scr_simulation_15_slope(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
+                if (script_execute(_slope_collision_script, _tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
                 {
                     // update collision states
                     raycast_collision_slope = true;
