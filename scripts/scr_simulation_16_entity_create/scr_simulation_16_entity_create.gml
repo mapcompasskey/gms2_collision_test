@@ -47,7 +47,7 @@ tick = 0;
 
 // movement values
 speed_h = 50;
-speed_v = 50;
+speed_v = 30;
 
 velocity_x = 0;
 velocity_y = 0;
@@ -91,6 +91,9 @@ raycast_slope_move_v = 0;
 raycast_collision_h = false;
 raycast_collision_v = false;
 raycast_collision_slope = false;
+
+output_raycast_slope_x = 0;
+output_raycast_slope_y = 0;
 
 // drawing
 // the_sprite = spr_simulation_15px;

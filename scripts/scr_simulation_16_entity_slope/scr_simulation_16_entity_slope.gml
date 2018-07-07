@@ -98,139 +98,252 @@ _start_y += _offset_y;
 
 
 /**
- * Determine the Side of the Tile
- *
- * The "sign of the determinant" is used to determine if the starting and ending points are on the open side of the sloped tile.
- * The ray only need to be redirected if the starting point is on the open side of the tile and the ending point is on the solid side.
- *
- * d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
- */
-
-// get the value that represents the side that is "open space'
-var _tile_determinant = tile_definitions[_tile_at_point, 8];
-
-// find the side of the tile the starting point is on
-var _start_determinant = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
-
-scr_output(string_format(_start_determinant,10,10));
-
-//var _remainder_v_x = (_step_v_x mod _tile_size);
-//if (_remainder_v_x < 0.0001) _step_v_x = floor(_step_v_x);
-//if (_tile_size - _remainder_v_x < 0.0001) _step_v_x = ceil(_step_v_x);
-if (_start_determinant < 0.01 && _start_determinant > -0.01)
-{
-    _start_determinant = 0;
-}
-
-// if the starting point is not on the line
-if (_start_determinant != 0)
-{
-    // if the starting point is not on the open side of the tile
-    if (sign(_start_determinant) != _tile_determinant)
-    {
-        return false;
-    }
-}
-
-// find the side of the tile the end point is on
-var _end_determinant = (((_start_x + _move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
-
-// if the end point is on the open side of the tile
-if (sign(_end_determinant) == _tile_determinant)
-{
-    return false;
-}
-
-
-/**
  * Find the Point of Intersection
  *
- * The following equation to find the intersection of two lines segments was taken from the following page.
- * https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
  */
 
-var _s1_x = _move_h;
-var _s1_y = _move_v;
+var _x1 = _start_x;
+var _y1 = _start_y;
 
-var _s2_x = _tile_x2 - _tile_x1;
-var _s2_y = _tile_y2 - _tile_y1;
+var _x2 = _tile_x1;
+var _y2 = _tile_y1;
 
-// if the denominator equals zero the lines would be collinear or never intersect
-var _denominator = (-_s2_x * _s1_y + _s1_x * _s2_y);
-if (_denominator == 0)
+var _m1 = _ray_gradient;
+var _m2 = _tile_gradient;
+
+
+var _xx, _yy;
+var _tile_intercept = false;
+
+// find the y-intercepts for both lines
+var _b1 = _y1 - (_m1 * _x1);
+var _b2 = _y2 - (_m2 * _x2);
+
+// if a vertical line
+// *the ray's x position is always x1, so just plug x into the second line's equation and solve for y
+if (_move_h == 0)
 {
-    return false;
+    _xx = _x1;
+    _yy = (_m2 * _xx) + _b2;
 }
 
-var _s = (-_s1_y * (_start_x - _tile_x1) + _s1_x * (_start_y - _tile_y1)) / _denominator;
-if (_s < 0 || _s > 1)
+// else, if a horizontal line
+// *the ray's y position is always y1, so just plug y into the second line's equation and solve for x
+else if (_move_v == 0)
 {
-    return false;
+    _yy = _y1;
+    _xx = (_yy - _b2) / _m2;
 }
 
-var _t = ( _s2_x * (_start_y - _tile_y1) - _s2_y * (_start_x - _tile_x1)) / _denominator;
-if (_t < 0 || _t > 1)
+// else, both lines are sloped
+else
 {
-    return false;
+    // find the point where the lines intersect
+    _xx = (_b2 - _b1) / (_m1 - _m2);
+    _yy = (_m1 * _xx) + _b1;
 }
 
-// get the point of intersection
-var _xx = _start_x + (_t * _s1_x);
-var _yy = _start_y + (_t * _s1_y);
-
-// update the point of collision (minus the offsets)
-raycast_slope_x = _xx - _offset_x;
-raycast_slope_y = _yy - _offset_y;
-
-
-/**
- * Redirect the Ray
- *
- * In a side scroller we only care about the horizontal movement along the slope.
- * So only the remaining horizontal distance needs to be redirected.
- *
- * Just use the line equation to find the y position after getting the x position.
- * Using the sin of the angle to find it never seems to put it in the right place.
- *
- * point: (x, y)
- * m: slope
- * b: y-intercept
- * line equation: y = mx + b
- * y-intercept: b = y - mx
- */
-
-// get the y-intercepts of the tile
-var _tile_y_intercept = _tile_y1 - (_tile_gradient * _tile_x1);
-
-// get the remaining horizontal distance from the point of collision
-var _distance_h = point_distance(_xx, 0, _start_x + _move_h, 0);
-
-// update the movement to rediret along the slope
-raycast_slope_move_h = _distance_h * _tile_cosine;
-raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
-
-//raycast_slope_move_v -= 1;
+// if colliding with the exact corner of the sloped tile
+// *it could end up calculating into another cell when dividing by the _cell_size
+if ((_xx == _tile_x1 && _yy == _tile_y1) || _xx == _tile_x2 && _yy == _tile_y2)
+{
+    _tile_intercept = true;
+}
+else
+{
+    // find the cell where the lines intercept
+    var _cell_x2 = floor(_xx / _tile_size);
+    var _cell_y2 = floor(_yy / _tile_size);
+    
+    // if the lines intercept within the cell that called this script
+    if (_cell_x2 == _cell_x && _cell_y2 == _cell_y)
+    {
+        _tile_intercept = true;
+    }
+    
+}
 
 /*
-// step the distance of a tile across the x-axis, following the slope of the line
-// check each tile until the current tile no longer equals the current one from this test
-if (true)
+// if the lines intercepted within the sloped tile
+if (_tile_intercept)
 {
-    var _step_xx = _xx;
-    var _step_yy = _yy;
-    var _distance_delta = _tile_size;
-    var _distance_target = point_distance(_xx, 0, _xx + raycast_slope_move_h, 0);
+    raycast_slope_x = _xx - _offset_x;
+    raycast_slope_y = _yy - _offset_y;
     
-    while (_distance_delta < _distance_target)
+    var degrees = 0;
+    switch (_tile_at_point)
     {
-        _step_xx = _step_xx + (_tile_size * sign(_move_h))
-        _step_yy = (_tile_gradient * _step_xx) + _tile_y_intercept;
+        // 45 degress
+        case global.TILE_SOLID_45_SE: // ◢
+            degrees = 45;
+            break;
+            
+        case global.TILE_SOLID_45_SW: // ◣
+            degrees = -45;
+            break;
+            
+        case global.TILE_SOLID_45_NE: // ◥
+            degrees = -45;
+            break;
+            
+        case global.TILE_SOLID_45_NW: // ◤
+            degrees = 45;
+            break;
+            
+        // 22 degress
+        case global.TILE_SOLID_22_SE_1: // ◢
+        case global.TILE_SOLID_22_SE_2: // ◢
+            degrees = 22;
+            break;
+            
+        case global.TILE_SOLID_22_SW_1: // ◣
+        case global.TILE_SOLID_22_SW_2: // ◣
+            degrees = -22;
+            break;
+            
+        case global.TILE_SOLID_22_NE_1: // ◥
+        case global.TILE_SOLID_22_NE_2: // ◥
+            degrees = -22;
+            break;
+            
+        case global.TILE_SOLID_22_NW_1: // ◤
+        case global.TILE_SOLID_22_NW_2: // ◤
+            degrees = 22;
+            break;
+    }
+    
+    if (_move_h < 0) {
+        degrees -= 180;
+    }
+    var _radians = degtorad(degrees);
+    
+    if (true)
+    {
+        // find the distance from the starting point to where the collision occurred
+        var _distance = point_distance(_start_x, _start_y, _xx, _yy);
         
-        _distance_delta += _tile_size;
+        // if the distance to the intercept point does not exceede the maximum target distance
+        if (_distance < _ray_target)
+        {
+            if (_move_h == 0)
+            {
+                // redirect the movement along the slope
+                raycast_slope_move_h = 0;
+                raycast_slope_move_v = 0;
+            }
+            else
+            {
+                // redirect the movement along the slope
+                raycast_slope_move_h = (_ray_target - _distance) * cos(_radians);
+                //raycast_slope_move_v = (_ray_target - _distance) * sin(_radians) * -1;
+                raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _b2) - _yy;
+            }
+            return true;
+        }
+        
+    }
+    
+    if (false)
+    {
+        var _distance_h = point_distance(_xx, 0, _start_x + _move_h, 0);
+    
+        // redirect the movement along the slope
+        raycast_slope_move_h = _distance_h * cos(_radians);
+        raycast_slope_move_v = _distance_h * sin(_radians) * -1;
+        
+        return true;
     }
     
 }
 */
 
-return true;
+// if the lines intercepted within the sloped tile
+if (_tile_intercept)
+{
+    raycast_slope_x = _xx - _offset_x;
+    raycast_slope_y = _yy - _offset_y;
+    
+    if (true)
+    {
+        // find the distance from the starting point to where the collision occurred
+        var _distance = point_distance(_start_x, _start_y, _xx, _yy);
+        
+        // if the distance to the intercept point does not exceede the maximum target distance
+        if (_distance < _ray_target)
+        {
+            if (_move_h == 0)
+            {
+                // redirect the movement along the slope
+                raycast_slope_move_h = 0;
+                raycast_slope_move_v = 0;
+            }
+            else
+            {
+                /** /
+                // redirect the movement along the slope
+                raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
+                //raycast_slope_move_v = (_ray_target - _distance) * _tile_sine * -1;
+                raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _b2) - _yy;
+                /**/
+                
+                /**/
+                var _tile_sine = 0;
+                
+                switch (_tile_at_point)
+                {
+                    // 45 degress
+                    case global.TILE_SOLID_45_SE: // ◢
+                    case global.TILE_SOLID_45_NW: // ◤
+                        if (_move_h > 0) _tile_sine =  0.70710678118;
+                        if (_move_h < 0) _tile_sine = -0.70710678118;
+                        break;
+                        
+                    case global.TILE_SOLID_45_SW: // ◣
+                    case global.TILE_SOLID_45_NE: // ◥
+                        if (_move_h > 0) _tile_sine = -0.70710678118;
+                        if (_move_h < 0) _tile_sine =  0.70710678118;
+                        break;
+                        
+                    // 22.5 degress
+                    case global.TILE_SOLID_22_SE_1: // ◢
+                    case global.TILE_SOLID_22_SE_2: // ◢
+                    case global.TILE_SOLID_22_NW_1: // ◤
+                    case global.TILE_SOLID_22_NW_2: // ◤
+                        if (_move_h > 0) _tile_sine =  0.38268343236;
+                        if (_move_h < 0) _tile_sine = -0.38268343236;
+                        break;
+                        
+                    case global.TILE_SOLID_22_SW_1: // ◣
+                    case global.TILE_SOLID_22_SW_2: // ◣
+                    case global.TILE_SOLID_22_NE_1: // ◥
+                    case global.TILE_SOLID_22_NE_2: // ◥
+                        if (_move_h > 0) _tile_sine = -0.38268343236;
+                        if (_move_h < 0) _tile_sine =  0.38268343236;
+                        break;
+                }
+                scr_output(_tile_sine);
+                // redirect the movement along the slope
+                raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
+                raycast_slope_move_v = (_ray_target - _distance) * _tile_sine * -1;
+                /**/
+            }
+            return true;
+        }
+        
+    }
+    
+    if (false)
+    {
+        var _distance_h = point_distance(_xx, 0, _start_x + _move_h, 0);
+    
+        // redirect the movement along the slope
+        raycast_slope_move_h = _distance_h * cos(_radians);
+        raycast_slope_move_v = _distance_h * sin(_radians) * -1;
+        
+        return true;
+    }
+    
+}
+
+return false;
 

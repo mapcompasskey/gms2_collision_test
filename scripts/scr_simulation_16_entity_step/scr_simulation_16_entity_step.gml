@@ -116,13 +116,14 @@ raycast_collision_slope = false;
  *
  */
 
+/*
 new_move_h = 0;
 new_move_v = 0;
 
 raycast_next_move_h = move_h;
 raycast_next_move_v = move_v;
 
-for (var i = 0; i < 3; i++)
+for (var i = 0; i < 2; i++)
 {
     // update the starting position to the point of collision
     raycast_x = x + new_move_h;
@@ -163,6 +164,75 @@ for (var i = 0; i < 3; i++)
     //if (collision_h && collision_v) break;
     
 }
+*/
+
+
+
+
+raycast_x = x;
+raycast_y = y;
+
+raycast_move_h = move_h;
+raycast_move_v = move_v;
+
+raycast_collision_h = false;
+raycast_collision_v = false;
+raycast_collision_slope = false;
+
+scr_simulation_16_entity_raycast();
+
+// update the new movement values
+new_move_h = raycast_move_h;
+new_move_v = raycast_move_v;
+
+// merge collision states
+collision_h = raycast_collision_h;
+collision_v = raycast_collision_v;
+
+if (raycast_collision_slope)
+{
+    collision_h = false;
+    collision_v = true;
+    
+    raycast_x = x + new_move_h;
+    raycast_y = y + new_move_v;
+    
+    raycast_move_h = raycast_next_move_h;
+    raycast_move_v = raycast_next_move_v;
+    
+    raycast_collision_h = false;
+    raycast_collision_v = false;
+    //raycast_collision_slope = false;
+    
+    scr_simulation_16_entity_raycast();
+    
+    new_move_h += raycast_move_h;
+    new_move_v += raycast_move_v;
+}
+else if (collision_h && collision_v)
+{
+    // done
+}
+else if (collision_h || collision_v)
+{
+    raycast_x = x + new_move_h;
+    raycast_y = y + new_move_v;
+    
+    raycast_move_h = raycast_next_move_h;
+    raycast_move_v = raycast_next_move_v;
+    
+    raycast_collision_h = false;
+    raycast_collision_v = false;
+    raycast_collision_slope = false;
+    
+    scr_simulation_16_entity_raycast();
+    
+    new_move_h += raycast_move_h;
+    new_move_v += raycast_move_v;
+}
+
+
+
 
 if (has_gravity)
 {

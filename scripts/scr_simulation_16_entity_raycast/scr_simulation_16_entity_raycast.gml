@@ -33,6 +33,10 @@ var _collision_v = false;
 var _collision_tilemap = collision_tilemap;
 var _tile_size = tile_size;
 
+var _slope_collision_script = scr_simulation_16_entity_slope;
+//var _slope_collision_script = scr_simulation_16_entity_slope_2;
+//var _slope_collision_script = scr_simulation_16_entity_slope_3;
+
 
 /**
  * Find the X and Y Offsets
@@ -215,12 +219,17 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 raycast_collision_slope = false;
                 
                 // if a sloped tile, and a point on the slope was found
-                if (scr_simulation_16_entity_slope(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
+                //if (scr_simulation_16_entity_slope(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
+                //if (scr_simulation_16_entity_slope_2(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
+                if (script_execute(_slope_collision_script, _tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
                 {
                     // update collision states
                     raycast_collision_slope = true;
                     _collision_h = true;
                     _test_h = false;
+                    
+                    _collision_v = true;
+                    _test_v = false;
                     
                     // update the movement values
                     _move_h = raycast_slope_x - _start_x;
@@ -336,6 +345,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     
                     // update the collision target distance
                     _ray_target_v = point_distance(0, 0, _move_h, _move_v);
+                    
+                    break;
                 }
             }
             
@@ -348,12 +359,17 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 raycast_collision_slope = false;
                 
                 // if a sloped tile, and a point on the slope was found
-                if (scr_simulation_16_entity_slope(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
+                //if (scr_simulation_16_entity_slope(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
+                //if (scr_simulation_16_entity_slope_2(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
+                if (script_execute(_slope_collision_script, _tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
                 {
                     // update collision states
                     raycast_collision_slope = true;
                     _collision_v = true;
                     _test_v = false;
+                    
+                    _collision_h = true;
+                    _test_h = false;
                     
                     // update the movement values
                     _move_h = raycast_slope_x - _start_x;

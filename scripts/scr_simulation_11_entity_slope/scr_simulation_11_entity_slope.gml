@@ -343,7 +343,7 @@ if (_tile_intercept)
         
         // redirect the movement along the slope
         raycast_slope_move_h = (_ray_target - _distance) * cos(_radians);
-        raycast_slope_move_v = (_ray_target - _distance) * sin(_radians) * -1;
+        raycast_slope_move_v = (_ray_target - _distance) * sin(_radians) * -1
         
         return true;
     }

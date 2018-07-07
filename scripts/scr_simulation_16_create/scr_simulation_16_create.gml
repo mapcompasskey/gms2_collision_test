@@ -71,7 +71,7 @@ global.TILE_SOLID_22_NW_2 = 42; // ◤
 
 var _idx = 0;
 var _cosine_45 = 0.70710678118; // cosine(45 degrees)
-var _cosine_22 = 0.92387953251; // cosine(22 degrees)
+var _cosine_22 = 0.92387953251; // cosine(22.5 degrees)
 
 // 45 degrees, south east ◢
 _idx = global.TILE_SOLID_45_SE;
@@ -225,6 +225,11 @@ global.TILE_DEFINITIONS[_idx, 8] = -1;
 
 // instances layer
 instances_layer_id = layer_get_id("Instances");
+
+// frames per second
+fps_timer = 0;
+low_fps = 0;
+high_fps = 0;
 
 
 /**

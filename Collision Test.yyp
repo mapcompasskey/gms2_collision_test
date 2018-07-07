@@ -319,6 +319,14 @@
             }
         },
         {
+            "Key": "209bb5b4-431c-4b80-8aec-4e3ee47f1945",
+            "Value": {
+                "id": "51e787ed-246d-42a3-972a-0624bed88d23",
+                "resourcePath": "scripts\\scr_simulation_16_draw_gui\\scr_simulation_16_draw_gui.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "253ed899-b2e5-4cbc-9c6f-4ef2c274826b",
             "Value": {
                 "id": "c2bfa80e-5d5f-4742-809d-99102c6092eb",
@@ -1023,6 +1031,14 @@
             }
         },
         {
+            "Key": "9fa0e44c-d8f7-458c-bc99-d7715a5d1767",
+            "Value": {
+                "id": "9f960075-ef6c-42d6-8807-f30b067881fe",
+                "resourcePath": "scripts\\scr_simulation_16_entity_slope_2\\scr_simulation_16_entity_slope_2.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "9fa98fcb-3fc7-4efb-a80c-8ecffc93bafe",
             "Value": {
                 "id": "a6245ad4-a3eb-4e8c-ae6b-4df839b576f1",
@@ -1291,6 +1307,14 @@
             "Value": {
                 "id": "a13bb6a8-356b-4039-91e9-c9af801ee350",
                 "resourcePath": "scripts\\scr_simulation_12_raycast_3\\scr_simulation_12_raycast_3.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
+            "Key": "c4836fe8-6bee-4bd3-bd6d-de8edc530673",
+            "Value": {
+                "id": "1ba8adfc-5493-4b0e-886e-bd3922835137",
+                "resourcePath": "scripts\\scr_simulation_16_entity_slope_3\\scr_simulation_16_entity_slope_3.yy",
                 "resourceType": "GMScript"
             }
         },
@@ -1697,10 +1721,13 @@
         "3d447d83-5291-4aff-9eed-a7ae7caacd4a",
         "680024df-1893-451c-a92a-6552007ee771",
         "994e4748-688c-49ff-9870-26ab4fa570cf",
+        "209bb5b4-431c-4b80-8aec-4e3ee47f1945",
         "0d90aaa5-c2cf-49eb-a06b-f9040ac1db84",
         "c27edba2-dc0e-4f9a-bbe6-7c6950d70d41",
         "182b5239-5fe0-4b5f-8ccc-f7c3e13d2b39",
-        "01ac5d38-02ca-4942-be65-16ad8a675467"
+        "01ac5d38-02ca-4942-be65-16ad8a675467",
+        "9fa0e44c-d8f7-458c-bc99-d7715a5d1767",
+        "c4836fe8-6bee-4bd3-bd6d-de8edc530673"
     ],
     "tutorial": ""
 }
