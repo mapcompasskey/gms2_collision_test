@@ -109,49 +109,61 @@ _start_y += _offset_y;
 
 
 /**
+ * Determine the Side of the Tile
+ *
+ * The "sign of the determinant" is used to determine if the starting and ending points are on the open side of the sloped tile.
+ * The ray only need to be redirected if the starting point is on the open side of the tile and the ending point is on the solid side.
+ *
+ * d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
+ */
+
+// get the value that represents the side that is "open space"
+var _tile_determinant = tile_definitions[_tile_at_point, 8];
+
+// find the side of the tile the end point is on
+var _end_determinant = (((_start_x + _move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
+
+// if the end point is on the open side of the tile
+if (sign(_end_determinant) == _tile_determinant)
+{
+    return false;
+}
+
+
+/**
  * Find the Point of Intersection
  *
  */
-
-var _x1 = _start_x;
-var _y1 = _start_y;
-
-var _x2 = _tile_x1;
-var _y2 = _tile_y1;
-
-var _m1 = _ray_gradient;
-var _m2 = _tile_gradient;
-
 
 var _xx, _yy;
 var _tile_intercept = false;
 
 // find the y-intercepts for both lines
-var _b1 = _y1 - (_m1 * _x1);
-var _b2 = _y2 - (_m2 * _x2);
+var _ray_y_intercept = _start_y - (_ray_gradient * _start_x);
+var _tile_y_intercept = _tile_y1 - (_tile_gradient * _tile_x1);
 
 // if a vertical line
 // *the ray's x position is always x1, so just plug x into the second line's equation and solve for y
 if (_move_h == 0)
 {
-    _xx = _x1;
-    _yy = (_m2 * _xx) + _b2;
+    _xx = _start_x;
+    _yy = (_tile_gradient * _xx) + _tile_y_intercept;
 }
 
 // else, if a horizontal line
 // *the ray's y position is always y1, so just plug y into the second line's equation and solve for x
 else if (_move_v == 0)
 {
-    _yy = _y1;
-    _xx = (_yy - _b2) / _m2;
+    _yy = _start_y;
+    _xx = (_yy - _tile_y_intercept) / _tile_gradient;
 }
 
 // else, both lines are sloped
 else
 {
     // find the point where the lines intersect
-    _xx = (_b2 - _b1) / (_m1 - _m2);
-    _yy = (_m1 * _xx) + _b1;
+    _xx = (_tile_y_intercept - _ray_y_intercept) / (_ray_gradient - _tile_gradient);
+    _yy = (_ray_gradient * _xx) + _ray_y_intercept;
 }
 
 // if colliding with the exact corner of the sloped tile
@@ -200,7 +212,7 @@ if (_tile_intercept)
             /**/
             // redirect the movement along the slope
             raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
-            raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _b2) - _yy;
+            raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
             
             // saved the gradient of this tile
             collision_slope_tile_gradient = _tile_gradient;

@@ -33,8 +33,8 @@ var _collision_v = false;
 var _collision_tilemap = collision_tilemap;
 var _tile_size = global.TILE_SIZE;
 
-var _slope_collision_script = scr_simulation_15_slope;
-//var _slope_collision_script = scr_simulation_15_slope_2;
+//var _slope_collision_script = scr_simulation_15_slope;
+var _slope_collision_script = scr_simulation_15_slope_2;
 
 
 /**

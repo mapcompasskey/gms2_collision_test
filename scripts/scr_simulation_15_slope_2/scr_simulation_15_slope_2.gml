@@ -78,7 +78,13 @@ var _tile_gradient = tile_definitions[_tile_at_point, 0];
 // or they are the same line and touch infinity (collinear)
 if (_ray_gradient == _tile_gradient)
 {
-    return;
+    return false;
+}
+
+// if this tile's slope is the same as one already collided against
+if (_tile_gradient == collision_slope_tile_gradient)
+{
+    return false;
 }
 
 // get the value for the cosine of the angle
@@ -213,6 +219,9 @@ var _distance_h = point_distance(_xx, 0, _start_x + _move_h, 0);
 raycast_slope_move_h = _distance_h * _tile_cosine;
 raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
 
+// saved the gradient of this tile
+collision_slope_tile_gradient = _tile_gradient;
+
 // step the distance of a tile across the x-axis, following the slope of the line
 // check each tile until the current tile no longer equals the current one from this test
 if (true)
@@ -240,95 +249,4 @@ if (true)
 
 
 return true;
-
-
-/**
- * Find the Point of Intersection
- *
- * /
-
-var _x1 = _start_x;
-var _y1 = _start_y;
-
-var _x2 = _tile_x1;
-var _y2 = _tile_y1;
-
-var _m1 = _ray_gradient;
-var _m2 = _tile_gradient;
-
-
-var _xx, _yy;
-var _tile_intercept = false;
-
-// find the y-intercepts for both lines
-var _b1 = _y1 - (_m1 * _x1);
-var _b2 = _y2 - (_m2 * _x2);
-
-// if a vertical line
-// *the ray's x position is always x1, so just plug x into the second line's equation and solve for y
-if (_move_h == 0)
-{
-    _xx = _x1;
-    _yy = (_m2 * _xx) + _b2;
-}
-
-// else, if a horizontal line
-// *the ray's y position is always y1, so just plug y into the second line's equation and solve for x
-else if (_move_v == 0)
-{
-    _yy = _y1;
-    _xx = (_yy - _b2) / _m2;
-}
-
-// else, both lines are sloped
-else
-{
-    // find the point where the lines intersect
-    _xx = (_b2 - _b1) / (_m1 - _m2);
-    _yy = (_m1 * _xx) + _b1;
-}
-
-// if colliding with the exact corner of the sloped tile
-// *it could end up calculating into another cell when dividing by the _cell_size
-if ((_xx == _tile_x1 && _yy == _tile_y1) || _xx == _tile_x2 && _yy == _tile_y2)
-{
-    _tile_intercept = true;
-}
-else
-{
-    // find the cell where the lines intercept
-    var _cell_x2 = floor(_xx / _tile_size);
-    var _cell_y2 = floor(_yy / _tile_size);
-    
-    // if the lines intercept within the cell that called this script
-    if (_cell_x2 == _cell_x && _cell_y2 == _cell_y)
-    {
-        _tile_intercept = true;
-    }
-    
-}
-
-// if the lines intercepted within the sloped tile
-if (_tile_intercept)
-{
-    // find the distance from the starting point to where the collision occurred
-    var _distance = point_distance(_start_x, _start_y, _xx, _yy);
-    
-    // if the distance to the intercept point does not exceede the maximum target distance
-    if (_distance < _ray_target)
-    {
-        raycast_slope_x = _xx - _offset_x;
-        raycast_slope_y = _yy - _offset_y;
-        
-        var _radians = degtorad(45);
-        
-        // redirect the movement along the slope
-        raycast_slope_move_h = (_ray_target - _distance) * cos(_radians);
-        raycast_slope_move_v = (_ray_target - _distance) * sin(_radians) * -1;
-        
-        return true;
-    }
-}
-
-return false;
 
