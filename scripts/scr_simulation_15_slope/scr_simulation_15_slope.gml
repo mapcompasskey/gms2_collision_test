@@ -78,7 +78,13 @@ var _tile_gradient = tile_definitions[_tile_at_point, 0];
 // or they are the same line and touch infinity (collinear)
 if (_ray_gradient == _tile_gradient)
 {
-    return;
+    return false;
+}
+
+// if this tile's slope is the same as one already collided against
+if (_tile_gradient == collision_slope_tile_gradient)
+{
+    return false;
 }
 
 // get the value for the cosine of the angle
@@ -195,6 +201,9 @@ if (_tile_intercept)
             // redirect the movement along the slope
             raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
             raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _b2) - _yy;
+            
+            // saved the gradient of this tile
+            collision_slope_tile_gradient = _tile_gradient;
             
             //raycast_slope_move_v -= 0.1;
             /**/

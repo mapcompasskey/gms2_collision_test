@@ -262,8 +262,10 @@ new_move_v = 0;
 collision_h = false;
 collision_v = false
 collision_slope = false;
-collision_slope_falling = false;
-collision_slope_rising = false;
+//collision_slope_falling = false;
+//collision_slope_rising = false;
+//collision_slope_tile = 0;
+collision_slope_tile_gradient = 0;
 
 // raycasting starting position
 raycast_x = 0;

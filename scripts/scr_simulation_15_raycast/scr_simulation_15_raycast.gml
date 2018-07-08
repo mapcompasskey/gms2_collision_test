@@ -281,16 +281,19 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 // prepare the slope collision test
                 raycast_slope_x = _step_h_x;
                 raycast_slope_y = _step_h_y;
-                raycast_collision_slope = false;
+                //raycast_collision_slope = false;
                 
                 // if a sloped tile, and a point on the slope was found
-                //if (scr_simulation_15_slope(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
-                if (script_execute(_slope_collision_script, _tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
+                if (scr_simulation_15_slope(_tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
+                //if (script_execute(_slope_collision_script, _tile_at_point, _tile_x, _tile_step_y, _gradient, _ray_target_h))
                 {
                     // update collision states
-                    raycast_collision_slope = true;
+                    //raycast_collision_slope = true;
                     _collision_h = true;
                     _test_h = false;
+                    
+                    collision_slope = true
+                    //collision_slope_tile = _tile_at_point;
                     
                     // update the movement values
                     _move_h = raycast_slope_x - _start_x;
@@ -448,16 +451,19 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 // prepare the slope collision test
                 raycast_slope_x = _step_v_x;
                 raycast_slope_y = _step_v_y;
-                raycast_collision_slope = false;
+                //raycast_collision_slope = false;
                 
                 // if a sloped tile, and a point on the slope was found
-                //if (scr_simulation_15_slope(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
-                if (script_execute(_slope_collision_script, _tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
+                if (scr_simulation_15_slope(_tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
+                //if (script_execute(_slope_collision_script, _tile_at_point, _tile_step_x, _tile_y, _gradient, _ray_target_v))
                 {
                     // update collision states
-                    raycast_collision_slope = true;
+                    //raycast_collision_slope = true;
                     _collision_v = true;
                     _test_v = false;
+                    
+                    collision_slope = true
+                    //collision_slope_tile = _tile_at_point;
                     
                     // update the movement values
                     _move_h = raycast_slope_x - _start_x;

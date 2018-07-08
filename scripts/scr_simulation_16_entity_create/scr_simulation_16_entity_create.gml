@@ -45,8 +45,11 @@ collision_tilemap = global.COLLISION_TILEMAP;
 // delta time
 tick = 0;
 
+inst_x = x;
+inst_y = y;
+
 // movement values
-speed_h = 50;
+speed_h = 100;
 speed_v = 30;
 
 velocity_x = 0;
@@ -67,8 +70,9 @@ new_move_v = 0;
 collision_h = false;
 collision_v = false
 collision_slope = false;
-collision_slope_falling = false;
-collision_slope_rising = false;
+//collision_slope_falling = false;
+//collision_slope_rising = false;
+collision_slope_tile_gradient = 0;
 
 // raycasting starting position
 raycast_x = 0;

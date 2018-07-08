@@ -87,8 +87,9 @@ new_move_v = move_v;
 collision_h = false;
 collision_v = false;
 collision_slope = false;
-collision_slope_falling = false;
-collision_slope_rising = false;
+//collision_slope_falling = false;
+//collision_slope_rising = false;
+collision_slope_tile_gradient = 0;
 
 /*
 raycast_x = x;
@@ -167,10 +168,13 @@ for (var i = 0; i < 2; i++)
 */
 
 
+//inst_x = x;
+//inst_y = y;
 
-
-raycast_x = x;
-raycast_y = y;
+//raycast_x = x;
+//raycast_y = y;
+raycast_x = inst_x;
+raycast_y = inst_y;
 
 raycast_move_h = move_h;
 raycast_move_v = move_v;
@@ -194,8 +198,10 @@ if (raycast_collision_slope)
     collision_h = false;
     collision_v = true;
     
-    raycast_x = x + new_move_h;
-    raycast_y = y + new_move_v;
+    //raycast_x = x + new_move_h;
+    //raycast_y = y + new_move_v;
+    raycast_x = inst_x + new_move_h;
+    raycast_y = inst_y + new_move_v;
     
     raycast_move_h = raycast_next_move_h;
     raycast_move_v = raycast_next_move_v;
@@ -215,8 +221,10 @@ else if (collision_h && collision_v)
 }
 else if (collision_h || collision_v)
 {
-    raycast_x = x + new_move_h;
-    raycast_y = y + new_move_v;
+    //raycast_x = x + new_move_h;
+    //raycast_y = y + new_move_v;
+    raycast_x = inst_x + new_move_h;
+    raycast_y = inst_y + new_move_v;
     
     raycast_move_h = raycast_next_move_h;
     raycast_move_v = raycast_next_move_v;
@@ -230,9 +238,6 @@ else if (collision_h || collision_v)
     new_move_h += raycast_move_h;
     new_move_v += raycast_move_v;
 }
-
-
-
 
 if (has_gravity)
 {
@@ -375,8 +380,13 @@ if (has_gravity)
  *
  */
 
-x += new_move_h;
-y += new_move_v;
+inst_x += new_move_h;
+inst_y += new_move_v;
+x = inst_x;
+y = inst_y;
+
+//x += new_move_h;
+//y += new_move_v;
 
 // update the camera's position
 camera_set_view_pos(camera, x - camera_width_half, y - camera_height_half);

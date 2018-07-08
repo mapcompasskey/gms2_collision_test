@@ -76,6 +76,12 @@ if (_ray_gradient == _tile_gradient)
     return;
 }
 
+// if this tile's slope is the same as one already collided against
+if (_tile_gradient == collision_slope_tile_gradient)
+{
+    return false;
+}
+
 // get the value for the cosine of the angle
 var _tile_cosine  = tile_definitions[_tile_at_point, 1] * (_move_h > 0 ? 1 : -1);
 
@@ -260,9 +266,6 @@ if (_tile_intercept)
 // if the lines intercepted within the sloped tile
 if (_tile_intercept)
 {
-    raycast_slope_x = _xx - _offset_x;
-    raycast_slope_y = _yy - _offset_y;
-    
     // find the distance from the starting point to where the collision occurred
     var _distance = point_distance(_start_x, _start_y, _xx, _yy);
         
@@ -271,20 +274,27 @@ if (_tile_intercept)
     {
         if (_move_h == 0)
         {
+            raycast_slope_x = _xx - _offset_x;
+            raycast_slope_y = _yy - _offset_y;
+            
             // redirect the movement along the slope
             raycast_slope_move_h = 0;
             raycast_slope_move_v = 0;
+            
+            return true;
         }
         else
         {
-            /** /
+            raycast_slope_x = _xx - _offset_x;
+            raycast_slope_y = _yy - _offset_y;
+            
+            /**/
             // redirect the movement along the slope
             raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
-            //raycast_slope_move_v = (_ray_target - _distance) * _tile_sine * -1;
             raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _b2) - _yy;
             /**/
-                
-            /**/
+            
+            /** /
             var _tile_sine = 0;
                 
             switch (_tile_at_point)
@@ -319,13 +329,18 @@ if (_tile_intercept)
                     if (_move_h < 0) _tile_sine =  0.38268343236;
                     break;
             }
-                
+            
             // redirect the movement along the slope
             raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
             raycast_slope_move_v = (_ray_target - _distance) * _tile_sine * -1;
             /**/
+            
+            // saved the gradient of this tile
+            collision_slope_tile_gradient = _tile_gradient;
+            
+            return true;
         }
-        return true;
+        
     }
     
     /*

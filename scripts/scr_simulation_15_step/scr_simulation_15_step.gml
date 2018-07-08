@@ -285,8 +285,10 @@ move_v = move_distance * sin(move_angle_rads) * -1;
 collision_h = false;
 collision_v = false;
 collision_slope = false;
-collision_slope_falling = false;
-collision_slope_rising = false;
+//collision_slope_falling = false;
+//collision_slope_rising = false;
+//collision_slope_tile = 0;
+collision_slope_tile_gradient = 0;
 
 
 /**
@@ -354,6 +356,8 @@ raycast_collision_h = false;
 raycast_collision_v = false;
 raycast_collision_slope = false;
 
+scr_output(" ");
+scr_output("Test 1");
 scr_simulation_15_raycast();
 
 // update the new movement values
@@ -364,13 +368,41 @@ new_move_v = raycast_move_v;
 collision_h = raycast_collision_h;
 collision_v = raycast_collision_v;
 
+//while ()
+//{
+    if (collision_slope)
+    {
+        collision_h = false;
+        collision_v = true;
+        collision_slope = false;
+        
+        raycast_x += new_move_h;
+        raycast_y += new_move_v;
+    
+        raycast_move_h = raycast_next_move_h;
+        raycast_move_v = raycast_next_move_v;
+    
+        raycast_collision_h = false;
+        raycast_collision_v = false;
+        //raycast_collision_slope = false;
+
+        scr_output(" ");
+        scr_output("Test 2");
+        scr_simulation_15_raycast();
+    
+        new_move_h += raycast_move_h;
+        new_move_v += raycast_move_v;
+    }
+//}
+
+/*
 if (raycast_collision_slope)
 {
     collision_h = false;
     collision_v = true;
     
-    raycast_x = sim_x + new_move_h;
-    raycast_y = sim_y + new_move_v;
+    raycast_x += new_move_h;
+    raycast_y += new_move_v;
     
     raycast_move_h = raycast_next_move_h;
     raycast_move_v = raycast_next_move_v;
@@ -378,7 +410,9 @@ if (raycast_collision_slope)
     raycast_collision_h = false;
     raycast_collision_v = false;
     //raycast_collision_slope = false;
-    
+
+    scr_output(" ");
+    scr_output("Test 2");
     scr_simulation_15_raycast();
     
     new_move_h += raycast_move_h;
@@ -405,6 +439,7 @@ else if (collision_h || collision_v)
     new_move_h += raycast_move_h;
     new_move_v += raycast_move_v;
 }
+*/
 
 
 /**
