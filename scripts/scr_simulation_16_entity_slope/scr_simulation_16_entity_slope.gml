@@ -112,6 +112,100 @@ _start_y += _offset_y;
  * d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
  */
 
+/** /
+// get the value that represents the side that is "open space'
+var _tile_determinant = tile_definitions[_tile_at_point, 8];
+
+// find the side of the tile the starting point is on
+var _start_determinant = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
+
+// if the starting point is not on the line
+if (_start_determinant != 0)
+{
+    // if the starting point is not on the open side of the tile
+    if (sign(_start_determinant) != _tile_determinant)
+    {
+        return false;
+    }
+}
+
+// find the side of the tile the end point is on
+var _end_determinant = (((_start_x + _move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
+
+// if the end point is on the open side of the tile
+if (sign(_end_determinant) == _tile_determinant)
+{
+    return false;
+}
+/**/
+
+/**/
+var _sticky = false;
+switch (_tile_at_point)
+{
+    // 45 degress
+    case global.TILE_SOLID_45_SE: // ◢
+    case global.TILE_SOLID_45_NW: // ◤
+        if (_move_h > 0) _sticky = false;
+        if (_move_h < 0) _sticky = true;
+        break;
+                        
+    case global.TILE_SOLID_45_SW: // ◣
+    case global.TILE_SOLID_45_NE: // ◥
+        if (_move_h > 0) _sticky = true
+        if (_move_h < 0) _sticky = false;
+        break;
+                        
+    // 22.5 degress
+    case global.TILE_SOLID_22_SE_1: // ◢
+    case global.TILE_SOLID_22_SE_2: // ◢
+    case global.TILE_SOLID_22_NW_1: // ◤
+    case global.TILE_SOLID_22_NW_2: // ◤
+        if (_move_h > 0) _sticky = false;
+        if (_move_h < 0) _sticky = true;
+        break;
+                        
+    case global.TILE_SOLID_22_SW_1: // ◣
+    case global.TILE_SOLID_22_SW_2: // ◣
+    case global.TILE_SOLID_22_NE_1: // ◥
+    case global.TILE_SOLID_22_NE_2: // ◥
+        if (_move_h > 0) _sticky = true;
+        if (_move_h < 0) _sticky = false;
+        break;
+}
+
+// get the value that represents the side that is "open space'
+var _tile_determinant = tile_definitions[_tile_at_point, 8];
+/*
+// find the side of the tile the starting point is on
+var _start_determinant = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
+
+// if the starting point is not on the line
+if (_start_determinant != 0)
+{
+    // if the starting point is not on the open side of the tile
+    if (sign(_start_determinant) != _tile_determinant)
+    {
+        return false;
+    }
+}
+*/
+// if not sticking to the tile
+// *this will allow the entity to jump away from the slope while rising with it
+if ( ! _sticky)
+{
+    // find the side of the tile the end point is on
+    var _end_determinant = (((_start_x + _move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
+    
+    // if the end point is on the open side of the tile
+    if (sign(_end_determinant) == _tile_determinant)
+    {
+        return false;
+    }
+}
+/**/
+
+/** /
 var _sticky = false;
 switch (_tile_at_point)
 {
@@ -162,6 +256,7 @@ if ( ! _sticky)
         return false;
     }
 }
+/**/
 
 
 /**
