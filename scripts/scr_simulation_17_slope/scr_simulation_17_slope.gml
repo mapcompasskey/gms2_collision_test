@@ -12,14 +12,14 @@
  */
 
 // if there is no movement
-if (raycast_move_h == 0 && raycast_move_v == 0)
+if (raycast_new_move_h == 0 && raycast_new_move_v == 0)
 {
     return false;
 }
 
 // get values
-var _move_h = raycast_move_h;
-var _move_v = raycast_move_v;
+var _new_move_h = raycast_new_move_h;
+var _new_move_v = raycast_new_move_v;
 var _tile_at_point = argument0;
 var _cell_x = argument1;
 var _cell_y = argument2;
@@ -27,8 +27,10 @@ var _ray_gradient = argument3;
 var _ray_target = argument4;
 
 // the starting position (always the top left corner of the bounding box)
-var _start_x = raycast_x + sprite_bbox_left;
-var _start_y = raycast_y + sprite_bbox_top;
+//var _start_x = raycast_x + sprite_bbox_left;
+//var _start_y = raycast_y + sprite_bbox_top;
+var _start_x = raycast_slope_x;
+var _start_y = raycast_slope_y;
 
 // get the size of the bounding box
 var _height = bbox_height + 1;
@@ -88,7 +90,7 @@ if (_tile_gradient == collision_slope_tile_gradient)
 }
 
 // get the value for the cosine of the angle
-var _tile_cosine  = tile_definitions[_tile_at_point, 1] * (_move_h > 0 ? 1 : -1);
+var _tile_cosine  = tile_definitions[_tile_at_point, 1] * (_new_move_h > 0 ? 1 : -1);
 
 // get the first (left most) point on the tile
 var _tile_x1 = (_cell_x + tile_definitions[_tile_at_point, 2]) * _tile_size;
@@ -104,8 +106,8 @@ var _offset_x = tile_definitions[_tile_at_point, 6] * _width;
 var _offset_y = tile_definitions[_tile_at_point, 7] * _height;
 
 // update the starting position
-_start_x += _offset_x;
-_start_y += _offset_y;
+//_start_x += _offset_x;
+//_start_y += _offset_y;
 
 
 /**
@@ -134,7 +136,7 @@ if (_start_determinant != 0)
 }
 
 // find the side of the tile the end point is on
-var _end_determinant = (((_start_x + _move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
+var _end_determinant = (((_start_x + _new_move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _new_move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
 
 // if the end point is on the open side of the tile
 if (sign(_end_determinant) == _tile_determinant)
@@ -157,7 +159,7 @@ var _tile_y_intercept = _tile_y1 - (_tile_gradient * _tile_x1);
 
 // if a vertical line
 // *the ray's x position is always x1, so just plug x into the second line's equation and solve for y
-if (_move_h == 0)
+if (_new_move_h == 0)
 {
     _xx = _start_x;
     _yy = (_tile_gradient * _xx) + _tile_y_intercept;
@@ -165,7 +167,7 @@ if (_move_h == 0)
 
 // else, if a horizontal line
 // *the ray's y position is always y1, so just plug y into the second line's equation and solve for x
-else if (_move_v == 0)
+else if (_new_move_v == 0)
 {
     _yy = _start_y;
     _xx = (_yy - _tile_y_intercept) / _tile_gradient;
@@ -208,10 +210,12 @@ if (_tile_intercept)
     // if the distance to the intercept point does not exceede the maximum target distance
     if (_distance < _ray_target)
     {
-        raycast_slope_x = _xx - _offset_x;
-        raycast_slope_y = _yy - _offset_y;
+        //raycast_slope_x = _xx - _offset_x;
+        //raycast_slope_y = _yy - _offset_y;
+        raycast_slope_x = _xx;// - _offset_x;
+        raycast_slope_y = _yy;// - _offset_y;
         
-        if (_move_h == 0)
+        if (_new_move_h == 0)
         {
             // redirect the movement along the slope
             raycast_slope_move_h = 0;

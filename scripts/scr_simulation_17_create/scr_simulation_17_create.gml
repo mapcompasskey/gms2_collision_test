@@ -259,11 +259,10 @@ global.TILE_DEFINITIONS[_idx, 8] = -1;
 // time delta
 tick = 0;
 
-// collision tilemap
+// collision tilemap information
 collision_tilemap_layer_id = layer_get_id("Collision_Tiles");
 collision_tilemap = layer_tilemap_get_id(collision_tilemap_layer_id);
-
-// collision tile information
+tile_size = global.TILE_SIZE;
 tile_definitions = global.TILE_DEFINITIONS;
 
 // starting position
@@ -287,30 +286,30 @@ collision_v = false
 collision_slope = false;
 collision_slope_tile_gradient = 0;
 
-// raycasting collision variables
+// raycasting collision values
 raycast_x = 0;
 raycast_y = 0;
-raycast_move_h = 0;
-raycast_move_v = 0;
-raycast_next_move_h = 0;
-raycast_next_move_v = 0;
+raycast_new_move_h = 0;
+raycast_new_move_v = 0;
+raycast_redirect_move_h = 0;
+raycast_redirect_move_v = 0;
+raycast_collision_h = false;
+raycast_collision_v = false;
+raycast_collision_slope = false;
 
-// slope collision variables
+// slope collision values
 raycast_slope_x = 0;
 raycast_slope_y = 0;
 raycast_slope_move_h = 0;
 raycast_slope_move_v = 0;
-raycast_collision_h = false;
-raycast_collision_v = false;
-raycast_collision_slope = false;
 
 // simulation states
 update_simulation = true;
 is_rotating = false;
 
 // drawing
-//sprite_index = spr_simulation_15px;
-//mask_index = spr_simulation_15px;
+sprite_index = spr_simulation_15px;
+mask_index = spr_simulation_15px;
 
 //sprite_index = spr_simulation_10px;
 //mask_index = spr_simulation_10px;
@@ -451,7 +450,7 @@ if (false)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (false)
+if (true)
 {
     inst_x = -5 * global.TILE_SIZE;
     inst_y = 5 * global.TILE_SIZE;
@@ -465,7 +464,7 @@ if (false)
     camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (true)
+if (false)
 {
     inst_x = 26 * global.TILE_SIZE;
     inst_y = 25 * global.TILE_SIZE;
@@ -475,5 +474,18 @@ if (true)
     // update the camera position
     camera_x = (global.TILE_SIZE * 20);
     camera_y = (global.TILE_SIZE * 17);
+    camera_set_view_pos(camera, camera_x, camera_y);
+}
+
+if (true)
+{
+    inst_x = 10 * global.TILE_SIZE;
+    inst_y =  6 * global.TILE_SIZE + 4
+    move_angle = 315;
+    move_distance = 40;
+    
+    // update the camera position
+    camera_x = (global.TILE_SIZE * 5);
+    camera_y = (global.TILE_SIZE * 0);
     camera_set_view_pos(camera, camera_x, camera_y);
 }
