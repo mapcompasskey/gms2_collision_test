@@ -1,4 +1,4 @@
-/// @function scr_simulation_17_raycast();
+/// @function scr_simulation_17_raycast_3();
 
 
 /**
@@ -94,7 +94,6 @@ var _cell_max_x, _cell_max_y;
 var _step_cell_x, _step_cell_y;
 var _size_delta, _size_target;
 var _remainder_x, _remainder_y;
-var _collision_x, _collision_y;
 
 // the test that can be performed
 var _test_h = (raycast_new_move_h == 0 ? false : true);
@@ -145,7 +144,8 @@ var _tile_v_one_way = (raycast_new_move_v > 0 ? global.TILE_SOLID_SOUTH : global
  * Move towards each horizontal and veritcal intersection until a tile is found.
  * At each intersection, test the width or height of the bounding box, checking for tiles along the opposite intersection.
  */
-
+scr_output("---");
+scr_output("---");
 // while test can be performed and no collisions have occurred
 while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
 {
@@ -153,9 +153,6 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
     // (and either can't test veritcal collision or the horizontal test is closer than the vertical test)
     if (_test_h && ( ! _test_v || _ray_delta_h <= _ray_delta_v))
     {
-        _collision_x = 0;
-        _collision_y = 0;
-        
         // find the cell the first point occupies
         // *the first point is always the top of the bounding box
         _cell_x = floor(_step_h_x / _tile_size);
@@ -235,6 +232,85 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 continue;
             }
             
+            /** /
+            // if moving up and this is the first collision step
+            // or if moving down and this is the last collision step
+            //if ((_new_move_v < 0 && _step_cell_y == _cell_y) || (_new_move_v > 0 && _step_cell_y == (_cell_max_y - 1)))
+            if ((_new_move_v < 0 && _step_cell_y == _cell_y) || (_new_move_v > 0 && _step_cell_y == _cell_max_y))
+            {
+                // if colliding with the exact corner of a tile
+                // *because horizontal collision is checked first, this would result in a horizontal collision
+                // *but if the path above (or below) the tile is clear horizontally, then it should be resolved as a vertical collision and continue horizontally
+                if (_tile_at_point == _tile_solid && _remainder_x == 0 && _remainder_y == 0 && _new_move_v != 0)
+                {
+                    if (_capture_step_special_tiles)
+                    {
+                        var _list = ds_list_create();
+                        ds_list_add(_list, (_cell_x * _tile_size), ((_step_cell_y + (_new_move_v > 0 ? -1 : 1)) * _tile_size), global.COLLISION_HV_COLOR);
+                        ds_list_add(global.DRAW_CELLS, _list);
+                        ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                    }
+                    
+                    // shift the current tile one above or below depending on the vertical movement
+                    _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _step_cell_y + (_new_move_v > 0 ? -1 : 1)) & tile_index_mask;
+                    
+                    // if this tile is empty space
+                    if (_tile_at_point == 0)
+                    {
+                        continue;
+                    }
+                    
+                }
+            }
+            /**/
+            
+            /*
+            if (_tile_at_point == _tile_solid)
+            {
+                if (_new_move_v < 0 && _step_cell_y == _cell_y && _remainder_x == 0 && _remainder_y == 0)
+                {
+                    if (_capture_step_special_tiles)
+                    {
+                        var _list = ds_list_create();
+                        ds_list_add(_list, (_cell_x * _tile_size), ((_step_cell_y + 1) * _tile_size), global.COLLISION_HV_COLOR);
+                        ds_list_add(global.DRAW_CELLS, _list);
+                        ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                    }
+                    
+                    // shift the current tile one above or below depending on the vertical movement
+                    var _tile_at_point_2 = tilemap_get(_collision_tilemap, _cell_x, (_step_cell_y + 1)) & tile_index_mask;
+                    
+                    // if this tile is empty space
+                    if (_tile_at_point_2 == 0)
+                    {
+                        continue;
+                    }
+                    
+                }
+                
+                if (_new_move_v > 0 && _step_cell_y == _cell_max_y && _remainder_x == 0 && (_remainder_y + _height) == _tile_size)
+                {
+                    if (_capture_step_special_tiles)
+                    {
+                        var _list = ds_list_create();
+                        ds_list_add(_list, (_cell_x * _tile_size), ((_step_cell_y - 1) * _tile_size), global.COLLISION_HV_COLOR);
+                        ds_list_add(global.DRAW_CELLS, _list);
+                        ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                    }
+                    
+                    // shift the current tile one above or below depending on the vertical movement
+                    var _tile_at_point_2 = tilemap_get(_collision_tilemap, _cell_x, (_step_cell_y - 1)) & tile_index_mask;
+                    
+                    // if this tile is empty space
+                    if (_tile_at_point_2 == 0)
+                    {
+                        continue;
+                    }
+                    
+                }
+            }
+            */
+            
             // if colliding with a solid tile or one that is solid from this side
             if (_tile_at_point == _tile_solid || _tile_at_point == _tile_h_one_way)
             {
@@ -245,63 +321,70 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _ray_target_h = point_distance((_start_x + _offset_x), _start_y, _step_h_x, _step_h_y);
                     if (_ray_target_h <= _ray_target_v)
                     {
+                        // update collision states
+                        _test_h = false;
                         _collision_h = true;
-                        _collision_x = _step_h_x;
-                        _collision_y = _step_h_y;
+                        
+                        // update the movement values
+                        _new_move_h = _step_h_x - (_start_x + _offset_x);
+                        _new_move_v = _step_h_y - _start_y;
+                        
+                        // update the redirection values for another test
+                        _redirect_move_h = 0;
+                        _redirect_move_v = (raycast_new_move_v - _new_move_v);
+                        
+                        if (_capture_collision_tiles)
+                        {
+                            // capture the tile
+                            var _list = ds_list_create();
+                            ds_list_add(_list, (_cell_x * _tile_size), (_step_cell_y * _tile_size), global.COLLISION_H_COLOR);
+                            ds_list_add(global.DRAW_CELLS, _list);
+                            ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                        }
+                        
                         break;
                     }
                     
                 }
             }
             
-        }
-        
-        // if a collision occurred this step
-        // *special case where a horizontal collision occurred against the exact corner of a tile below the lowest point, but the space above that tile is clear
-        // *also can occur when the horizontal collision occurred against the exact corner of a tile above the highest point, but the space below that tile is clear
-        // *the instance should vertically collide against the corner of the tile, then continue straight horizontally in the direction it was traveling
-        if (_collision_h)
-        {
-            var _step_h_y2 = _step_h_y + _offset_y;
-            if ((_step_h_y2 mod _tile_size) == 0)
+            /*
+            // if colliding with another type of tile
+            if (_tile_at_point != _tile_solid && _tile_at_point != _tile_h_one_way)
             {
-                var _cell_y2 = floor(_step_h_y2 / _tile_size) + (_new_move_v > 0 ? -1 : 0);
-                var _tile_at_point_2 = tilemap_get(_collision_tilemap, _cell_x, _cell_y2) & tile_index_mask;
+                // prepare the slope collision test
+                raycast_slope_x = _step_h_x;
+                raycast_slope_y = _step_h_y;
                 
-                // if the tile is not solid tile or one that is solid from this side
-                if (_tile_at_point_2 != _tile_solid && _tile_at_point_2 != _tile_h_one_way)
+                // if colliding with a sloped tile, and a point on the slope is found
+                if (script_execute(script_slope_collision, _tile_at_point, _cell_x, _step_cell_y, _gradient, _ray_target_h))
                 {
-                    _collision_h = false;
+                    // update collision states
+                    _collision_slope = true;
+                    _collision_h = true;
+                    _test_h = false;
                     
-                    if (_capture_step_special_tiles)
-                    {
-                        var _list = ds_list_create();
-                        ds_list_add(_list, (_cell_x * _tile_size), (_cell_y2 * _tile_size), global.COLLISION_HV_COLOR);
-                        ds_list_add(global.DRAW_CELLS, _list);
-                        ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
-                    }
+                    // update the movement values
+                    _new_move_h = raycast_slope_x - _start_x;
+                    _new_move_v = raycast_slope_y - _start_y;
                     
+                    // update the movement values for another test
+                    _redirect_move_h = raycast_slope_move_h;
+                    _redirect_move_v = raycast_slope_move_v;
+                    
+                    // update the collision target distance
+                    _ray_target_h = point_distance(0, 0, _new_move_h, _new_move_v);
+                    
+                    break;
                 }
-                    
+                
             }
+            */
+            
         }
         
-        // if a collision occurred during this step
-        if (_collision_h)
-        {
-            _test_h = false;
-            
-            // update the movement values
-            _new_move_h = _collision_x - (_start_x + _offset_x);
-            _new_move_v = _collision_y - _start_y;
-            
-            // update the redirection values for another test
-            _redirect_move_h = 0;
-            _redirect_move_v = (raycast_new_move_v - _new_move_v);
-        }
-        
-        // else, no collision occurred during this step
-        else
+        // if no collision occurred during this step
+        if (_collision_h == false)
         {
             // move to the next horizontal intersection
             _step_h_x = round((_cell_x + _tile_offset_x) * _tile_size);
@@ -332,9 +415,6 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
     // (and either can't test horizontal collision or the vertical test is closer than the horizontal test)
     else if  (_test_v && ( ! _test_h || _ray_delta_v <= _ray_delta_h))
     {
-        _collision_x = 0;
-        _collision_y = 0;
-        
         // find the cell the first point occupies
         // *the first point is always the left side of the bounding box
         _cell_x = floor(_step_v_x / _tile_size);
@@ -418,33 +498,70 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _ray_target_v = point_distance(_start_x, (_start_y + _offset_y), _step_v_x, _step_v_y);
                     if (_ray_target_v <= _ray_target_h)
                     {
+                        // update collision states
+                        _test_v = false;
                         _collision_v = true;
-                        _collision_x = _step_v_x;
-                        _collision_y = _step_v_y;
+                        
+                        // update the movement values
+                        _new_move_h = _step_v_x - _start_x;
+                        _new_move_v = _step_v_y - (_start_y + _offset_y);
+                        
+                        // update the redirection values for another test
+                        _redirect_move_h = (raycast_new_move_h - _new_move_h);
+                        _redirect_move_v = 0;
+                        
+                        if (_capture_collision_tiles)
+                        {
+                            // capture the tile
+                            var _list = ds_list_create();
+                            ds_list_add(_list, (_step_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_V_COLOR);
+                            ds_list_add(global.DRAW_CELLS, _list);
+                            ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                        }
+                    
                         break;
                     }
                     
                 }
             }
             
+            /*
+            // if colliding with another type of tile
+            if (_tile_at_point != _tile_solid && _tile_at_point != _tile_v_one_way)
+            {
+                // prepare the slope collision test
+                raycast_slope_x = _step_v_x;
+                raycast_slope_y = _step_v_y;
+                
+                // if a sloped tile, and a point on the slope was found
+                if (script_execute(script_slope_collision, _tile_at_point, _step_cell_x, _cell_y, _gradient, _ray_target_v))
+                {
+                    // update collision states
+                    _collision_slope = true;
+                    _collision_v = true;
+                    _test_v = false;
+                    
+                    // update the movement values
+                    _new_move_h = raycast_slope_x - _start_x;
+                    _new_move_v = raycast_slope_y - _start_y;
+                    
+                    // update the movement values for another test
+                    _redirect_move_h = raycast_slope_move_h;
+                    _redirect_move_v = raycast_slope_move_v;
+                    
+                    // update the collision target distance
+                    _ray_target_v = point_distance(0, 0, _new_move_h, _new_move_v);
+                    
+                    break;
+                }
+                
+            }
+            */
+            
         }
         
-        // if a collision occurred during this step
-        if (_collision_v)
-        {
-            _test_v = false;
-            
-            // update the movement values
-            _new_move_h = _step_v_x - _start_x;
-            _new_move_v = _step_v_y - (_start_y + _offset_y);
-            
-            // update the redirection values for another test
-            _redirect_move_h = (raycast_new_move_h - _new_move_h);
-            _redirect_move_v = 0;
-        }
-        
-        // else, no collision occurred during this step
-        else 
+        // if no collision occurred during this step
+        if (_collision_v == false)
         {
             // move to the next vertical intersection
             _step_v_y = round((_cell_y + _tile_offset_y) * _tile_size);
@@ -490,6 +607,10 @@ raycast_new_move_h = _new_move_h;
 raycast_new_move_v = _new_move_v;
 raycast_redirect_move_h = _redirect_move_h;
 raycast_redirect_move_v = _redirect_move_v;
+
+//raycast_move_distance_target = _ray_target;
+//var _ray_delta_h = raycast_move_distance_delta;
+//var _ray_delta_v = raycast_move_distance_delta;
 
 // update collision states
 raycast_collision_h = _collision_h;

@@ -279,6 +279,8 @@ move_h = 0;
 move_v = 0;
 new_move_h = 0;
 new_move_v = 0;
+move_distance_delta = 0;
+move_distance_target = 0;
 
 // collision states
 collision_h = false;
@@ -286,13 +288,15 @@ collision_v = false
 collision_slope = false;
 collision_slope_tile_gradient = 0;
 
-// raycasting collision values
+// raycasting movement values
 raycast_x = 0;
 raycast_y = 0;
 raycast_new_move_h = 0;
 raycast_new_move_v = 0;
 raycast_redirect_move_h = 0;
 raycast_redirect_move_v = 0;
+
+// raycasting movement states
 raycast_collision_h = false;
 raycast_collision_v = false;
 raycast_collision_slope = false;
@@ -308,8 +312,8 @@ update_simulation = true;
 is_rotating = false;
 
 // drawing
-sprite_index = spr_simulation_15px;
-mask_index = spr_simulation_15px;
+//sprite_index = spr_simulation_15px;
+//mask_index = spr_simulation_15px;
 
 //sprite_index = spr_simulation_10px;
 //mask_index = spr_simulation_10px;
@@ -349,8 +353,8 @@ window_width = window_get_width();
 window_height = window_get_height();
 
 // camera size
-camera_x = (global.TILE_SIZE * -2);
-camera_y = (global.TILE_SIZE * -4);
+camera_x = 0;
+camera_y = 0;
 camera_width = (window_width / view_scale);
 camera_height = (window_height / view_scale);
 
@@ -391,11 +395,14 @@ if (false)
     inst_y = 13 * global.TILE_SIZE;
     move_angle = -10;
     move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 22);
-    camera_y = (global.TILE_SIZE * 5);
-    camera_set_view_pos(camera, camera_x, camera_y);
+}
+
+if (true)
+{
+    inst_x =  5 * global.TILE_SIZE + 4;
+    inst_y = 20 * global.TILE_SIZE + 4;
+    move_angle = -45;
+    move_distance = 40;
 }
 
 if (false)
@@ -404,11 +411,6 @@ if (false)
     inst_y = 5 * global.TILE_SIZE;
     move_angle = -45;
     move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 0);
-    camera_y = (global.TILE_SIZE * 0);
-    camera_set_view_pos(camera, camera_x, camera_y);
 }
 
 if (false)
@@ -417,11 +419,6 @@ if (false)
     inst_y = 5 * global.TILE_SIZE;
     move_angle = -45;
     move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 10);
-    camera_y = (global.TILE_SIZE * -2);
-    camera_set_view_pos(camera, camera_x, camera_y);
 }
 
 if (false)
@@ -430,11 +427,6 @@ if (false)
     inst_y = 4 * global.TILE_SIZE;
     move_angle = -10;
     move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 22);
-    camera_y = (global.TILE_SIZE * -4);
-    camera_set_view_pos(camera, camera_x, camera_y);
 }
 
 if (false)
@@ -443,25 +435,15 @@ if (false)
     inst_y = 5 * global.TILE_SIZE + 5;
     move_angle = -180;
     move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * -12);
-    camera_y = (global.TILE_SIZE * 0);
-    camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (true)
+if (false)
 {
     inst_x = -5 * global.TILE_SIZE;
     inst_y = 5 * global.TILE_SIZE;
     move_angle = -405;
     move_angle = -45;
     move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * -12);
-    camera_y = (global.TILE_SIZE * 0);
-    camera_set_view_pos(camera, camera_x, camera_y);
 }
 
 if (false)
@@ -470,22 +452,21 @@ if (false)
     inst_y = 25 * global.TILE_SIZE;
     move_angle = 315;
     move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 20);
-    camera_y = (global.TILE_SIZE * 17);
-    camera_set_view_pos(camera, camera_x, camera_y);
 }
 
-if (true)
+if (false)
 {
     inst_x = 10 * global.TILE_SIZE;
     inst_y =  6 * global.TILE_SIZE + 4
     move_angle = 315;
     move_distance = 40;
-    
-    // update the camera position
-    camera_x = (global.TILE_SIZE * 5);
-    camera_y = (global.TILE_SIZE * 0);
-    camera_set_view_pos(camera, camera_x, camera_y);
 }
+
+// update the camera position
+camera_x = inst_x - (camera_width / 2);
+camera_y = inst_y - (camera_height / 2);
+camera_x = floor(camera_x / global.TILE_SIZE) * global.TILE_SIZE;
+camera_y = floor(camera_y / global.TILE_SIZE) * global.TILE_SIZE;
+camera_set_view_pos(camera, camera_x, camera_y);
+    
+    
