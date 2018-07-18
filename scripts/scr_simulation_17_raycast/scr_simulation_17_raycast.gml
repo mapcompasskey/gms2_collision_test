@@ -254,9 +254,11 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         // *if a horizontal collision occurred against the exact corner of a tile below the lowest point, but the space above that tile is clear
         // *or if a horizontal collision occurred against the exact corner of a tile above the highest point, but the space below that tile is clear
         // *the instance should vertically collide against the corner of the tile, then continue straight horizontally in the direction it was traveling since the space is clear
+        // *otherwise, its a horizontal collision, and if there are tiles directly above or below, it would also resolve a vertical collision, stopping the instance at that corner
         if (_collision_h)
         {
-            // get the highest or lowest point on the bounding box (depending on the vertical movement)
+            // get the highest or lowest point on the bounding box
+            // *depending on the vertical movement
             var _step_h_y2 = _step_h_y + _offset_y;
             
             // if the point is on a vertical intersection
@@ -268,6 +270,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                 // if this tile is not a solid tile or one that is solid from this side
                 if (_tile_at_point_2 != _tile_solid && _tile_at_point_2 != _tile_h_one_way)
                 {
+                    // ignore this collision and continue testing
                     _collision_h = false;
                     
                     if (_capture_step_special_tiles)
@@ -283,6 +286,39 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             }
             
         }
+        
+        /*
+        // if colliding with another type of tile
+        if (_tile_at_point != _tile_solid && _tile_at_point != _tile_h_one_way)
+        {
+            // prepare the slope collision test
+            raycast_slope_x = _step_h_x;
+            raycast_slope_y = _step_h_y;
+                
+            // if colliding with a sloped tile, and a point on the slope is found
+            if (script_execute(script_slope_collision, _tile_at_point, _cell_x, _step_cell_y, _gradient, _ray_target_h))
+            {
+                // update collision states
+                _collision_slope = true;
+                _collision_h = true;
+                _test_h = false;
+                    
+                // update the movement values
+                _new_move_h = raycast_slope_x - _start_x;
+                _new_move_v = raycast_slope_y - _start_y;
+                    
+                // update the movement values for another test
+                _redirect_move_h = raycast_slope_move_h;
+                _redirect_move_v = raycast_slope_move_v;
+                    
+                // update the collision target distance
+                _ray_target_h = point_distance(0, 0, _new_move_h, _new_move_v);
+                    
+                break;
+            }
+                
+        }
+        */
         
         // if a collision occurred during this step
         if (_collision_h)
@@ -426,6 +462,39 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             }
             
         }
+        
+        /*
+        // if colliding with another type of tile
+        if (_tile_at_point != _tile_solid && _tile_at_point != _tile_v_one_way)
+        {
+            // prepare the slope collision test
+            raycast_slope_x = _step_v_x;
+            raycast_slope_y = _step_v_y;
+                
+            // if a sloped tile, and a point on the slope was found
+            if (script_execute(script_slope_collision, _tile_at_point, _step_cell_x, _cell_y, _gradient, _ray_target_v))
+            {
+                // update collision states
+                _collision_slope = true;
+                _collision_v = true;
+                _test_v = false;
+                    
+                // update the movement values
+                _new_move_h = raycast_slope_x - _start_x;
+                _new_move_v = raycast_slope_y - _start_y;
+                    
+                // update the movement values for another test
+                _redirect_move_h = raycast_slope_move_h;
+                _redirect_move_v = raycast_slope_move_v;
+                    
+                // update the collision target distance
+                _ray_target_v = point_distance(0, 0, _new_move_h, _new_move_v);
+                    
+                break;
+            }
+                
+        }
+        */
         
         // if a collision occurred during this step
         if (_collision_v)
