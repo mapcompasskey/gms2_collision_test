@@ -1,4 +1,4 @@
-/// @function scr_simulation_17_create()
+/// @function scr_simulation_18_create()
 
 
 /**
@@ -6,10 +6,10 @@
  *
  */
 
-simulation_name = "Simulation 17";
-script_movement = scr_simulation_17_movement;
-script_raycast_collision = scr_simulation_17_raycast;
-script_slope_collision = scr_simulation_17_slope;
+simulation_name = "Simulation 18";
+script_movement = scr_simulation_18_movement;
+script_raycast_collision = scr_simulation_18_raycast;
+script_slope_collision = scr_simulation_18_slope;
 
 
 /**

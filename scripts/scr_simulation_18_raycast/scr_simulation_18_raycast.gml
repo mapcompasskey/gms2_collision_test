@@ -1,4 +1,4 @@
-/// @function scr_simulation_17_raycast_2();
+/// @function scr_simulation_18_raycast();
 
 
 /**
@@ -20,7 +20,9 @@ if (raycast_new_move_h == 0 && raycast_new_move_v == 0)
 {
     exit;
 }
-
+scr_output(" ");
+scr_output("raycast_new_move_h", raycast_new_move_h);
+scr_output("raycast_new_move_v", raycast_new_move_v);
 // starting position (always the top left corner of the bounding box)
 var _start_x = raycast_x + sprite_bbox_left;
 var _start_y = raycast_y + sprite_bbox_top;
@@ -35,7 +37,8 @@ var _redirect_move_v = 0;
 // collision states
 var _collision_h = false;
 var _collision_v = false;
-var _collision_slope = false;
+var _collision_slope_h = false;
+var _collision_slope_v = false;
 
 // tilemap layer and tile size
 var _collision_tilemap = collision_tilemap;
@@ -95,6 +98,7 @@ var _step_cell_x, _step_cell_y;
 var _size_delta, _size_target;
 var _remainder_x, _remainder_y;
 var _collision_x, _collision_y;
+var _collision_slope_move_h, _collision_slope_move_v;
 
 // the tests that can be performed
 var _test_h = (_new_move_h == 0 ? false : true);
@@ -154,6 +158,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
     {
         _collision_x = 0;
         _collision_y = 0;
+        _collision_slope_move_h = 0;
+        _collision_slope_move_v = 0;
         
         // find the cell the first point occupies
         // *the first point is always the top of the bounding box
@@ -239,6 +245,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     if (_ray_target_h <= _ray_target_v)
                     {
                         _collision_h = true;
+                        _collision_slope_h = false;
                         _collision_x = _step_h_x;
                         _collision_y = _step_h_y;
                         break;
@@ -255,7 +262,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         // *or if a horizontal collision occurred against the exact corner of a tile above the highest point, but the space below that tile is clear
         // *the instance should vertically collide against the corner of the tile, then continue straight horizontally in the direction it was traveling since the space is clear
         // *otherwise, its a horizontal collision, and if there are tiles directly above or below, it would also resolve a vertical collision, stopping the instance at that corner
-        if (_collision_h)
+        if (_collision_h && ! _collision_slope_h)
         {
             // get the highest or lowest point on the bounding box
             // *depending on the vertical movement
@@ -290,18 +297,87 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             
         }
         
+        // if no horizontal collision, check for slope collision
+        if ( ! _collision_h)
+        {
+            // check the tile at the top most point
+            _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
+            if (_tile_at_point != _tile_solid && _tile_at_point != _tile_h_one_way)
+            {
+                // prepare the slope collision test
+                raycast_slope_x = _step_h_x;
+                raycast_slope_y = _step_h_y;
+                
+                // if colliding with a sloped tile, and a point on the slope is found
+                if (script_execute(script_slope_collision, _tile_at_point, _cell_x, _cell_y, _gradient, _ray_target_h))
+                {
+                    //_ray_target_h = point_distance(0, 0, raycast_slope_move_h, raycast_slope_move_v);
+                    //if (_ray_target_h <= _ray_target_v)
+                    //{
+                        _collision_h = true;
+                        _collision_slope_h = true;
+                        _collision_x = raycast_slope_x;
+                        _collision_y = raycast_slope_y;
+                        _collision_slope_move_h = raycast_slope_move_h;
+                        _collision_slope_move_v = raycast_slope_move_v;
+                    //}
+                }
+            }
+            
+            if (_cell_max_y != _cell_y)
+            {
+                // check the tile at the bottom most point
+                _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_max_y) & tile_index_mask;
+                if (_tile_at_point != _tile_solid && _tile_at_point != _tile_h_one_way)
+                {
+                    // prepare the slope collision test
+                    raycast_slope_x = _step_h_x;
+                    raycast_slope_y = _step_h_y;
+                    
+                    // if colliding with a sloped tile, and a point on the slope is found
+                    if (script_execute(script_slope_collision, _tile_at_point, _cell_x, _cell_max_y, _gradient, _ray_target_h))
+                    {
+                        //_ray_target_h = point_distance(0, 0, raycast_slope_move_h, raycast_slope_move_v);
+                        //if (_ray_target_h <= _ray_target_v)
+                        //{
+                            _collision_h = true;
+                            _collision_slope_h = true;
+                            _collision_x = raycast_slope_x;
+                            _collision_y = raycast_slope_y;
+                            _collision_slope_move_h = raycast_slope_move_h;
+                            _collision_slope_move_v = raycast_slope_move_v;
+                        //}
+                    }
+                }
+            }
+            
+        }
+        
         // if a collision occurred during this step
         if (_collision_h)
         {
             _test_h = false;
             
-            // update the movement values
-            _new_move_h = _collision_x - (_start_x + _offset_x);
-            _new_move_v = _collision_y - _start_y;
-            
-            // update the redirection values for another test
-            _redirect_move_h = 0;
-            _redirect_move_v = (raycast_new_move_v - _new_move_v);
+            if (_collision_slope_h)
+            {
+                // update the movement values
+                _new_move_h = _collision_x - _start_x;
+                _new_move_v = _collision_y - _start_y;
+                
+                // update the redirection values for another test
+                _redirect_move_h = _collision_slope_move_h;
+                _redirect_move_v = _collision_slope_move_v;
+            }
+            else
+            {
+                // update the movement values
+                _new_move_h = _collision_x - (_start_x + _offset_x);
+                _new_move_v = _collision_y - _start_y;
+                
+                // update the redirection values for another test
+                _redirect_move_h = 0;
+                _redirect_move_v = (raycast_new_move_v - _new_move_v);
+            }
         }
         
         // else, no collision occurred during this step
@@ -338,6 +414,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
     {
         _collision_x = 0;
         _collision_y = 0;
+        _collision_slope_move_h = 0;
+        _collision_slope_move_v = 0;
         
         // find the cell the first point occupies
         // *the first point is always the left side of the bounding box
@@ -423,11 +501,60 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     if (_ray_target_v <= _ray_target_h)
                     {
                         _collision_v = true;
+                        _collision_slope_v = false;
                         _collision_x = _step_v_x;
                         _collision_y = _step_v_y;
-                        break;
+                        break; // exit for loop
                     }
                     
+                }
+            }
+            
+        }
+        
+        // if no vertical collision, check for slope collision
+        if ( ! _collision_v)
+        {
+            // check the tile at the left most point
+            _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
+            if (_tile_at_point != _tile_solid && _tile_at_point != _tile_v_one_way)
+            {
+                // prepare the slope collision test
+                raycast_slope_x = _step_v_x;
+                raycast_slope_y = _step_v_y;
+                
+                // if colliding with a sloped tile, and a point on the slope is found
+                if (script_execute(script_slope_collision, _tile_at_point, _cell_x, _cell_y, _gradient, _ray_target_v))
+                {
+                    _collision_v = true;
+                    _collision_slope_v = true;
+                    _collision_x = raycast_slope_x;
+                    _collision_y = raycast_slope_y;
+                    _collision_slope_move_h = raycast_slope_move_h;
+                    _collision_slope_move_v = raycast_slope_move_v;
+                }
+            }
+            
+            if (_cell_max_x != _cell_x)
+            {
+                // check the tile at the right most point
+                _tile_at_point = tilemap_get(_collision_tilemap, _cell_max_x, _cell_y) & tile_index_mask;
+                if (_tile_at_point != _tile_solid && _tile_at_point != _tile_v_one_way)
+                {
+                    // prepare the slope collision test
+                    raycast_slope_x = _step_v_x;
+                    raycast_slope_y = _step_v_y;
+                    
+                    // if colliding with a sloped tile, and a point on the slope is found
+                    if (script_execute(script_slope_collision, _tile_at_point, _cell_max_x, _cell_y, _gradient, _ray_target_v))
+                    {
+                        _collision_v = true;
+                        _collision_slope_v = true;
+                        _collision_x = raycast_slope_x;
+                        _collision_y = raycast_slope_y;
+                        _collision_slope_move_h = raycast_slope_move_h;
+                        _collision_slope_move_v = raycast_slope_move_v;
+                    }
                 }
             }
             
@@ -438,13 +565,26 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         {
             _test_v = false;
             
-            // update the movement values
-            _new_move_h = _collision_x - _start_x;
-            _new_move_v = _collision_y - (_start_y + _offset_y);
-            
-            // update the redirection values for another test
-            _redirect_move_h = (raycast_new_move_h - _new_move_h);
-            _redirect_move_v = 0;
+            if (_collision_slope_v)
+            {
+                // update the movement values
+                _new_move_h = _collision_x - _start_x;
+                _new_move_v = _collision_y - _start_y;
+                
+                // update the redirection values for another test
+                _redirect_move_h = _collision_slope_move_h;
+                _redirect_move_v = _collision_slope_move_v;
+            }
+            else
+            {
+                // update the movement values
+                _new_move_h = _collision_x - _start_x;
+                _new_move_v = _collision_y - (_start_y + _offset_y);
+                
+                // update the redirection values for another test
+                _redirect_move_h = (raycast_new_move_h - _new_move_h);
+                _redirect_move_v = 0;
+            }
         }
         
         // else, no collision occurred during this step
@@ -498,5 +638,5 @@ raycast_redirect_move_v = _redirect_move_v;
 // update collision states
 raycast_collision_h = _collision_h;
 raycast_collision_v = _collision_v;
-raycast_collision_slope = _collision_slope;
+raycast_collision_slope = (_collision_slope_h || _collision_slope_v);
 

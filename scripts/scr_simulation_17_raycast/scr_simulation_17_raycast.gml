@@ -20,7 +20,9 @@ if (raycast_new_move_h == 0 && raycast_new_move_v == 0)
 {
     exit;
 }
-
+scr_output(" ");
+scr_output("raycast_new_move_h", raycast_new_move_h);
+scr_output("raycast_new_move_v", raycast_new_move_v);
 // starting position (always the top left corner of the bounding box)
 var _start_x = raycast_x + sprite_bbox_left;
 var _start_y = raycast_y + sprite_bbox_top;
