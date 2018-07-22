@@ -27,10 +27,8 @@ var _ray_gradient = argument3;
 var _ray_target = argument4;
 
 // the starting position (always the top left corner of the bounding box)
-//var _start_x = raycast_x + sprite_bbox_left;
-//var _start_y = raycast_y + sprite_bbox_top;
-var _start_x = raycast_slope_x;
-var _start_y = raycast_slope_y;
+var _start_x = raycast_x + sprite_bbox_left;
+var _start_y = raycast_y + sprite_bbox_top;
 
 // get the size of the bounding box
 var _height = bbox_height + 1;
@@ -106,15 +104,15 @@ var _offset_x = tile_definitions[_tile_at_point, 6] * _width;
 var _offset_y = tile_definitions[_tile_at_point, 7] * _height;
 
 // update the starting position
-//_start_x += _offset_x;
-//_start_y += _offset_y;
+_start_x += _offset_x;
+_start_y += _offset_y;
 
 
 /**
  * Determine the Side of the Tile
  *
  * The "sign of the determinant" is used to determine if the starting and ending points are on the open side of the sloped tile.
- * The ray only need to be redirected if the starting point is on the open side of the tile and the ending point is on the solid side.
+ * The ray only needs to be redirected if the starting point is on the open side of the tile and the ending point is on the solid side.
  *
  * d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
  */
@@ -210,14 +208,12 @@ if (_tile_intercept)
     // if the distance to the intercept point does not exceede the maximum target distance
     if (_distance < _ray_target)
     {
-        //raycast_slope_x = _xx - _offset_x;
-        //raycast_slope_y = _yy - _offset_y;
-        raycast_slope_x = _xx;// - _offset_x;
-        raycast_slope_y = _yy;// - _offset_y;
+        raycast_slope_x = _xx - _offset_x;
+        raycast_slope_y = _yy - _offset_y;
         
         if (_new_move_h == 0)
         {
-            // redirect the movement along the slope
+            // no movement redirection
             raycast_slope_move_h = 0;
             raycast_slope_move_v = 0;
         }
@@ -228,7 +224,7 @@ if (_tile_intercept)
             raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
         }
         
-        // saved the gradient of this tile
+        // save the gradient of this tile
         collision_slope_tile_gradient = _tile_gradient;
             
         if (true)
@@ -239,7 +235,7 @@ if (_tile_intercept)
             ds_list_add(global.GUI_AXIS_POINTS, _list);
             ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
         }
-            
+        
         return true;
             
     }

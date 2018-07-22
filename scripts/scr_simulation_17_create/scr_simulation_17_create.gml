@@ -315,8 +315,8 @@ is_rotating = false;
 //sprite_index = spr_simulation_15px;
 //mask_index = spr_simulation_15px;
 
-//sprite_index = spr_simulation_10px;
-//mask_index = spr_simulation_10px;
+sprite_index = spr_simulation_10px;
+mask_index = spr_simulation_10px;
 
 //sprite_index = spr_simulation_8x6px;
 //mask_index = spr_simulation_8x6px;
@@ -397,7 +397,7 @@ if (false)
     move_distance = 40;
 }
 
-if (true)
+if (false)
 {
     inst_x =  5 * global.TILE_SIZE + 4;
     inst_y = 20 * global.TILE_SIZE + 4;
@@ -446,7 +446,7 @@ if (false)
     move_distance = 40;
 }
 
-if (false)
+if (true)
 {
     inst_x = 26 * global.TILE_SIZE;
     inst_y = 25 * global.TILE_SIZE;

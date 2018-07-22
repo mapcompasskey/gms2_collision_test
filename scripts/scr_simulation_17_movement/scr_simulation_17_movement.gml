@@ -63,7 +63,7 @@ while (move_distance_delta < move_distance_target && i < 5)
     
     // perform a collision test
     script_execute(script_raycast_collision);
-    
+
     // update the new movement values
     // *if a collision occurred during the raycast script, the values will have been altered
     new_move_h += raycast_new_move_h;
@@ -84,6 +84,6 @@ while (move_distance_delta < move_distance_target && i < 5)
     i++;
     
     // update the distance traveled
-    move_distance_delta = point_distance(0, 0, new_move_h, new_move_v);
+    //move_distance_delta = point_distance(0, 0, new_move_h, new_move_v);
 }
 
