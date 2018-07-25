@@ -8,7 +8,7 @@
 
 simulation_name = "Simulation 18";
 script_movement = scr_simulation_18_movement;
-script_raycast_collision = scr_simulation_18_raycast;
+script_raycast_collision = scr_simulation_18_raycast_2;
 script_slope_collision = scr_simulation_18_slope;
 
 
@@ -405,7 +405,7 @@ if (false)
     move_distance = 40;
 }
 
-if (false)
+if (true)
 {
     inst_x = 5 * global.TILE_SIZE;
     inst_y = 5 * global.TILE_SIZE;
@@ -421,7 +421,7 @@ if (false)
     move_distance = 40;
 }
 
-if (true)
+if (false)
 {
     inst_x = 26 * global.TILE_SIZE;
     inst_y =  4 * global.TILE_SIZE + 4;
