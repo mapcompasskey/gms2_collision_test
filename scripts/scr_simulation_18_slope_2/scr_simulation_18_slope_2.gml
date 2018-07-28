@@ -1,4 +1,4 @@
-/// @function scr_simulation_18_slope(tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
+/// @function scr_simulation_18_slope_2(tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
 /// @param {real} tile_at_point  - the index of the tile that was intersected
 /// @param {number} cell_x       - the tile's horizontal cell position
 /// @param {number} cell_y       - the tile's vertical cell position
@@ -111,40 +111,35 @@ _start_y += _offset_y;
 /**
  * Determine the Side of the Tile
  *
- * The "sign of the determinant" is used to determine if the starting and ending points are on the "open" or "solid" sides of the sloped tile.
- * Normally, the ray only needs to be redirected if the starting point is on the open side of the tile and the ending point is on the solid side.
- * But that relies on the floating point math to be extremely precise, which shouldn't be assumed.
- * Instead, just magnitize the instance to the slope unless the instance is attempting to jump off of the slope.
- * You can determine if its leaving the slope because the "end determinant" will equal the side of the tile that is open space.
+ * The "sign of the determinant" is used to determine if the starting and ending points are on the open side of the sloped tile.
+ * The ray only needs to be redirected if the starting point is on the open side of the tile and the ending point is on the solid side.
  *
  * d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
  */
 
-var _sticky = false;
-if (sign(_tile_gradient) < 0 && _new_move_h < 0)
-{
-    _sticky = true;
-}
-else if (sign(_tile_gradient) > 0 && _new_move_h > 0)
-{
-    _sticky = true;
-}
+// get the value that represents the side that is "open space"
+var _tile_determinant = tile_definitions[_tile_at_point, 8];
 
-// if the instance is attempting to leave the slope
-if ( ! _sticky)
+// find the side of the tile the starting point is on
+var _start_determinant = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
+
+// if the starting point is not on the line
+if (_start_determinant != 0)
 {
-    // get the value that represents the side that is "open space'
-    var _tile_determinant = tile_definitions[_tile_at_point, 8];
-    
-    // find the side of the tile the end point is on
-    var _end_determinant = (((_start_x + _new_move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _new_move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
-    
-    // if the end point is on the open side of the tile
-    if (sign(_end_determinant) == _tile_determinant)
+    // if the starting point is not on the open side of the tile
+    if (sign(_start_determinant) != _tile_determinant)
     {
         return false;
     }
-    
+}
+
+// find the side of the tile the end point is on
+var _end_determinant = (((_start_x + _new_move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _new_move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
+
+// if the end point is on the open side of the tile
+if (sign(_end_determinant) == _tile_determinant)
+{
+    return false;
 }
 
 
@@ -225,18 +220,13 @@ if (_tile_intercept)
         else
         {
             // redirect the movement along the slope
-            //raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
-            //raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
-            
-            // redirect the remaining horizontal movement along the slope
-            var _distance_h = point_distance(_xx, 0, _start_x + _new_move_h, 0);
-            raycast_slope_move_h = _distance_h * _tile_cosine;
+            raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
             raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
         }
         
         // save the gradient of this tile
         collision_slope_tile_gradient = _tile_gradient;
-        
+            
         if (true)
         {
             // capture the point on the slope where collision occurred

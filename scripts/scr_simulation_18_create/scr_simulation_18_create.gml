@@ -8,7 +8,7 @@
 
 simulation_name = "Simulation 18";
 script_movement = scr_simulation_18_movement;
-script_raycast_collision = scr_simulation_18_raycast_2;
+script_raycast_collision = scr_simulation_18_raycast;
 script_slope_collision = scr_simulation_18_slope;
 
 
@@ -90,6 +90,7 @@ global.TILE_SOLID_22_NW_2 = 42; // ◤
  * Where (0, 0) is the top left and (1, 1) is the bottom right of the bounding box.
  *
  * The "sign of the determinant" is used to determine if a point is on the open or solid side of a sloped tile.
+ * This value needs to represent the value of the side that is "open space".
  *
  * 0: gradient
  * 1: cosine of the angle
@@ -389,7 +390,7 @@ view_set_yport(view_index, 0);
  *
  */
 
-if (false)
+if (true)
 {
     inst_x = 27 * global.TILE_SIZE;
     inst_y = 13 * global.TILE_SIZE;
@@ -405,7 +406,7 @@ if (false)
     move_distance = 40;
 }
 
-if (true)
+if (false)
 {
     inst_x = 5 * global.TILE_SIZE;
     inst_y = 5 * global.TILE_SIZE;
