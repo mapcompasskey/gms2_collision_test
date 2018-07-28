@@ -1,0 +1,1 @@
+scr_simulation_19_draw_gui();
