@@ -54,7 +54,7 @@ inst_y = y;
 
 // movement values
 speed_h = 100;
-speed_v = 30;
+speed_v = 100;//30;
 
 velocity_x = 0;
 velocity_y = 0;
@@ -77,6 +77,8 @@ collision_h = false;
 collision_v = false
 collision_slope = false;
 collision_slope_tile_gradient = 0;
+collision_floor = false;
+collision_ceiling = false;
 
 // raycasting movement values
 raycast_x = 0;
@@ -90,12 +92,16 @@ raycast_redirect_move_v = 0;
 raycast_collision_h = false;
 raycast_collision_v = false;
 raycast_collision_slope = false;
+raycast_collision_floor = false;
+raycast_collision_ceiling = false;
 
 // slope collision values
 raycast_slope_x = 0;
 raycast_slope_y = 0;
 raycast_slope_move_h = 0;
 raycast_slope_move_v = 0;
+raycast_slope_collision_floor = false;
+raycast_slope_collision_ceiling = false;
 
 // drawing
 //the_sprite = spr_simulation_15px;

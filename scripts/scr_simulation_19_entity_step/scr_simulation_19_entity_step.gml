@@ -93,6 +93,8 @@ collision_h = false;
 collision_v = false;
 collision_slope = false;
 collision_slope_tile_gradient = 0;
+collision_floor = false;
+collision_ceiling = false;
 
 // the distance to move this step
 new_move_h = 0;
@@ -117,6 +119,8 @@ while (move_distance_delta < move_distance_target && i < 5)
     raycast_collision_h = false;
     raycast_collision_v = false;
     raycast_collision_slope = false;
+    raycast_collision_floor = false;
+    raycast_collision_ceiling = false;
     
     // the position to cast the ray from
     raycast_x = inst_x + new_move_h;
@@ -138,12 +142,18 @@ while (move_distance_delta < move_distance_target && i < 5)
     collision_h = (collision_h ? collision_h : raycast_collision_h);
     collision_v = (collision_v ? collision_v : raycast_collision_v);
     
+    collision_floor = (collision_floor ? collision_floor : raycast_collision_floor);
+    collision_ceiling = (collision_ceiling ? collision_ceiling : raycast_collision_ceiling);
+    
     // if colliding with a slope
     if (raycast_collision_slope)
     {
-        // only counts as a vertical collision
-        collision_h = false;
-        collision_v = true;
+        if (has_gravity)
+        {
+            // only counts as a vertical collision
+            collision_h = false;
+            collision_v = true;
+        }
     }
     
     // if both horizontal and vertical collision have occurred
@@ -166,6 +176,7 @@ while (move_distance_delta < move_distance_target && i < 5)
  *
  */
 
+/** /
 if (has_gravity)
 {
     // reset grounded state
@@ -187,6 +198,37 @@ if (has_gravity)
     }
     
 }
+/**/
+
+/**/
+if (has_gravity)
+{
+    // reset grounded state
+    is_standing = false;
+    
+    // if colliding with the floor
+    if (collision_floor)
+    {
+        // reset vertical velocity
+        velocity_y = 0;
+            
+        // update grounded state
+        is_standing = true;
+    }
+        
+    // else, if colliding with the ceiling
+    else if (collision_ceiling)
+    {
+        // if rising
+        if (velocity_y < 0)
+        {
+            // reset vertical velocity
+            velocity_y = 0;
+        }
+    }
+    
+}
+/**/
 
 
 /**

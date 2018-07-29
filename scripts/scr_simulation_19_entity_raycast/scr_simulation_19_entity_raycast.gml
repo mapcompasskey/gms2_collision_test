@@ -30,9 +30,13 @@ var _redirect_move_v = 0;
 var _collision = false;
 var _collision_h = false;
 var _collision_v = false;
+var _raycast_collision_floor = false;
+var _raycast_collision_ceiling = false;
 var _collision_slope = false;
 var _collision_slope_h = false;
 var _collision_slope_v = false;
+var _collision_floor = false;
+var _collision_ceiling = false;
 
 // tilemap layer and tile size
 var _collision_tilemap = collision_tilemap;
@@ -129,6 +133,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         _collision_y = 0;
         _collision_redirect_move_h = 0;
         _collision_redirect_move_v = 0;
+        _collision_floor = false;
+        _collision_ceiling = false;
         
         // find the cell the first point occupies
         // *the first point is always the top of the bounding box
@@ -193,6 +199,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _collision_y = _step_h_y;
                     _collision_redirect_move_h = 0;
                     _collision_redirect_move_v = raycast_new_move_v - (_collision_y - _start_y);
+                    _collision_floor = false;
+                    _collision_ceiling = false;
                     break; // exit for loop
                 }
             }
@@ -250,6 +258,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _collision_y = raycast_slope_y;
                     _collision_redirect_move_h = raycast_slope_move_h;
                     _collision_redirect_move_v = raycast_slope_move_v;
+                    _collision_floor = raycast_slope_collision_floor;
+                    _collision_ceiling = raycast_slope_collision_ceiling;
                 }
             }
             
@@ -272,6 +282,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                         _collision_y = raycast_slope_y;
                         _collision_redirect_move_h = raycast_slope_move_h;
                         _collision_redirect_move_v = raycast_slope_move_v;
+                        _collision_floor = raycast_slope_collision_floor;
+                        _collision_ceiling = raycast_slope_collision_ceiling;
                     }
                 }
             }
@@ -305,6 +317,9 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _collision_slope_h = false;
                     _collision_slope_v = true;
                 }
+                
+                _raycast_collision_floor = _collision_floor;
+                _raycast_collision_ceiling = _collision_ceiling;
                 
             }
             
@@ -350,6 +365,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         _collision_y = 0;
         _collision_redirect_move_h = 0;
         _collision_redirect_move_v = 0;
+        _collision_floor = false;
+        _collision_ceiling = false;
         
         // find the cell the first point occupies
         // *the first point is always the left side of the bounding box
@@ -414,6 +431,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _collision_y = _step_v_y - _offset_y;
                     _collision_redirect_move_h = raycast_new_move_h - (_collision_x - _start_x);
                     _collision_redirect_move_v = 0;
+                    _collision_floor = (_new_move_v > 0);
+                    _collision_ceiling = (_new_move_v < 0);
                     break; // exit for loop
                 }
             }
@@ -440,6 +459,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _collision_y = raycast_slope_y;
                     _collision_redirect_move_h = raycast_slope_move_h;
                     _collision_redirect_move_v = raycast_slope_move_v;
+                    _collision_floor = raycast_slope_collision_floor;
+                    _collision_ceiling = raycast_slope_collision_ceiling;
                 }
             }
             
@@ -462,6 +483,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                         _collision_y = raycast_slope_y;
                         _collision_redirect_move_h = raycast_slope_move_h;
                         _collision_redirect_move_v = raycast_slope_move_v;
+                        _collision_floor = raycast_slope_collision_floor;
+                        _collision_ceiling = raycast_slope_collision_ceiling;
                     }
                 }
             }
@@ -495,6 +518,9 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _collision_slope_h = false;
                     _collision_slope_v = true;
                 }
+                
+                _raycast_collision_floor = _collision_floor;
+                _raycast_collision_ceiling = _collision_ceiling;
                 
             }
             
@@ -553,4 +579,7 @@ raycast_redirect_move_v = _redirect_move_v;
 raycast_collision_h = _collision_h;
 raycast_collision_v = _collision_v;
 raycast_collision_slope = (_collision_slope_h || _collision_slope_v);
+
+raycast_collision_floor = _raycast_collision_floor;
+raycast_collision_ceiling = _raycast_collision_ceiling;
 
