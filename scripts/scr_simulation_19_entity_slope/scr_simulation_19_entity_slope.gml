@@ -116,73 +116,70 @@ _start_y += _offset_y;
  * d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
  */
 
+// get whether this type of tile is considered a floor or ceiling
+var _is_floor_tile = tile_definitions[_tile_at_point, 8];
+
 // if this instance is always falling
 if (has_gravity)
 {
-    // if jumping while on a "floor" slope
-    if (_new_move_v < 0)
+    // if the instance is rising while on a floor tile
+    if (_new_move_v < 0 && _is_floor_tile == 1)
     {
-        // if this tile is a "floor" tile (as opposed to a ceiling tile)
-        var _is_floor_tile = tile_definitions[_tile_at_point, 8];
-        if (_is_floor_tile == 1)
+        // default state is to stick to the slope
+        var _sticky = true;
+        
+        // if ◢ tile (gradient -1, -0.5)
+        if (sign(_tile_gradient) == -1)
         {
-            // default state is to stick to the slope
-            var _sticky = true;
-        
-            // if ◢ tile (gradient -1, -0.5)
-            if (sign(_tile_gradient) == -1)
+            // if standing or descending the slope
+            if (_new_move_h == 0 || _new_move_h < 0)
             {
-                // if standing or descending the slope
-                if (_new_move_h == 0 || _new_move_h < 0)
-                {
-                    return false;
-                }
-                // else, if ascending the slope
-                else if (_new_move_h > 0)
-                {
-                    _sticky = false;
-                }
+                return false;
             }
-        
-            // else, if ◣ tile (gradient 1, 0.5)
-            else if (sign(_tile_gradient) == 1)
+            // else, if ascending the slope
+            else if (_new_move_h > 0)
             {
-                // if standing or descending the slope
-                if (_new_move_h == 0 || _new_move_h > 0)
-                {
-                    return false;
-                }
-                // else, if ascending the slope
-                else if (_new_move_h < 0)
-                {
-                    _sticky = false;
-                }
+                _sticky = false;
             }
-        
-            // if the instance is attempting to leave the slope
-            if ( ! _sticky)
-            {
-                // get the value that represents the side that is "open space'
-                var _tile_determinant = tile_definitions[_tile_at_point, 9];
-            
-                // find the side of the tile the end point is on
-                var _end_determinant = (((_start_x + _new_move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _new_move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
-            
-                // if the end point is on the open side of the tile
-                if (sign(_end_determinant) == _tile_determinant)
-                {
-                    return false;
-                }
-        
-            }
-    
         }
-
+        
+        // else, if ◣ tile (gradient 1, 0.5)
+        else if (sign(_tile_gradient) == 1)
+        {
+            // if standing or descending the slope
+            if (_new_move_h == 0 || _new_move_h > 0)
+            {
+                return false;
+            }
+            // else, if ascending the slope
+            else if (_new_move_h < 0)
+            {
+                _sticky = false;
+            }
+        }
+        
+        // if the instance is attempting to leave the slope
+        if ( ! _sticky)
+        {
+            // get the value that represents the side that is "open space'
+            var _tile_determinant = tile_definitions[_tile_at_point, 9];
+            
+            // find the side of the tile the end point is on
+            var _end_determinant = (((_start_x + _new_move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _new_move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
+            
+            // if the end point is on the open side of the tile
+            if (sign(_end_determinant) == _tile_determinant)
+            {
+                return false;
+            }
+        
+        }
+    
     }
     
-    /**/
+    
     // if this tile is a "ceiling" tile
-    var _is_floor_tile = tile_definitions[_tile_at_point, 8];
+    // *need to determine if the end point is on the open side of the tile and if so, the instance should no longer stick to the slope of the tile
     if ( ! _is_floor_tile)
     {
         // get the value that represents the side that is "open space'
@@ -197,7 +194,6 @@ if (has_gravity)
             return false;
         }
     }
-    /**/
     
 }
 
@@ -270,40 +266,13 @@ if (_tile_intercept)
         raycast_slope_x = _xx - _offset_x;
         raycast_slope_y = _yy - _offset_y;
         
+        // reset floor/ceiling collision states
         raycast_slope_collision_floor = false;
         raycast_slope_collision_ceiling = false;
         
         // if this instance is always falling
         if (has_gravity)
         {
-            /*
-            // if this tile is a "ceiling" tile
-            var _is_floor_tile = tile_definitions[_tile_at_point, 8];
-            if ( ! _is_floor_tile)
-            {
-                // no movement redirection
-                raycast_slope_move_h = 0;
-                raycast_slope_move_v = 0;
-            }
-            else
-            {
-                if (_new_move_h == 0)
-                {
-                    // no movement redirection
-                    raycast_slope_move_h = 0;
-                    raycast_slope_move_v = 0;
-                }
-                else
-                {
-                    // redirect the remaining horizontal movement along the slope
-                    var _distance_h = point_distance(_xx, 0, _start_x + _new_move_h, 0);
-                    raycast_slope_move_h = _distance_h * _tile_cosine;
-                    raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
-                }
-            }
-            */
-            
-            /**/
             if (_new_move_h == 0)
             {
                 // no movement redirection
@@ -317,10 +286,8 @@ if (_tile_intercept)
                 raycast_slope_move_h = _distance_h * _tile_cosine;
                 raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
             }
-            /**/
             
-            // if collision occurred with a "floor" or "ceiling" tile
-            var _is_floor_tile = tile_definitions[_tile_at_point, 8];
+            // update floor/ceiling collision states
             if (_is_floor_tile == 1)
             {
                 raycast_slope_collision_floor = true;

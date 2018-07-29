@@ -22,21 +22,20 @@ var _start_y = raycast_y + sprite_bbox_top;
 // movement values
 var _raycast_new_move_h = raycast_new_move_h;
 var _raycast_new_move_v = raycast_new_move_v;
-
 var _raycast_redirect_move_h = 0;
 var _raycast_redirect_move_v = 0;
 
 // collision states
 var _collision = false;
-var _raycast_collision_h = false;
-var _raycast_collision_v = false;
-var _raycast_collision_floor = false;
-var _raycast_collision_ceiling = false;
 var _collision_slope = false;
-var _raycast_collision_slope_h = false;
-var _raycast_collision_slope_v = false;
 var _collision_floor = false;
 var _collision_ceiling = false;
+
+var _raycast_collision_h = false;
+var _raycast_collision_v = false;
+var _raycast_collision_slope = false;
+var _raycast_collision_floor = false;
+var _raycast_collision_ceiling = false;
 
 // tilemap layer and tile size
 var _collision_tilemap = collision_tilemap;
@@ -302,6 +301,9 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 // update collision states
                 _raycast_collision_h = true;
                 _raycast_collision_v = false;
+                _raycast_collision_slope = _collision_slope;
+                _raycast_collision_floor = _collision_floor;
+                _raycast_collision_ceiling = _collision_ceiling;
                 
                 // update the movement values
                 _raycast_new_move_h = (_collision_x - _start_x);
@@ -310,17 +312,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 // update the redirection values for another test
                 _raycast_redirect_move_h = _collision_move_h;
                 _raycast_redirect_move_v = _collision_move_v;
-                
-                // if there was collision with a sloped tile
-                if (_collision_slope)
-                {
-                    _raycast_collision_slope_h = false;
-                    _raycast_collision_slope_v = true;
-                }
-                
-                _raycast_collision_floor = _collision_floor;
-                _raycast_collision_ceiling = _collision_ceiling;
-                
             }
             
             _test_h = false;
@@ -503,6 +494,9 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 // update collision states
                 _raycast_collision_h = false;
                 _raycast_collision_v = true;
+                _raycast_collision_slope = _collision_slope;
+                _raycast_collision_floor = _collision_floor;
+                _raycast_collision_ceiling = _collision_ceiling;
                 
                 // update the movement values
                 _raycast_new_move_h = (_collision_x - _start_x);
@@ -511,17 +505,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 // update the redirection values for another test
                 _raycast_redirect_move_h = _collision_move_h;
                 _raycast_redirect_move_v = _collision_move_v;
-                
-                // if there was collision with a sloped tile
-                if (_collision_slope)
-                {
-                    _raycast_collision_slope_h = false;
-                    _raycast_collision_slope_v = true;
-                }
-                
-                _raycast_collision_floor = _collision_floor;
-                _raycast_collision_ceiling = _collision_ceiling;
-                
             }
             
             _test_v = false;
@@ -578,8 +561,7 @@ raycast_redirect_move_v = _raycast_redirect_move_v;
 // update collision states
 raycast_collision_h = _raycast_collision_h;
 raycast_collision_v = _raycast_collision_v;
-raycast_collision_slope = (_raycast_collision_slope_h || _raycast_collision_slope_v);
-
+raycast_collision_slope = _raycast_collision_slope;
 raycast_collision_floor = _raycast_collision_floor;
 raycast_collision_ceiling = _raycast_collision_ceiling;
 

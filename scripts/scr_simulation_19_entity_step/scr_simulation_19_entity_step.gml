@@ -41,6 +41,13 @@ if (has_gravity)
         is_jumping = true;
     }
     
+    // if jumping
+    //if (is_standing && keyboard_check_pressed(ord("W")))
+    //{
+    //    velocity_y = -(speed_v * 4);
+    //    is_jumping = true;
+    //}
+    
 }
 else
 {
@@ -146,14 +153,11 @@ while (move_distance_delta < move_distance_target && i < 5)
     collision_ceiling = (collision_ceiling ? collision_ceiling : raycast_collision_ceiling);
     
     // if colliding with a slope
-    if (raycast_collision_slope)
+    if (has_gravity && raycast_collision_slope)
     {
-        if (has_gravity)
-        {
-            // only counts as a vertical collision
-            collision_h = false;
-            collision_v = true;
-        }
+        // only counts as a vertical collision
+        collision_h = false;
+        collision_v = true;
     }
     
     // if both horizontal and vertical collision have occurred
