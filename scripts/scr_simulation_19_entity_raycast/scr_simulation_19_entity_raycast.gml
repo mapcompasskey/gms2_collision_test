@@ -20,21 +20,21 @@ var _start_x = raycast_x + sprite_bbox_left;
 var _start_y = raycast_y + sprite_bbox_top;
 
 // movement values
-var _new_move_h = raycast_new_move_h;
-var _new_move_v = raycast_new_move_v;
+var _raycast_new_move_h = raycast_new_move_h;
+var _raycast_new_move_v = raycast_new_move_v;
 
-var _redirect_move_h = 0;
-var _redirect_move_v = 0;
+var _raycast_redirect_move_h = 0;
+var _raycast_redirect_move_v = 0;
 
 // collision states
 var _collision = false;
-var _collision_h = false;
-var _collision_v = false;
+var _raycast_collision_h = false;
+var _raycast_collision_v = false;
 var _raycast_collision_floor = false;
 var _raycast_collision_ceiling = false;
 var _collision_slope = false;
-var _collision_slope_h = false;
-var _collision_slope_v = false;
+var _raycast_collision_slope_h = false;
+var _raycast_collision_slope_v = false;
 var _collision_floor = false;
 var _collision_ceiling = false;
 
@@ -53,8 +53,8 @@ var _tile_size = tile_size;
 // get the size of the bounding box and offsets
 var _height = (bbox_height + 1);
 var _width = (bbox_width + 1);
-var _offset_x = (_new_move_h > 0 ? _width : 0);
-var _offset_y = (_new_move_v > 0 ? _height : 0);
+var _offset_x = (_raycast_new_move_h > 0 ? _width : 0);
+var _offset_y = (_raycast_new_move_v > 0 ? _height : 0);
 
 
 /**
@@ -68,18 +68,18 @@ var _step_cell_x, _step_cell_y;
 var _size_delta, _size_target;
 var _remainder_x, _remainder_y;
 var _collision_x, _collision_y;
-var _collision_redirect_move_h, _collision_redirect_move_v;
+var _collision_move_h, _collision_move_v;
 
 // the tests that can be performed
-var _test_h = (_new_move_h == 0 ? false : true);
-var _test_v = (_new_move_v == 0 ? false : true);
+var _test_h = (_raycast_new_move_h == 0 ? false : true);
+var _test_v = (_raycast_new_move_v == 0 ? false : true);
 
 // the slope of the line
 // *using the term "gradient" since "slope" can also refer to a type of tile
 var _gradient = 0;
-if (_new_move_h != 0 && _new_move_v != 0)
+if (_raycast_new_move_h != 0 && _raycast_new_move_v != 0)
 {
-    _gradient = (_new_move_v / _new_move_h);
+    _gradient = (_raycast_new_move_v / _raycast_new_move_h);
 }
 
 // the distances traveled along the ray
@@ -87,7 +87,7 @@ var _ray_delta_h = 0;
 var _ray_delta_v = 0;
 
 // the maximum distance of the ray
-var _ray_target = point_distance(0, 0, _new_move_h, _new_move_v);
+var _ray_target = point_distance(0, 0, _raycast_new_move_h, _raycast_new_move_v);
 
 // the distance to the closest collision points
 var _ray_target_h = _ray_target;
@@ -102,14 +102,14 @@ var _step_v_x = _start_x;
 var _step_v_y = (_start_y + _offset_y);
 
 // tile offsets
-var _tile_offset_x = (_new_move_h > 0 ? 1 : 0);
-var _tile_offset_y = (_new_move_v > 0 ? 1 : 0);
+var _tile_offset_x = (_raycast_new_move_h > 0 ? 1 : 0);
+var _tile_offset_y = (_raycast_new_move_v > 0 ? 1 : 0);
 
 // tile values
 var _tile_at_point;
 var _tile_solid = tile_solid
-var _tile_h_one_way = (_new_move_h > 0 ? tile_solid_east : tile_solid_west);
-var _tile_v_one_way = (_new_move_v > 0 ? tile_solid_south : tile_solid_north);
+var _tile_h_one_way = (_raycast_new_move_h > 0 ? tile_solid_east : tile_solid_west);
+var _tile_v_one_way = (_raycast_new_move_v > 0 ? tile_solid_south : tile_solid_north);
 
 
 /**
@@ -120,7 +120,7 @@ var _tile_v_one_way = (_new_move_v > 0 ? tile_solid_south : tile_solid_north);
  */
 
 // while test can be performed and no collisions have occurred
-while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
+while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
 {
     // if the horizontal collision test can be performed
     // (and either can't test veritcal collision or the horizontal test is closer than the vertical test)
@@ -131,8 +131,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         _collision_slope = false;
         _collision_x = 0;
         _collision_y = 0;
-        _collision_redirect_move_h = 0;
-        _collision_redirect_move_v = 0;
+        _collision_move_h = 0;
+        _collision_move_v = 0;
         _collision_floor = false;
         _collision_ceiling = false;
         
@@ -148,14 +148,14 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         
         // if the horizontal movement is negative and the point is on a horizontal intersection
         // *the instance is moving left, shift the tile's x position left by one
-        if (_new_move_h < 0 && _remainder_x == 0)
+        if (_raycast_new_move_h < 0 && _remainder_x == 0)
         {
             _cell_x -= 1;
         }
             
         // if the vertical movement is negative and the point is on a vertical intersection
         // *the instance is moving up, shift the tile's y position up by one
-        if (_new_move_v < 0 && _remainder_y == 0)
+        if (_raycast_new_move_v < 0 && _remainder_y == 0)
         {
             _cell_y -= 1; 
         }
@@ -169,7 +169,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         {
             // if the vertical movement is less than or equal to 0
             // *the instance is either not moving vertically or is moving up, shift the cell of the last point up by one
-            if (_new_move_v <= 0)
+            if (_raycast_new_move_v <= 0)
             {
                 _cell_max_y -= 1;
             }
@@ -197,8 +197,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _collision_slope = false;
                     _collision_x = _step_h_x - _offset_x;
                     _collision_y = _step_h_y;
-                    _collision_redirect_move_h = 0;
-                    _collision_redirect_move_v = raycast_new_move_v - (_collision_y - _start_y);
+                    _collision_move_h = 0;
+                    _collision_move_v = raycast_new_move_v - (_collision_y - _start_y);
                     _collision_floor = false;
                     _collision_ceiling = false;
                     break; // exit for loop
@@ -222,9 +222,9 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             // if the point is on a vertical intersection
             if ((_step_h_y2 mod _tile_size) == 0)
             {
-                //var _cell_y2 = floor(_step_h_y2 / _tile_size) + (_new_move_v > 0 ? -1 : 0);
+                //var _cell_y2 = floor(_step_h_y2 / _tile_size) + (_raycast_new_move_v > 0 ? -1 : 0);
                 //_tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y2) & tile_index_mask;
-                _cell_y = floor(_step_h_y2 / _tile_size) + (_new_move_v > 0 ? -1 : 0);
+                _cell_y = floor(_step_h_y2 / _tile_size) + (_raycast_new_move_v > 0 ? -1 : 0);
                 _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
                 
                 // if this tile is not a solid tile or one that is solid from this side
@@ -256,8 +256,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _collision_slope = true;
                     _collision_x = raycast_slope_x;
                     _collision_y = raycast_slope_y;
-                    _collision_redirect_move_h = raycast_slope_move_h;
-                    _collision_redirect_move_v = raycast_slope_move_v;
+                    _collision_move_h = raycast_slope_move_h;
+                    _collision_move_v = raycast_slope_move_v;
                     _collision_floor = raycast_slope_collision_floor;
                     _collision_ceiling = raycast_slope_collision_ceiling;
                 }
@@ -280,8 +280,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                         _collision_slope = true;
                         _collision_x = raycast_slope_x;
                         _collision_y = raycast_slope_y;
-                        _collision_redirect_move_h = raycast_slope_move_h;
-                        _collision_redirect_move_v = raycast_slope_move_v;
+                        _collision_move_h = raycast_slope_move_h;
+                        _collision_move_v = raycast_slope_move_v;
                         _collision_floor = raycast_slope_collision_floor;
                         _collision_ceiling = raycast_slope_collision_ceiling;
                     }
@@ -300,22 +300,22 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             if (_ray_target_h < _ray_target_v)
             {
                 // update collision states
-                _collision_h = true;
-                _collision_v = false;
+                _raycast_collision_h = true;
+                _raycast_collision_v = false;
                 
                 // update the movement values
-                _new_move_h = (_collision_x - _start_x);
-                _new_move_v = (_collision_y - _start_y);
+                _raycast_new_move_h = (_collision_x - _start_x);
+                _raycast_new_move_v = (_collision_y - _start_y);
                 
                 // update the redirection values for another test
-                _redirect_move_h = _collision_redirect_move_h;
-                _redirect_move_v = _collision_redirect_move_v;
+                _raycast_redirect_move_h = _collision_move_h;
+                _raycast_redirect_move_v = _collision_move_v;
                 
-                // if there was collision wtih a sloped tile
+                // if there was collision with a sloped tile
                 if (_collision_slope)
                 {
-                    _collision_slope_h = false;
-                    _collision_slope_v = true;
+                    _raycast_collision_slope_h = false;
+                    _raycast_collision_slope_v = true;
                 }
                 
                 _raycast_collision_floor = _collision_floor;
@@ -363,8 +363,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         _collision_slope = false;
         _collision_x = 0;
         _collision_y = 0;
-        _collision_redirect_move_h = 0;
-        _collision_redirect_move_v = 0;
+        _collision_move_h = 0;
+        _collision_move_v = 0;
         _collision_floor = false;
         _collision_ceiling = false;
         
@@ -380,14 +380,14 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         
         // if the horizontal movement is negative and the point is on a horizontal intersection
         // *the instance is moving left, shift the tile's x position left by one
-        if (_new_move_h < 0 && _remainder_x == 0)
+        if (_raycast_new_move_h < 0 && _remainder_x == 0)
         {
             _cell_x -= 1;
         }
         
         // if the vertical movement is negative and the point is on a vertical intersection
         // *the instance is moving up, shift the tile's y position up by one
-        if (_new_move_v < 0 && _remainder_y == 0)
+        if (_raycast_new_move_v < 0 && _remainder_y == 0)
         {
             _cell_y -= 1; 
         }
@@ -401,7 +401,7 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
         {
             // if the horizontal movement is less than or equal to 0
             // *the instance is either not moving horizontally or is moving to the left, shift the cell of the last point left by one
-            if (_new_move_h <= 0)
+            if (_raycast_new_move_h <= 0)
             {
                 _cell_max_x -= 1;
             }
@@ -429,10 +429,10 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _collision_slope = false;
                     _collision_x = _step_v_x;
                     _collision_y = _step_v_y - _offset_y;
-                    _collision_redirect_move_h = raycast_new_move_h - (_collision_x - _start_x);
-                    _collision_redirect_move_v = 0;
-                    _collision_floor = (_new_move_v > 0);
-                    _collision_ceiling = (_new_move_v < 0);
+                    _collision_move_h = raycast_new_move_h - (_collision_x - _start_x);
+                    _collision_move_v = 0;
+                    _collision_floor = (_raycast_new_move_v > 0);
+                    _collision_ceiling = (_raycast_new_move_v < 0);
                     break; // exit for loop
                 }
             }
@@ -457,8 +457,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                     _collision_slope = true;
                     _collision_x = raycast_slope_x;
                     _collision_y = raycast_slope_y;
-                    _collision_redirect_move_h = raycast_slope_move_h;
-                    _collision_redirect_move_v = raycast_slope_move_v;
+                    _collision_move_h = raycast_slope_move_h;
+                    _collision_move_v = raycast_slope_move_v;
                     _collision_floor = raycast_slope_collision_floor;
                     _collision_ceiling = raycast_slope_collision_ceiling;
                 }
@@ -481,8 +481,8 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
                         _collision_slope = true;
                         _collision_x = raycast_slope_x;
                         _collision_y = raycast_slope_y;
-                        _collision_redirect_move_h = raycast_slope_move_h;
-                        _collision_redirect_move_v = raycast_slope_move_v;
+                        _collision_move_h = raycast_slope_move_h;
+                        _collision_move_v = raycast_slope_move_v;
                         _collision_floor = raycast_slope_collision_floor;
                         _collision_ceiling = raycast_slope_collision_ceiling;
                     }
@@ -501,22 +501,22 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
             if (_ray_target_v < _ray_target_h)
             {
                 // update collision states
-                _collision_h = false;
-                _collision_v = true;
+                _raycast_collision_h = false;
+                _raycast_collision_v = true;
                 
                 // update the movement values
-                _new_move_h = (_collision_x - _start_x);
-                _new_move_v = (_collision_y - _start_y);
+                _raycast_new_move_h = (_collision_x - _start_x);
+                _raycast_new_move_v = (_collision_y - _start_y);
                 
                 // update the redirection values for another test
-                _redirect_move_h = _collision_redirect_move_h;
-                _redirect_move_v = _collision_redirect_move_v;
+                _raycast_redirect_move_h = _collision_move_h;
+                _raycast_redirect_move_v = _collision_move_v;
                 
-                // if there was collision wtih a sloped tile
+                // if there was collision with a sloped tile
                 if (_collision_slope)
                 {
-                    _collision_slope_h = false;
-                    _collision_slope_v = true;
+                    _raycast_collision_slope_h = false;
+                    _raycast_collision_slope_v = true;
                 }
                 
                 _raycast_collision_floor = _collision_floor;
@@ -570,15 +570,15 @@ while ((_test_h || _test_v) && ! _collision_h && ! _collision_v)
  */
 
 // update movement values
-raycast_new_move_h = _new_move_h;
-raycast_new_move_v = _new_move_v;
-raycast_redirect_move_h = _redirect_move_h;
-raycast_redirect_move_v = _redirect_move_v;
+raycast_new_move_h = _raycast_new_move_h;
+raycast_new_move_v = _raycast_new_move_v;
+raycast_redirect_move_h = _raycast_redirect_move_h;
+raycast_redirect_move_v = _raycast_redirect_move_v;
 
 // update collision states
-raycast_collision_h = _collision_h;
-raycast_collision_v = _collision_v;
-raycast_collision_slope = (_collision_slope_h || _collision_slope_v);
+raycast_collision_h = _raycast_collision_h;
+raycast_collision_v = _raycast_collision_v;
+raycast_collision_slope = (_raycast_collision_slope_h || _raycast_collision_slope_v);
 
 raycast_collision_floor = _raycast_collision_floor;
 raycast_collision_ceiling = _raycast_collision_ceiling;
