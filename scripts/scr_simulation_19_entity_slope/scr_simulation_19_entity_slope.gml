@@ -12,14 +12,14 @@
  */
 
 // if there is no movement
-if (raycast_move_h == 0 && raycast_move_v == 0)
+if (raycast_new_move_h == 0 && raycast_new_move_v == 0)
 {
     return false;
 }
 
 // get values
-var _move_h = raycast_move_h;
-var _move_v = raycast_move_v;
+var _new_move_h = raycast_new_move_h;
+var _new_move_v = raycast_new_move_v;
 var _tile_at_point = argument0;
 var _cell_x = argument1;
 var _cell_y = argument2;
@@ -51,7 +51,8 @@ var _tile_size = tile_size;
  * 5: y2
  * 6: offset_x
  * 7: offset_y 
- * 8: sign of the determinant
+ * 8: 0: ceiling tile, 1: floor tile
+ * 9: sign of the determinant
  */
 
 // if not an array
@@ -61,7 +62,7 @@ if ( ! is_array(tile_definitions))
 }
 
 // if this entry of the array does not have the correct length
-if (array_length_2d(tile_definitions, _tile_at_point) != 9)
+if (array_length_2d(tile_definitions, _tile_at_point) != 10)
 {
     return false;
 }
@@ -73,7 +74,7 @@ var _tile_gradient = tile_definitions[_tile_at_point, 0];
 // or they are the same line and touch infinity (collinear)
 if (_ray_gradient == _tile_gradient)
 {
-    return;
+    return false;
 }
 
 // if this tile's slope is the same as one already collided against
@@ -83,7 +84,7 @@ if (_tile_gradient == collision_slope_tile_gradient)
 }
 
 // get the value for the cosine of the angle
-var _tile_cosine  = tile_definitions[_tile_at_point, 1] * (_move_h > 0 ? 1 : -1);
+var _tile_cosine  = tile_definitions[_tile_at_point, 1] * (_new_move_h > 0 ? 1 : -1);
 
 // get the first (left most) point on the tile
 var _tile_x1 = (_cell_x + tile_definitions[_tile_at_point, 2]) * _tile_size;
@@ -106,157 +107,75 @@ _start_y += _offset_y;
 /**
  * Determine the Side of the Tile
  *
- * The "sign of the determinant" is used to determine if the starting and ending points are on the open side of the sloped tile.
- * The ray only need to be redirected if the starting point is on the open side of the tile and the ending point is on the solid side.
+ * The "sign of the determinant" is used to determine if the starting and ending points are on the "open" or "solid" sides of the sloped tile.
+ * Normally, the ray only needs to be redirected if the starting point is on the open side of the tile and the ending point is on the solid side.
+ * However, that relies on the floating point math to be extremely precise, which shouldn't be assumed.
+ * Instead, just magnitize the instance to the slope unless the instance is attempting to move away from it (like when jumping).
+ * You can determine if its leaving the slope because the "end determinant" will equal the side of the tile that is open space.
  *
  * d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
  */
 
-/** /
-// get the value that represents the side that is "open space'
-var _tile_determinant = tile_definitions[_tile_at_point, 8];
-
-// find the side of the tile the starting point is on
-var _start_determinant = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
-
-// if the starting point is not on the line
-if (_start_determinant != 0)
+// if jumping while on a "floor" slope
+if (_new_move_v < 0)
 {
-    // if the starting point is not on the open side of the tile
-    if (sign(_start_determinant) != _tile_determinant)
+    // if this tile is a "floor" tile (as opposed to a ceiling tile)
+    var _is_floor_tile = tile_definitions[_tile_at_point, 8];
+    if (_is_floor_tile == 1)
     {
-        return false;
-    }
-}
-
-// find the side of the tile the end point is on
-var _end_determinant = (((_start_x + _move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
-
-// if the end point is on the open side of the tile
-if (sign(_end_determinant) == _tile_determinant)
-{
-    return false;
-}
-/**/
-
-/**/
-var _sticky = false;
-switch (_tile_at_point)
-{
-    // 45 degress
-    case global.TILE_SOLID_45_SE: // ◢
-    case global.TILE_SOLID_45_NW: // ◤
-        if (_move_h > 0) _sticky = false;
-        if (_move_h < 0) _sticky = true;
-        break;
-                        
-    case global.TILE_SOLID_45_SW: // ◣
-    case global.TILE_SOLID_45_NE: // ◥
-        if (_move_h > 0) _sticky = true
-        if (_move_h < 0) _sticky = false;
-        break;
-                        
-    // 22.5 degress
-    case global.TILE_SOLID_22_SE_1: // ◢
-    case global.TILE_SOLID_22_SE_2: // ◢
-    case global.TILE_SOLID_22_NW_1: // ◤
-    case global.TILE_SOLID_22_NW_2: // ◤
-        if (_move_h > 0) _sticky = false;
-        if (_move_h < 0) _sticky = true;
-        break;
-                        
-    case global.TILE_SOLID_22_SW_1: // ◣
-    case global.TILE_SOLID_22_SW_2: // ◣
-    case global.TILE_SOLID_22_NE_1: // ◥
-    case global.TILE_SOLID_22_NE_2: // ◥
-        if (_move_h > 0) _sticky = true;
-        if (_move_h < 0) _sticky = false;
-        break;
-}
-
-// get the value that represents the side that is "open space'
-var _tile_determinant = tile_definitions[_tile_at_point, 8];
-/*
-// find the side of the tile the starting point is on
-var _start_determinant = ((_start_x - _tile_x1) * (_tile_y2 - _tile_y1)) - ((_start_y - _tile_y1) * (_tile_x2 - _tile_x1));
-
-// if the starting point is not on the line
-if (_start_determinant != 0)
-{
-    // if the starting point is not on the open side of the tile
-    if (sign(_start_determinant) != _tile_determinant)
-    {
-        return false;
-    }
-}
-*/
-// if not sticking to the tile
-// *this will allow the entity to jump away from the slope while rising with it
-if ( ! _sticky)
-{
-    // find the side of the tile the end point is on
-    var _end_determinant = (((_start_x + _move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
+        // default state is to stick to the slope
+        var _sticky = true;
+        
+        // if ◢ tile (gradient -1, -0.5)
+        if (sign(_tile_gradient) == -1)
+        {
+            // if standing or descending the slope
+            if (_new_move_h == 0 || _new_move_h < 0)
+            {
+                return false;
+            }
+            // else, if ascending the slope
+            else if (_new_move_h > 0)
+            {
+                _sticky = false;
+            }
+        }
+        
+        // else, if ◣ tile (gradient 1, 0.5)
+        else if (sign(_tile_gradient) == 1)
+        {
+            // if standing or descending the slope
+            if (_new_move_h == 0 || _new_move_h > 0)
+            {
+                return false;
+            }
+            // else, if ascending the slope
+            else if (_new_move_h < 0)
+            {
+                _sticky = false;
+            }
+        }
+        
+        // if the instance is attempting to leave the slope
+        if ( ! _sticky)
+        {
+            // get the value that represents the side that is "open space'
+            var _tile_determinant = tile_definitions[_tile_at_point, 9];
+            
+            // find the side of the tile the end point is on
+            var _end_determinant = (((_start_x + _new_move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _new_move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
+            
+            // if the end point is on the open side of the tile
+            if (sign(_end_determinant) == _tile_determinant)
+            {
+                return false;
+            }
+        
+        }
     
-    // if the end point is on the open side of the tile
-    if (sign(_end_determinant) == _tile_determinant)
-    {
-        return false;
     }
-}
-/**/
 
-/** /
-var _sticky = false;
-switch (_tile_at_point)
-{
-    // 45 degress
-    case global.TILE_SOLID_45_SE: // ◢
-    case global.TILE_SOLID_45_NW: // ◤
-        if (_move_h > 0) _sticky = false;
-        if (_move_h < 0) _sticky = true;
-        break;
-                        
-    case global.TILE_SOLID_45_SW: // ◣
-    case global.TILE_SOLID_45_NE: // ◥
-        if (_move_h > 0) _sticky = true
-        if (_move_h < 0) _sticky = false;
-        break;
-                        
-    // 22.5 degress
-    case global.TILE_SOLID_22_SE_1: // ◢
-    case global.TILE_SOLID_22_SE_2: // ◢
-    case global.TILE_SOLID_22_NW_1: // ◤
-    case global.TILE_SOLID_22_NW_2: // ◤
-        if (_move_h > 0) _sticky = false;
-        if (_move_h < 0) _sticky = true;
-        break;
-                        
-    case global.TILE_SOLID_22_SW_1: // ◣
-    case global.TILE_SOLID_22_SW_2: // ◣
-    case global.TILE_SOLID_22_NE_1: // ◥
-    case global.TILE_SOLID_22_NE_2: // ◥
-        if (_move_h > 0) _sticky = true;
-        if (_move_h < 0) _sticky = false;
-        break;
 }
-
-// if not sticking to the tile
-// *this will allow the entity to jump away from the slope while rising with it
-if ( ! _sticky)
-{
-    // get the value that represents the side that is "open space'
-    var _tile_determinant = tile_definitions[_tile_at_point, 8];
-    
-    // find the side of the tile the end point is on
-    var _end_determinant = (((_start_x + _move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
-    
-    // if the end point is on the open side of the tile
-    if (sign(_end_determinant) == _tile_determinant)
-    {
-        return false;
-    }
-}
-/**/
 
 
 /**
@@ -273,7 +192,7 @@ var _tile_y_intercept = _tile_y1 - (_tile_gradient * _tile_x1);
 
 // if a vertical line
 // *the ray's x position is always x1, so just plug x into the second line's equation and solve for y
-if (_move_h == 0)
+if (_new_move_h == 0)
 {
     _xx = _start_x;
     _yy = (_tile_gradient * _xx) + _tile_y_intercept;
@@ -281,7 +200,7 @@ if (_move_h == 0)
 
 // else, if a horizontal line
 // *the ray's y position is always y1, so just plug y into the second line's equation and solve for x
-else if (_move_v == 0)
+else if (_new_move_v == 0)
 {
     _yy = _start_y;
     _xx = (_yy - _tile_y_intercept) / _tile_gradient;
@@ -320,96 +239,37 @@ if (_tile_intercept)
 {
     // find the distance from the starting point to where the collision occurred
     var _distance = point_distance(_start_x, _start_y, _xx, _yy);
-        
+    
     // if the distance to the intercept point does not exceede the maximum target distance
     if (_distance < _ray_target)
     {
-        if (_move_h == 0)
+        raycast_slope_x = _xx - _offset_x;
+        raycast_slope_y = _yy - _offset_y;
+        
+        if (_new_move_h == 0)
         {
-            raycast_slope_x = _xx - _offset_x;
-            raycast_slope_y = _yy - _offset_y;
-            
-            // redirect the movement along the slope
+            // no movement redirection
             raycast_slope_move_h = 0;
             raycast_slope_move_v = 0;
-            
-            return true;
         }
         else
         {
-            raycast_slope_x = _xx - _offset_x;
-            raycast_slope_y = _yy - _offset_y;
-            
-            /** /
             // redirect the movement along the slope
-            raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
-            raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
-            /**/
+            //raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
+            //raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
             
-            var _distance_h = point_distance(_xx, 0, _start_x + _move_h, 0);
-            
-            // redirect the movement along the slope
+            // redirect the remaining horizontal movement along the slope
+            var _distance_h = point_distance(_xx, 0, _start_x + _new_move_h, 0);
             raycast_slope_move_h = _distance_h * _tile_cosine;
             raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
-            
-            /** /
-            var _tile_sine = 0;
-                
-            switch (_tile_at_point)
-            {
-                // 45 degress
-                case global.TILE_SOLID_45_SE: // ◢
-                case global.TILE_SOLID_45_NW: // ◤
-                    if (_move_h > 0) _tile_sine =  0.70710678118;
-                    if (_move_h < 0) _tile_sine = -0.70710678118;
-                    break;
-                        
-                case global.TILE_SOLID_45_SW: // ◣
-                case global.TILE_SOLID_45_NE: // ◥
-                    if (_move_h > 0) _tile_sine = -0.70710678118;
-                    if (_move_h < 0) _tile_sine =  0.70710678118;
-                    break;
-                        
-                // 22.5 degress
-                case global.TILE_SOLID_22_SE_1: // ◢
-                case global.TILE_SOLID_22_SE_2: // ◢
-                case global.TILE_SOLID_22_NW_1: // ◤
-                case global.TILE_SOLID_22_NW_2: // ◤
-                    if (_move_h > 0) _tile_sine =  0.38268343236;
-                    if (_move_h < 0) _tile_sine = -0.38268343236;
-                    break;
-                        
-                case global.TILE_SOLID_22_SW_1: // ◣
-                case global.TILE_SOLID_22_SW_2: // ◣
-                case global.TILE_SOLID_22_NE_1: // ◥
-                case global.TILE_SOLID_22_NE_2: // ◥
-                    if (_move_h > 0) _tile_sine = -0.38268343236;
-                    if (_move_h < 0) _tile_sine =  0.38268343236;
-                    break;
-            }
-            
-            // redirect the movement along the slope
-            raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
-            raycast_slope_move_v = (_ray_target - _distance) * _tile_sine * -1;
-            /**/
-            
-            // get the gradient of this tile
-            collision_slope_tile_gradient = _tile_gradient;
-            
-            return true;
         }
         
-    }
-    
-    /*
-        var _distance_h = point_distance(_xx, 0, _start_x + _move_h, 0);
-    
-        // redirect the movement along the slope
-        raycast_slope_move_h = _distance_h * cos(_radians);
-        raycast_slope_move_v = _distance_h * sin(_radians) * -1;
+        // save the gradient of this tile
+        collision_slope_tile_gradient = _tile_gradient;
         
         return true;
-    */
+            
+    }
     
 }
 

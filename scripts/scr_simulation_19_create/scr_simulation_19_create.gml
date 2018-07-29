@@ -6,6 +6,14 @@
  *
  */
 
+object_entity = obj_simulation_19_entity;
+
+
+/**
+ * Globals for Helper Function
+ *
+ */
+
 show_debug_overlay(true);
 
 // values
@@ -19,6 +27,9 @@ global.COLLISION_TILEMAP = layer_tilemap_get_id(collision_tilemap_layer_id);
 /**
  * Tiles
  *
+ * The tiles are named for the side or direction that cannot be passed through.
+ * The numbers "_45" and "_22" refer to the angle of the slope of the tile (22 is actually 22.5 degrees).
+ * The additional "_1" and "_2" refer to multiple tiles that make up a single slope and should always be used together.
  */
 
 global.TILE_SIZE = 10;
@@ -53,20 +64,33 @@ global.TILE_SOLID_22_NW_2 = 42; // ◤
 /**
  * Sloped Tiles Information
  *
- * The "sign of the determinant" is used to determine if a point is on the open side of a sloped tile.
+ * The gradient is the slope (m) of the tile.
  *
- * We only use the cosine of the angle to determine the x position along the slope.
- * When trying to apply the sin of the angle to determine the y position, its always off.
+ * The cosine of the angle is used to determine the new x position along the slope to redirect the movement.
+ * Then the line equation "y = mx + b" is used to find the new y position.
+ * When trying to apply the sine of 22.5 degrees to determine the new y position, it was always off for some reason.
+ *
+ * The tile's x1 and y1 refer to the left most offset inside the tile the line starts from.
+ * The tile's x2 and y2 refer to the right most offset inside the tile that the line ends at.
+ * Where (0, 0) is the top left, (1, 1) is the bottom right, and (1, 0.5) is the left middle point of a tile when multiplied by the tile size.
+ *
+ * The bounding box of the object testing for collision needs to be offset so that the point closest to a slope is tested.
+ * The position is always reset to the top left corner of the bounding box and the offset of its width and height are added accordingly.
+ * Where (0, 0) is the top left and (1, 1) is the bottom right of the bounding box.
+ *
+ * The "sign of the determinant" is used to determine if a point is on the open or solid side of a sloped tile.
+ * This value needs to represent the value of the side that is "open space".
  *
  * 0: gradient
  * 1: cosine of the angle
- * 2: x1
- * 3: y1
- * 4: x2
- * 5: y2
- * 6: offset_x
- * 7: offset_y 
- * 8: sign of the determinant
+ * 2: tile x1
+ * 3: tile y1
+ * 4: tile x2
+ * 5: tile y2
+ * 6: bbox width offset
+ * 7: bbox height offset
+ * 8: 0: ceiling tile, 1: floor tile
+ * 9: sign of the determinant
  */
 
 var _idx = 0;
@@ -84,6 +108,7 @@ global.TILE_DEFINITIONS[_idx, 5] = 0;
 global.TILE_DEFINITIONS[_idx, 6] = 1;
 global.TILE_DEFINITIONS[_idx, 7] = 1;
 global.TILE_DEFINITIONS[_idx, 8] = 1;
+global.TILE_DEFINITIONS[_idx, 9] = 1;
 
 // 45 degrees, north west ◤
 _idx = global.TILE_SOLID_45_NW;
@@ -95,7 +120,8 @@ global.TILE_DEFINITIONS[_idx, 4] = 1;
 global.TILE_DEFINITIONS[_idx, 5] = 0;
 global.TILE_DEFINITIONS[_idx, 6] = 0;
 global.TILE_DEFINITIONS[_idx, 7] = 0;
-global.TILE_DEFINITIONS[_idx, 8] = -1;
+global.TILE_DEFINITIONS[_idx, 8] = 0;
+global.TILE_DEFINITIONS[_idx, 9] = -1;
 
 // 45 degrees, south west ◣
 _idx = global.TILE_SOLID_45_SW;
@@ -108,6 +134,7 @@ global.TILE_DEFINITIONS[_idx, 5] = 1;
 global.TILE_DEFINITIONS[_idx, 6] = 0;
 global.TILE_DEFINITIONS[_idx, 7] = 1;
 global.TILE_DEFINITIONS[_idx, 8] = 1;
+global.TILE_DEFINITIONS[_idx, 9] = 1;
 
 // 45 degrees, north east ◥
 _idx = global.TILE_SOLID_45_NE;
@@ -119,7 +146,8 @@ global.TILE_DEFINITIONS[_idx, 4] = 1;
 global.TILE_DEFINITIONS[_idx, 5] = 1;
 global.TILE_DEFINITIONS[_idx, 6] = 1;
 global.TILE_DEFINITIONS[_idx, 7] = 0;
-global.TILE_DEFINITIONS[_idx, 8] = -1;
+global.TILE_DEFINITIONS[_idx, 8] = 0;
+global.TILE_DEFINITIONS[_idx, 9] = -1;
 
 // 22 degrees, south east ◢ (1)
 _idx = global.TILE_SOLID_22_SE_1;
@@ -132,6 +160,7 @@ global.TILE_DEFINITIONS[_idx, 5] = 0.5;
 global.TILE_DEFINITIONS[_idx, 6] = 1;
 global.TILE_DEFINITIONS[_idx, 7] = 1;
 global.TILE_DEFINITIONS[_idx, 8] = 1;
+global.TILE_DEFINITIONS[_idx, 9] = 1;
 
 // 22 degrees, south east ◢ (2)
 _idx = global.TILE_SOLID_22_SE_2;
@@ -144,6 +173,7 @@ global.TILE_DEFINITIONS[_idx, 5] = 0;
 global.TILE_DEFINITIONS[_idx, 6] = 1;
 global.TILE_DEFINITIONS[_idx, 7] = 1;
 global.TILE_DEFINITIONS[_idx, 8] = 1;
+global.TILE_DEFINITIONS[_idx, 9] = 1;
 
 // 22 degrees, north west ◤ (1)
 _idx = global.TILE_SOLID_22_NW_1;
@@ -155,7 +185,8 @@ global.TILE_DEFINITIONS[_idx, 4] = 1;
 global.TILE_DEFINITIONS[_idx, 5] = 0.5;
 global.TILE_DEFINITIONS[_idx, 6] = 0;
 global.TILE_DEFINITIONS[_idx, 7] = 0;
-global.TILE_DEFINITIONS[_idx, 8] = -1;
+global.TILE_DEFINITIONS[_idx, 8] = 0;
+global.TILE_DEFINITIONS[_idx, 9] = -1;
 
 // 22 degrees, north west ◤ (2)
 _idx = global.TILE_SOLID_22_NW_2;
@@ -167,7 +198,8 @@ global.TILE_DEFINITIONS[_idx, 4] = 1;
 global.TILE_DEFINITIONS[_idx, 5] = 0;
 global.TILE_DEFINITIONS[_idx, 6] = 0;
 global.TILE_DEFINITIONS[_idx, 7] = 0;
-global.TILE_DEFINITIONS[_idx, 8] = -1;
+global.TILE_DEFINITIONS[_idx, 8] = 0;
+global.TILE_DEFINITIONS[_idx, 9] = -1;
 
 // 22 degrees, south west ◣ (1)
 _idx = global.TILE_SOLID_22_SW_1;
@@ -180,6 +212,7 @@ global.TILE_DEFINITIONS[_idx, 5] = 0.5;
 global.TILE_DEFINITIONS[_idx, 6] = 0;
 global.TILE_DEFINITIONS[_idx, 7] = 1;
 global.TILE_DEFINITIONS[_idx, 8] = 1;
+global.TILE_DEFINITIONS[_idx, 9] = 1;
 
 // 22 degrees, south west ◣ (2)
 _idx = global.TILE_SOLID_22_SW_2;
@@ -192,6 +225,7 @@ global.TILE_DEFINITIONS[_idx, 5] = 1;
 global.TILE_DEFINITIONS[_idx, 6] = 0;
 global.TILE_DEFINITIONS[_idx, 7] = 1;
 global.TILE_DEFINITIONS[_idx, 8] = 1;
+global.TILE_DEFINITIONS[_idx, 9] = 1;
 
 // 22 degrees, north east ◥ (1)
 _idx = global.TILE_SOLID_22_NE_1;
@@ -203,7 +237,8 @@ global.TILE_DEFINITIONS[_idx, 4] = 1;
 global.TILE_DEFINITIONS[_idx, 5] = 0.5;
 global.TILE_DEFINITIONS[_idx, 6] = 1;
 global.TILE_DEFINITIONS[_idx, 7] = 0;
-global.TILE_DEFINITIONS[_idx, 8] = -1;
+global.TILE_DEFINITIONS[_idx, 8] = 0;
+global.TILE_DEFINITIONS[_idx, 9] = -1;
 
 // 22 degrees, north east ◥ (2)
 _idx = global.TILE_SOLID_22_NE_2;
@@ -215,7 +250,8 @@ global.TILE_DEFINITIONS[_idx, 4] = 1;
 global.TILE_DEFINITIONS[_idx, 5] = 1;
 global.TILE_DEFINITIONS[_idx, 6] = 1;
 global.TILE_DEFINITIONS[_idx, 7] = 0;
-global.TILE_DEFINITIONS[_idx, 8] = -1;
+global.TILE_DEFINITIONS[_idx, 8] = 0;
+global.TILE_DEFINITIONS[_idx, 9] = -1;
 
 
 /**
@@ -299,12 +335,12 @@ var pos_y = (room_height / 2);
 
 for (var i = 0; i < 50; i++)
 {
-    instance_create_layer(pos_x, pos_y, instances_layer_id, obj_simulation_16_entity);
+    instance_create_layer(pos_x, pos_y, instances_layer_id, object_entity);
 }
 */
 
 var pos_x = (room_width / 2);
 var pos_y = (room_height / 2);
-var _player = instance_create_layer(pos_x, pos_y, instances_layer_id, obj_simulation_16_entity);
+var _player = instance_create_layer(pos_x, pos_y, instances_layer_id, object_entity);
 //camera_set_view_target(camera, _player);
 

@@ -6,6 +6,10 @@
  *
  */
 
+// scripts
+script_raycast_collision = scr_simulation_19_entity_raycast;
+script_slope_collision = scr_simulation_19_entity_slope;
+
 // values
 camera = global.CAMERA;
 camera_width_half = global.CAMERA_WIDTH_HALF;
@@ -27,14 +31,14 @@ tile_solid_45_ne = global.TILE_SOLID_45_NE; // ◥
 tile_solid_45_nw = global.TILE_SOLID_45_NW; // ◤
 
 // 22 degress
-tile_solid_22_se_1 = global.TILE_SOLID_22_SE_1 = 11; // ◢
-tile_solid_22_se_2 = global.TILE_SOLID_22_SE_2 = 12; // ◢
-tile_solid_22_sw_1 = global.TILE_SOLID_22_SW_1 = 31; // ◣
-tile_solid_22_sw_2 = global.TILE_SOLID_22_SW_2 = 32; // ◣
-tile_solid_22_ne_1 = global.TILE_SOLID_22_NE_1 = 21; // ◥
-tile_solid_22_ne_2 = global.TILE_SOLID_22_NE_2 = 22; // ◥
-tile_solid_22_nw_1 = global.TILE_SOLID_22_NW_1 = 41; // ◤
-tile_solid_22_nw_2 = global.TILE_SOLID_22_NW_2 = 42; // ◤
+tile_solid_22_se_1 = global.TILE_SOLID_22_SE_1; // ◢
+tile_solid_22_se_2 = global.TILE_SOLID_22_SE_2; // ◢
+tile_solid_22_sw_1 = global.TILE_SOLID_22_SW_1; // ◣
+tile_solid_22_sw_2 = global.TILE_SOLID_22_SW_2; // ◣
+tile_solid_22_ne_1 = global.TILE_SOLID_22_NE_1; // ◥
+tile_solid_22_ne_2 = global.TILE_SOLID_22_NE_2; // ◥
+tile_solid_22_nw_1 = global.TILE_SOLID_22_NW_1; // ◤
+tile_solid_22_nw_2 = global.TILE_SOLID_22_NW_2; // ◤
 
 // collision tile information
 tile_definitions = global.TILE_DEFINITIONS;
@@ -65,45 +69,39 @@ move_h = 0;
 move_v = 0;
 new_move_h = 0;
 new_move_v = 0;
+move_distance_delta = 0;
+move_distance_target = 0;
 
 // collision states
 collision_h = false;
 collision_v = false
 collision_slope = false;
-//collision_slope_falling = false;
-//collision_slope_rising = false;
 collision_slope_tile_gradient = 0;
 
-// raycasting starting position
+// raycasting movement values
 raycast_x = 0;
 raycast_y = 0;
+raycast_new_move_h = 0;
+raycast_new_move_v = 0;
+raycast_redirect_move_h = 0;
+raycast_redirect_move_v = 0;
 
-raycast_slope_x = 0;
-raycast_slope_y = 0;
-
-// raycasting movement values
-raycast_move_h = 0;
-raycast_move_v = 0;
-
-raycast_next_move_h = 0;
-raycast_next_move_v = 0;
-
-raycast_slope_move_h = 0;
-raycast_slope_move_v = 0;
-
-// raycasting collision states
+// raycasting movement states
 raycast_collision_h = false;
 raycast_collision_v = false;
 raycast_collision_slope = false;
 
-output_raycast_slope_x = 0;
-output_raycast_slope_y = 0;
+// slope collision values
+raycast_slope_x = 0;
+raycast_slope_y = 0;
+raycast_slope_move_h = 0;
+raycast_slope_move_v = 0;
 
 // drawing
-// the_sprite = spr_simulation_15px;
-the_sprite = spr_simulation_10px;
-// the_sprite = spr_simulation_8x6px;
-// the_sprite = spr_simulation_6px;
+//the_sprite = spr_simulation_15px;
+//the_sprite = spr_simulation_10px;
+//the_sprite = spr_simulation_8x6px;
+the_sprite = spr_simulation_6px;
 //the_sprite = spr_simulation_1px;
 
 sprite_index = the_sprite;

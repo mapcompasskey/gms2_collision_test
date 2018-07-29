@@ -1167,6 +1167,14 @@
             }
         },
         {
+            "Key": "9b73c64f-dbbc-4eff-90c4-be0a30f0db36",
+            "Value": {
+                "id": "11937dc7-4273-4cd1-9976-9c0c4aa4877c",
+                "resourcePath": "scripts\\scr_simulation_19_entity_slope\\scr_simulation_19_entity_slope.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "9cb10dee-e8b7-4454-bb5c-487493331358",
             "Value": {
                 "id": "53714119-026d-403c-a8c5-0d228f185157",
@@ -1287,6 +1295,14 @@
             }
         },
         {
+            "Key": "aaed30ec-ff68-4983-8ac4-5bc55beec9f1",
+            "Value": {
+                "id": "d9de941c-7313-457d-b813-9e358538c5a2",
+                "resourcePath": "scripts\\scr_simulation_19_entity_raycast\\scr_simulation_19_entity_raycast.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "ac300157-4b17-4fd7-8f6c-a8968c9ada45",
             "Value": {
                 "id": "6cc99470-2ed9-4f0a-894a-3a33fbe197a1",
@@ -1346,7 +1362,7 @@
             "Key": "b45093e0-16aa-4856-a298-65c93395f06b",
             "Value": {
                 "id": "bf5a37a3-98b3-46b9-af82-854cff34d2fc",
-                "resourcePath": "scripts\\scr_simulation_19_entity_raycast\\scr_simulation_19_entity_raycast.yy",
+                "resourcePath": "scripts\\scr_simulation_19_entity_raycast_2\\scr_simulation_19_entity_raycast_2.yy",
                 "resourceType": "GMScript"
             }
         },
@@ -1458,7 +1474,7 @@
             "Key": "c1741498-d4ee-4c25-8441-f9d34f4368c8",
             "Value": {
                 "id": "1995dce6-1a35-441c-8a04-4885c09023f5",
-                "resourcePath": "scripts\\scr_simulation_19_entity_slope\\scr_simulation_19_entity_slope.yy",
+                "resourcePath": "scripts\\scr_simulation_19_entity_slope_2\\scr_simulation_19_entity_slope_2.yy",
                 "resourceType": "GMScript"
             }
         },
@@ -2031,7 +2047,9 @@
         "c89d7f53-9eb7-4a69-a874-9d443f5c911e",
         "ec6ca7ce-ab8d-4132-92b8-f4d44a1f939c",
         "177f467a-3d40-4659-8f97-ca728f600283",
+        "aaed30ec-ff68-4983-8ac4-5bc55beec9f1",
         "b45093e0-16aa-4856-a298-65c93395f06b",
+        "9b73c64f-dbbc-4eff-90c4-be0a30f0db36",
         "c1741498-d4ee-4c25-8441-f9d34f4368c8"
     ],
     "tutorial": ""
