@@ -9,6 +9,14 @@
 /**
  * Slope Collision
  *
+ * point: (x, y)
+ * m: slope
+ * b: y-intercept
+ *
+ * line equation: y = mx + b
+ * y-intercept: b = y - mx
+ * slope: (y2 - y1) / (x2 - x1)
+ *
  */
 
 // if there is no movement
@@ -64,7 +72,7 @@ if ( ! is_array(tile_definitions))
 {
     return false;
 }
-
+scr_output(_tile_at_point);
 // if this entry of the array does not have the correct length
 if (array_length_2d(tile_definitions, _tile_at_point) != 9)
 {
