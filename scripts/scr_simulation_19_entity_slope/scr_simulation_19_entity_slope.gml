@@ -55,6 +55,12 @@ var _tile_size = tile_size;
  * 9: sign of the determinant
  */
 
+// if this is not a sloped tile
+if (ds_list_find_index(sloped_tiles_list, _tile_at_point) == -1)
+{
+    return false;
+}
+
 // if not an array
 if ( ! is_array(tile_definitions))
 {

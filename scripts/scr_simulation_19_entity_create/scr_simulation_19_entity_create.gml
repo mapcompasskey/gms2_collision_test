@@ -15,32 +15,16 @@ camera = global.CAMERA;
 camera_width_half = global.CAMERA_WIDTH_HALF;
 camera_height_half = global.CAMERA_HEIGHT_HALF;
 
+// tiles
 tile_size = global.TILE_SIZE;
 tile_solid = global.TILE_SOLID;
-
-// one sided
 tile_solid_west = global.TILE_SOLID_WEST;   //  --|
 tile_solid_east = global.TILE_SOLID_EAST;   // |--
 tile_solid_south = global.TILE_SOLID_SOUTH; // ---
 tile_solid_north = global.TILE_SOLID_NORTH; // ___
 
-// 45 degrees
-tile_solid_45_se = global.TILE_SOLID_45_SE; // ◢
-tile_solid_45_sw = global.TILE_SOLID_45_SW; // ◣
-tile_solid_45_ne = global.TILE_SOLID_45_NE; // ◥
-tile_solid_45_nw = global.TILE_SOLID_45_NW; // ◤
-
-// 22 degress
-tile_solid_22_se_1 = global.TILE_SOLID_22_SE_1; // ◢
-tile_solid_22_se_2 = global.TILE_SOLID_22_SE_2; // ◢
-tile_solid_22_sw_1 = global.TILE_SOLID_22_SW_1; // ◣
-tile_solid_22_sw_2 = global.TILE_SOLID_22_SW_2; // ◣
-tile_solid_22_ne_1 = global.TILE_SOLID_22_NE_1; // ◥
-tile_solid_22_ne_2 = global.TILE_SOLID_22_NE_2; // ◥
-tile_solid_22_nw_1 = global.TILE_SOLID_22_NW_1; // ◤
-tile_solid_22_nw_2 = global.TILE_SOLID_22_NW_2; // ◤
-
 // collision tile information
+sloped_tiles_list = global.SLOPED_TILES_LIST;
 tile_definitions = global.TILE_DEFINITIONS;
 
 // collision tilemap
