@@ -38,7 +38,7 @@ inst_y = y;
 
 // movement values
 speed_h = 100;
-speed_v = 100;//30;
+speed_v = 30;
 
 velocity_x = 0;
 velocity_y = 0;

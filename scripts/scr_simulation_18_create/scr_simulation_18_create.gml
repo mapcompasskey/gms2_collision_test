@@ -51,6 +51,7 @@ tick = 0;
 collision_tilemap_layer_id = layer_get_id("Collision_Tiles");
 collision_tilemap = layer_tilemap_get_id(collision_tilemap_layer_id);
 tile_size = global.TILE_SIZE;
+sloped_tiles_list = global.SLOPED_TILES_LIST;
 tile_definitions = global.TILE_DEFINITIONS;
 
 // starting position
@@ -109,8 +110,8 @@ mask_index = spr_simulation_10px;
 //sprite_index = spr_simulation_8x6px;
 //mask_index = spr_simulation_8x6px;
 
-sprite_index = spr_simulation_6px;
-mask_index = spr_simulation_6px;
+//sprite_index = spr_simulation_6px;
+//mask_index = spr_simulation_6px;
 
 //sprite_index = spr_simulation_1px;
 //mask_index = spr_simulation_1px;
@@ -266,12 +267,20 @@ if (false)
     move_distance = 40;
 }
 
-if (true)
+if (false)
 {
     inst_x = 48 * global.TILE_SIZE;
     inst_y = 18 * global.TILE_SIZE;
     move_angle = 315;
     move_distance = 40;
+}
+
+if (true)
+{
+    inst_x = 19 * global.TILE_SIZE;
+    inst_y = 21 * global.TILE_SIZE;
+    move_angle = 270;
+    move_distance = 80;
 }
 
 // update the camera position

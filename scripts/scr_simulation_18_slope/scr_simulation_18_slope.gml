@@ -45,10 +45,10 @@ var _width = bbox_width + 1;
 // the tile size
 var _tile_size = global.TILE_SIZE;
 
-//var _list = ds_list_create();
-//ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_H_COLOR);
-//ds_list_add(global.GUI_AXIS_POINTS, _list);
-//ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+var _list = ds_list_create();
+ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_H_COLOR);
+ds_list_add(global.GUI_AXIS_POINTS, _list);
+ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
 
 
 /**
@@ -67,12 +67,18 @@ var _tile_size = global.TILE_SIZE;
  * 8: sign of the determinant
  */
 
+// if this is not a sloped tile
+if (ds_list_find_index(sloped_tiles_list, _tile_at_point) == -1)
+{
+    return false;
+}
+
 // if not an array
 if ( ! is_array(tile_definitions))
 {
     return false;
 }
-scr_output(_tile_at_point);
+
 // if this entry of the array does not have the correct length
 if (array_length_2d(tile_definitions, _tile_at_point) != 9)
 {
@@ -128,11 +134,16 @@ _start_y += _offset_y;
  * d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
  */
 
+// test the determinants by default to see if the entity is leaving the slope
 var _sticky = false;
+
+// if traveling up along the slope, just stick to the slope
 if (sign(_tile_gradient) < 0 && _new_move_h < 0)
 {
     _sticky = true;
 }
+
+// else, if traveling down along the slope, just stick to the slope
 else if (sign(_tile_gradient) > 0 && _new_move_h > 0)
 {
     _sticky = true;
@@ -192,7 +203,16 @@ else
     _yy = (_ray_gradient * _xx) + _ray_y_intercept;
 }
 
-// if colliding with the exact corner of the sloped tile
+// round each value used for comparison to the same nearest decimal place
+// *don't rely on javascript to be able to accurately track large floating point values
+_xx = round(_xx * 1000) / 1000;
+_yy = round(_yy * 1000) / 1000;
+_tile_x1 = round(_tile_x1 * 1000) / 1000;
+_tile_y1 = round(_tile_y1 * 1000) / 1000;
+_tile_x2 = round(_tile_x2 * 1000) / 1000;
+_tile_y2 = round(_tile_y2 * 1000) / 1000;
+
+// if colliding with the exact corner or edge of the sloped tile
 // *it could end up calculating into another cell when dividing by the _cell_size
 if ((_xx == _tile_x1 && _yy == _tile_y1) || _xx == _tile_x2 && _yy == _tile_y2)
 {

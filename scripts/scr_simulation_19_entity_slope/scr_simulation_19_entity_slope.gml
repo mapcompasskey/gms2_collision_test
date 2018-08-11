@@ -183,7 +183,6 @@ if (has_gravity)
     
     }
     
-    
     // if this tile is a "ceiling" tile
     // *need to determine if the end point is on the open side of the tile and if so, the instance should no longer stick to the slope of the tile
     if ( ! _is_floor_tile)
@@ -239,6 +238,15 @@ else
     _xx = (_tile_y_intercept - _ray_y_intercept) / (_ray_gradient - _tile_gradient);
     _yy = (_ray_gradient * _xx) + _ray_y_intercept;
 }
+
+// round each value used for comparison to the same nearest decimal place
+// *can't rely on javascript to be able to accurately track large floating point values
+_xx = round(_xx * 1000) / 1000;
+_yy = round(_yy * 1000) / 1000;
+_tile_x1 = round(_tile_x1 * 1000) / 1000;
+_tile_y1 = round(_tile_y1 * 1000) / 1000;
+_tile_x2 = round(_tile_x2 * 1000) / 1000;
+_tile_y2 = round(_tile_y2 * 1000) / 1000;
 
 // if colliding with the exact corner of the sloped tile
 // *it could end up calculating into another cell when dividing by the _cell_size

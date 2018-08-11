@@ -86,6 +86,80 @@ global.TILE_SOLID_75_NW_3 = 27; // ◤
 
 
 /**
+ * Sloped Tiles List
+ *
+ */
+
+global.SLOPED_TILES_LIST = ds_list_create();
+
+// 45 degrees
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_45_SE);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_45_SW);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_45_NE);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_45_NW);
+
+// 22.5 degrees
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_22_SE_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_22_SE_2);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_22_SW_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_22_SW_2);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_22_NE_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_22_NE_2);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_22_NW_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_22_NW_2);
+
+// 67.5 degrees
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_67_SE_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_67_SE_2);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_67_SW_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_67_SW_2);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_67_NE_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_67_NE_2);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_67_NW_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_67_NW_2);
+
+// 15 degrees
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_SE_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_SE_2);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_SE_3);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_SW_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_SW_2);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_SW_3);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_NE_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_NE_2);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_NE_3);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_NW_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_NW_2);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_15_NW_3);
+
+// 75 degrees
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_SE_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_SE_2);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_SE_3);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_SW_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_SW_2);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_SW_3);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_NE_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_NE_2);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_NE_3);
+
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_NW_1);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_NW_2);
+ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_NW_3);
+
+
+/**
  * Sloped Tiles Information
  *
  * The gradient is the slope (m) of the tile.
