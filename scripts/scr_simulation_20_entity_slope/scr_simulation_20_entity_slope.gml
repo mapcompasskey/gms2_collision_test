@@ -316,6 +316,24 @@ if (_tile_intercept)
         }
         else
         {
+            // if only moving vertically
+            if (_new_move_h == 0)
+            {
+                // if descending and colliding with a SW slope
+                if (_new_move_v > 0 && sign(_tile_gradient) == 1)
+                {
+                    // invert the cosine to continue descending
+                    _tile_cosine = _tile_cosine * -1;
+                }
+                
+                // else, if ascending and colliding with a NW slope
+                else if (_new_move_v < 0 && sign(_tile_gradient) == -1)
+                {
+                    // invert the cosine to conintue ascending
+                    _tile_cosine = _tile_cosine * -1;
+                }
+            }
+            
             // redirect the movement along the slope
             raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
             raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;

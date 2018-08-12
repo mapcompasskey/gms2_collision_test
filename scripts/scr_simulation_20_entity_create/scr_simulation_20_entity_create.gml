@@ -38,15 +38,16 @@ inst_y = y;
 
 // movement values
 speed_h = 100;
-speed_v = 30;
+speed_v = 100;
 
 velocity_x = 0;
 velocity_y = 0;
 
 // states
-has_gravity = true;
+has_gravity = false;
 is_jumping = false;
 is_standing = false;
+is_solid = true;
 
 // movement values
 move_h = 0;
