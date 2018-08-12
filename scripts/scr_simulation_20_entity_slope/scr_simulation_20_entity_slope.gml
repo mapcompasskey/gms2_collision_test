@@ -125,7 +125,7 @@ _start_y += _offset_y;
 // get whether this type of tile is considered a floor or ceiling
 var _is_floor_tile = tile_definitions[_tile_at_point, 8];
 
-// if this instance is always falling
+// if this instance is always falling then it should stick to a slope by default
 if (has_gravity)
 {
     // if the instance is rising while on a floor tile
@@ -200,6 +200,22 @@ if (has_gravity)
         }
     }
     
+}
+
+// if this instance has no graivty, then it shouldn't stick to the slope
+if ( ! has_gravity)
+{
+    // get the value that represents the side that is "open space'
+    var _tile_determinant = tile_definitions[_tile_at_point, 9];
+    
+    // find the side of the tile the end point is on
+    var _end_determinant = (((_start_x + _new_move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _new_move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
+    
+    // if the end point is on the open side of the tile
+    if (sign(_end_determinant) == _tile_determinant)
+    {
+        return false;
+    }
 }
 
 

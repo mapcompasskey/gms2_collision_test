@@ -180,31 +180,6 @@ while (move_distance_delta < move_distance_target && i < 5)
  *
  */
 
-/** /
-if (has_gravity)
-{
-    // reset grounded state
-    is_standing = false;
-    
-    // if veritcal collision occurred
-    if (collision_v)
-    {
-        // reset vertical velocity
-        velocity_y = 0;
-        
-        // if entity was falling
-        if (move_v > 0)
-        {
-            // update grounded state
-            is_standing = true;
-        }
-        
-    }
-    
-}
-/**/
-
-/**/
 if (has_gravity)
 {
     // reset grounded state
@@ -232,7 +207,6 @@ if (has_gravity)
     }
     
 }
-/**/
 
 
 /**

@@ -118,3 +118,4 @@ var pos_y = (room_height / 2);
 var _player = instance_create_layer(pos_x, pos_y, instances_layer_id, object_entity);
 //camera_set_view_target(camera, _player);
 
+
