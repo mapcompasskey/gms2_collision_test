@@ -13,10 +13,10 @@ global.TILE_SIZE = 10;
 global.TILE_SOLID = 1;
 
 // one sided
-global.TILE_SOLID_WEST = 2;  //  --|
-global.TILE_SOLID_EAST = 3;  // |--
-global.TILE_SOLID_SOUTH = 4; // ---
-global.TILE_SOLID_NORTH = 5; // ___
+global.TILE_SOLID_WEST = 2;
+global.TILE_SOLID_EAST = 3;
+global.TILE_SOLID_SOUTH = 4;
+global.TILE_SOLID_NORTH = 5;
 
 // 45 degrees
 global.TILE_SOLID_45_SE = 10; // ◢
@@ -170,14 +170,14 @@ ds_list_add(global.SLOPED_TILES_LIST, global.TILE_SOLID_75_NW_3);
  *
  * The tile's x1 and y1 refer to the left most offset inside the tile the line starts from.
  * The tile's x2 and y2 refer to the right most offset inside the tile that the line ends at.
- * Where (0, 0) is the top left, (1, 1) is the bottom right, and (1, 0.5) is the left middle point of a tile when multiplied by the tile size.
+ * Where (0, 0) is the top left, (1, 1) is the bottom right, and (1, 0.5) is the right middle point of a tile when multiplied by the tile size.
  *
- * The bounding box of the object testing for collision needs to be offset so that the point closest to a slope is tested.
+ * The bounding box of an instance needs to be offset so that the point closest to a slope is tested.
  * The position is always reset to the top left corner of the bounding box and the offset of its width and height are added accordingly.
  * Where (0, 0) is the top left and (1, 1) is the bottom right of the bounding box.
  *
  * The "sign of the determinant" is used to determine if a point is on the open or solid side of a sloped tile.
- * This value needs to represent the value of the side that is "open space".
+ * This value needs to represent the side that is "open space".
  *
  * 0: gradient
  * 1: cosine of the angle

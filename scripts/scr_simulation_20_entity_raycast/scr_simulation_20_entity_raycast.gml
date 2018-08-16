@@ -4,9 +4,58 @@
 /**
  * Tile Based Collision Test
  *
- * Cast a ray from the top left corner of an object checking every horizontal and veritcal intersection for collision with a tile.
- * At each horizontal intersection, check every tile the height of the bounding box (of the instance) would pass through.
- * At each vertical intersection, check every tile the width of the bounding box (of the instance) would pass through.
+ * Cast a ray from the top left corner of an instance and check every horizontal and veritcal intersection for collision with a tile.
+ * At each horizontal intersection, check every tile the height of the instance's bounding box would pass through.
+ * At each vertical intersection, check every tile the width of the instance's bounding box would pass through.
+ *
+ * Required Instance Variables:
+ *  number      raycast_x
+ *  number      raycast_y
+ *  number      raycast_new_move_h
+ *  number      raycast_new_move_v
+ *  number      raycast_redirect_move_h
+ *  number      raycast_redirect_move_v
+ *  boolean     raycast_collision_h
+ *  boolean     raycast_collision_v
+ *  boolean     raycast_collision_floor
+ *  boolean     raycast_collision_ceiling
+ *
+ *  number      sprite_bbox_left
+ *  number      sprite_bbox_top
+ *  number      bbox_height
+ *  number      bbox_width
+ *  real        collision_tilemap
+ *  number      tile_size
+ *  number      tile_solid
+ *  number      tile_solid_east
+ *  number      tile_solid_west
+ *  number      tile_solid_south
+ *  number      tile_solid_north
+ *
+ * Required Instance Variables (Slope):
+ *  real        script_slope_collision
+ *  boolean     raycast_collision_slope
+ *  number      raycast_slope_x
+ *  number      raycast_slope_y
+ *  number      raycast_slope_move_h
+ *  number      raycast_slope_move_v
+ *  boolean     raycast_slope_collision_floor
+ *  boolean     raycast_slope_collision_ceiling
+ *
+ * The point (raycast_x, raycast_y) is the coordinate where the ray is cast from.
+ * The values raycast_new_move_h and raycast_new_move_v represent the horizontal and vertical distance the ray will travel.
+ * If a collision occurs, the values raycast_new_move_h and raycast_new_move_v will be updated to reach the point of collision.
+ * If a collision occurs, the values raycast_redirect_move_h and raycast_redirect_move_v represent the distances the ray will travel during the next collision test.
+ * The values raycast_collision_h and raycast_collision_v track whether a horizontal or vertical collision occurred.
+ * If collision occurs, the values raycast_collision_floor and raycast_collision_ceiling store the state of the type of tile that was collided with.
+ 
+ * The values sprite_bbox_left and sprite_bbox_top are the pixel offsets of the bounding box of the instance calling this script.
+ * The values bbox_width and bbox_height represent the size of the bounding box of the instance calling this script.
+ * The tile_size value represents the size (in pixels) of the tiles being tested against.
+ 
+ 
+ * If collision occurs, the values raycast_slope_collision_floor and raycast_slope_collision_ceiling store the state of the type of tile that was collided with.
+ * If collision occurs, the point (raycast_slope_x, raycast_slope_y) stores the coordinate where the collision occurred.
  */
 
 // if there is no movement
@@ -106,7 +155,7 @@ var _tile_offset_y = (_raycast_new_move_v > 0 ? 1 : 0);
 
 // tile values
 var _tile_at_point;
-var _tile_solid = tile_solid
+var _tile_solid = tile_solid;
 var _tile_h_one_way = (_raycast_new_move_h > 0 ? tile_solid_east : tile_solid_west);
 var _tile_v_one_way = (_raycast_new_move_v > 0 ? tile_solid_south : tile_solid_north);
 
@@ -122,7 +171,7 @@ var _tile_v_one_way = (_raycast_new_move_v > 0 ? tile_solid_south : tile_solid_n
 while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
 {
     // if the horizontal collision test can be performed
-    // (and either can't test veritcal collision or the horizontal test is closer than the vertical test)
+    // (and either can't test veritcal collision or the next horizontal test is closer than the next vertical test)
     if (_test_h && ( ! _test_v || _ray_delta_h <= _ray_delta_v))
     {
         // reset collision values
@@ -346,7 +395,7 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
     }
     
     // else, if vertical collision test can be performed
-    // (and either can't test horizontal collision or the vertical test is closer than the horizontal test)
+    // (and either can't test horizontal collision or the next vertical test is closer than the next horizontal test)
     else if  (_test_v && ( ! _test_h || _ray_delta_v <= _ray_delta_h))
     {
         // reset collision values

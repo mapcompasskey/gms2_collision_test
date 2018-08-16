@@ -167,7 +167,7 @@ if (is_solid)
             collision_h = false;
             collision_v = true;
         }
-    
+        
         // if both horizontal and vertical collision have occurred
         // *there is no longer any reason to continue raycasting
         if (collision_h && collision_v)
