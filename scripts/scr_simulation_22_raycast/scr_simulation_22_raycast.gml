@@ -1,10 +1,8 @@
-/// @function scr_simulation_22_raycast(x, y, move_h, move_v, width, height);
-/// @param {number} x - the x position to start
-/// @param {number} y - the y position to start
-/// @param {number} move_h - the horizontal distance to move
-/// @param {number} move_v - the vertical distance to move
-/// @param {number} width - the width of the instance's bounding box
-/// @param {number} height - the height of the instance's bounding box
+/// @function scr_simulation_22_raycast(x, y, move_h, move_v);
+/// @param {number} x       - the x position to start
+/// @param {number} y       - the y position to start
+/// @param {number} move_h  - the horizontal distance to move
+/// @param {number} move_v  - the vertical distance to move
 
 
 /**
@@ -13,6 +11,39 @@
  * Cast a ray from the top left corner of an object checking every horizontal and veritcal intersection for collision with a tile.
  * At each horizontal intersection, check every tile the height of the bounding box (of the instance) would pass through.
  * At each vertical intersection, check every tile the width of the bounding box (of the instance) would pass through.
+ *
+ * Instead of creating and returning an array every time this script is called, it relies on the instance calling it to have a number of variables that can be updated.
+ *
+ * Required Instance Variables:
+ *  number      raycast_move_h
+ *  number      raycast_move_v
+ *  number      raycast_next_move_h
+ *  number      raycast_next_move_v
+ *  boolean     raycast_collision_h
+ *  boolean     raycast_collision_v
+ *  boolean     raycast_collision_slope
+ *  boolean     raycast_collision_floor
+ *  boolean     raycast_collision_ceiling
+ *  real        collision_tilemap
+ *  number      tile_size
+ *  number      tile_solid
+ *  number      tile_solid_east
+ *  number      tile_solid_west
+ *  number      tile_solid_south
+ *  number      tile_solid_north
+ *
+ * The "raycast_move_h" and "raycast_move_v" values represent the total distance that can be moved after each collision test.
+ * The "raycast_next_move_h" and "raycast_next_move_h" values represent the remaining distance that can be moved during the next collision test.
+ * The "raycast_collision_h" and "raycast_collision_v" values store the horizontal and vertical collision states.
+ * The "raycast_collision_slope" value stores the slope collision state.
+ * The "raycast_collision_floor" and "raycast_collision_ceiling" values store the type of vertical collision state.
+ * The "collision_tilemap" values points to the tilemap layer containing the tiles used for collision test.
+ * The "tile_size" value stores the size in pixels of the tiles in the collision tilemap.
+ * The "tile_solid" value stores the index of the tile that is solid from every direction.
+ * The "tile_solid_east" value stores the index of the tile that is only solid on the eastern side.
+ * The "tile_solid_west" value stores the index of the tile that is only solid on the western side.
+ * The "tile_solid_south" value stores the index of the tile that is only solid on the southern side.
+ * The "tile_solid_north" value stores the index of the tile that is only solid on the northern side.
  */
 
 // drawing states
@@ -40,12 +71,6 @@ if (_raycast_move_h == 0 && _raycast_move_v == 0)
 }
 
 // collision states
-
-//var _collision_h = false;
-//var _collision_v = false;
-//var _collision_slope_h = false;
-//var _collision_slope_v = false;
-
 var _collision = false;
 var _collision_slope = false;
 var _collision_floor = false;
@@ -70,8 +95,8 @@ var _tile_size = tile_size;
  */
 
 // get the size of the bounding box and offsets
-var _width = (argument4 + 1);
-var _height = (argument5 + 1);
+var _width = (bbox_width + 1);
+var _height = (bbox_height + 1);
 var _offset_x = (_raycast_move_h > 0 ? _width : 0);
 var _offset_y = (_raycast_move_v > 0 ? _height : 0);
 
@@ -154,9 +179,9 @@ var _tile_offset_y = (_raycast_move_v > 0 ? 1 : 0);
 
 // tile values
 var _tile_at_point;
-var _tile_solid = global.TILE_SOLID;
-var _tile_h_one_way = (_raycast_move_h > 0 ? global.TILE_SOLID_EAST : global.TILE_SOLID_WEST);
-var _tile_v_one_way = (_raycast_move_v > 0 ? global.TILE_SOLID_SOUTH : global.TILE_SOLID_NORTH);
+var _tile_solid = tile_solid;
+var _tile_h_one_way = (_raycast_move_h > 0 ? tile_solid_east : tile_solid_west);
+var _tile_v_one_way = (_raycast_move_v > 0 ? tile_solid_south : tile_solid_north);
 
 
 /**
@@ -318,7 +343,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             
         }
         
-        /*
         // if no horizontal collision, check for slope collision
         if ( ! _collision)
         {
@@ -326,20 +350,9 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
             if (_tile_at_point != _tile_solid && _tile_at_point != _tile_h_one_way)
             {
-                // prepare the slope collision test
-                raycast_slope_x = _step_h_x;
-                raycast_slope_y = _step_h_y;
-                
                 // if colliding with a sloped tile, and a point on the slope is found
-                if (script_execute(script_slope_collision, _tile_at_point, _cell_x, _cell_y, _gradient, _ray_target_h))
+                if (script_execute(script_slope_collision, _start_x, _start_y, _raycast_move_h, _raycast_move_v, _tile_at_point, _cell_x, _cell_y, _gradient, _ray_target_h))
                 {
-                    //_collision = true;
-                    //_collision_slope = true;
-                    //_collision_x = raycast_slope_x;
-                    //_collision_y = raycast_slope_y;
-                    //_collision_redirect_move_h = raycast_slope_move_h;
-                    //_collision_redirect_move_v = raycast_slope_move_v;
-                    
                     _collision = true;
                     _collision_slope = true;
                     _collision_x = raycast_slope_x;
@@ -357,20 +370,9 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_max_y) & tile_index_mask;
                 if (_tile_at_point != _tile_solid && _tile_at_point != _tile_h_one_way)
                 {
-                    // prepare the slope collision test
-                    raycast_slope_x = _step_h_x;
-                    raycast_slope_y = _step_h_y;
-                    
                     // if colliding with a sloped tile, and a point on the slope is found
-                    if (script_execute(script_slope_collision, _tile_at_point, _cell_x, _cell_max_y, _gradient, _ray_target_h))
+                    if (script_execute(script_slope_collision, _start_x, _start_y, _raycast_move_h, _raycast_move_v, _tile_at_point, _cell_x, _cell_max_y, _gradient, _ray_target_h))
                     {
-                        //_collision = true;
-                        //_collision_slope = true;
-                        //_collision_x = raycast_slope_x;
-                        //_collision_y = raycast_slope_y;
-                        //_collision_redirect_move_h = raycast_slope_move_h;
-                        //_collision_redirect_move_v = raycast_slope_move_v;
-                        
                         _collision = true;
                         _collision_slope = true;
                         _collision_x = raycast_slope_x;
@@ -384,7 +386,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             }
             
         }
-        */
         
         // if a collision occurred during this step
         if (_collision)
@@ -550,7 +551,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             
         }
         
-        /*
         // if no vertical collision, check for slope collision
         if ( ! _collision)
         {
@@ -558,20 +558,9 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
             if (_tile_at_point != _tile_solid && _tile_at_point != _tile_v_one_way)
             {
-                // prepare the slope collision test
-                raycast_slope_x = _step_v_x;
-                raycast_slope_y = _step_v_y;
-                
                 // if colliding with a sloped tile, and a point on the slope is found
-                if (script_execute(script_slope_collision, _tile_at_point, _cell_x, _cell_y, _gradient, _ray_target_v))
+                if (script_execute(script_slope_collision, _start_x, _start_y, _raycast_move_h, _raycast_move_v, _tile_at_point, _cell_x, _cell_y, _gradient, _ray_target_v))
                 {
-                    //_collision = true;
-                    //_collision_slope = true;
-                    //_collision_x = raycast_slope_x;
-                    //_collision_y = raycast_slope_y;
-                    //_collision_redirect_move_h = raycast_slope_move_h;
-                    //_collision_redirect_move_v = raycast_slope_move_v;
-                    
                     _collision = true;
                     _collision_slope = true;
                     _collision_x = raycast_slope_x;
@@ -589,20 +578,9 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 _tile_at_point = tilemap_get(_collision_tilemap, _cell_max_x, _cell_y) & tile_index_mask;
                 if (_tile_at_point != _tile_solid && _tile_at_point != _tile_v_one_way)
                 {
-                    // prepare the slope collision test
-                    raycast_slope_x = _step_v_x;
-                    raycast_slope_y = _step_v_y;
-                    
                     // if colliding with a sloped tile, and a point on the slope is found
-                    if (script_execute(script_slope_collision, _tile_at_point, _cell_max_x, _cell_y, _gradient, _ray_target_v))
+                    if (script_execute(script_slope_collision, _start_x, _start_y, _raycast_move_h, _raycast_move_v, _tile_at_point, _cell_max_x, _cell_y, _gradient, _ray_target_v))
                     {
-                        //_collision = true;
-                        //_collision_slope = true;
-                        //_collision_x = raycast_slope_x;
-                        //_collision_y = raycast_slope_y;
-                        //_collision_redirect_move_h = raycast_slope_move_h;
-                        //_collision_redirect_move_v = raycast_slope_move_v;
-                        
                         _collision = true;
                         _collision_slope = true;
                         _collision_x = raycast_slope_x;
@@ -616,7 +594,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             }
             
         }
-        */
         
         // if a collision occurred during this step
         if (_collision)

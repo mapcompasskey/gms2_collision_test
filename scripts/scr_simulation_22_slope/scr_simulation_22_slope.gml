@@ -1,4 +1,6 @@
-/// @function scr_simulation_22_slope(tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
+/// @function scr_simulation_22_slope(x, y, move_h, move_v, tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
+/// @param {number} x            - the x position to start
+/// @param {number} y            - the y position to start
 /// @param {real} tile_at_point  - the index of the tile that was intersected
 /// @param {number} cell_x       - the tile's horizontal cell position
 /// @param {number} cell_y       - the tile's vertical cell position
@@ -19,6 +21,7 @@
  *
  */
 
+/*
 // if there is no movement
 if (raycast_new_move_h == 0 && raycast_new_move_v == 0)
 {
@@ -37,13 +40,34 @@ var _ray_target = argument4;
 // the starting position (always the top left corner of the bounding box)
 var _start_x = raycast_x + sprite_bbox_left;
 var _start_y = raycast_y + sprite_bbox_top;
+*/
+
+// the starting position
+// *should always be the top left corner of the bounding box
+var _start_x = argument0;
+var _start_y = argument1;
+
+var _new_move_h = argument2;
+var _new_move_v = argument3;
+
+if (_new_move_h == 0 && _new_move_v == 0)
+{
+    return false;
+}
+
+var _tile_at_point = argument4;
+var _cell_x = argument5;
+var _cell_y = argument6;
+
+var _ray_gradient = argument7;
+var _ray_target = argument8;
 
 // get the size of the bounding box
-var _height = bbox_height + 1;
 var _width = bbox_width + 1;
+var _height = bbox_height + 1;
 
 // the tile size
-var _tile_size = global.TILE_SIZE;
+var _tile_size = tile_size;
 
 var _list = ds_list_create();
 ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_H_COLOR);
@@ -52,19 +76,35 @@ ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS
 
 
 /**
- * Get the Tile's Information
+ * Get the Tiles Information
  *
- * The "sign of the determinant" is used to determine if the starting point is on the open side of the sloped tile
+ * The gradient is the slope (m) of the tile.
+ *
+ * The cosine of the angle is used to determine the new x position along the slope to redirect the movement.
+ * Then the line equation "y = mx + b" is used to find the new y position.
+ * When trying to apply the sine of 22.5 degrees to determine the new y position, it was always off for some reason.
+ *
+ * The tile's x1 and y1 refer to the left most offset inside the tile the line starts from.
+ * The tile's x2 and y2 refer to the right most offset inside the tile that the line ends at.
+ * Where (0, 0) is the top left, (1, 1) is the bottom right, and (1, 0.5) is the right middle point of a tile when multiplied by the tile size.
+ *
+ * The bounding box of an instance needs to be offset so that the point closest to a slope is tested.
+ * The position is always reset to the top left corner of the bounding box and the offset of its width and height are added accordingly.
+ * Where (0, 0) is the top left and (1, 1) is the bottom right of the bounding box.
+ *
+ * The "sign of the determinant" is used to determine if a point is on the open or solid side of a sloped tile.
+ * This value needs to represent the side that is "open space".
  *
  * 0: gradient
- * 1: radians
- * 2: x1
- * 3: y1
- * 4: x2
- * 5: y2
- * 6: offset_x
- * 7: offset_y 
- * 8: sign of the determinant
+ * 1: cosine of the angle
+ * 2: tile x1
+ * 3: tile y1
+ * 4: tile x2
+ * 5: tile y2
+ * 6: bbox width offset
+ * 7: bbox height offset
+ * 8: 0: ceiling tile, 1: floor tile
+ * 9: sign of the determinant
  */
 
 // if this is not a sloped tile
@@ -80,7 +120,7 @@ if ( ! is_array(tile_definitions))
 }
 
 // if this entry of the array does not have the correct length
-if (array_length_2d(tile_definitions, _tile_at_point) != 9)
+if (array_length_2d(tile_definitions, _tile_at_point) != 10)
 {
     return false;
 }
@@ -134,26 +174,73 @@ _start_y += _offset_y;
  * d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
  */
 
-// test the determinants by default to see if the entity is leaving the slope
-var _sticky = false;
+// default state is to stick to the slope
+var _sticky = true;
 
-// if traveling up along the slope, just stick to the slope
-if (sign(_tile_gradient) < 0 && _new_move_h < 0)
+// get whether this type of tile is considered a floor or ceiling
+var _is_floor_tile = tile_definitions[_tile_at_point, 8];
+
+// if this instance is always falling
+if (has_gravity)
 {
-    _sticky = true;
+    // if the instance is moving up while on a floor tile
+    if (_new_move_v < 0 && _is_floor_tile == 1)
+    {
+        // if ◢ tile (gradient is negative)
+        if (sign(_tile_gradient) == -1)
+        {
+            // if not moving horizontally or moving to the left
+            if (_new_move_h == 0 || _new_move_h < 0)
+            {
+                // skip this test
+                return false;
+            }
+            // else, if moving to the right
+            else if (_new_move_h > 0)
+            {
+                // the instance is attempting to leave the slope
+                _sticky = false;
+            }
+        }
+        
+        // else, if ◣ tile (gradient is positive)
+        else if (sign(_tile_gradient) == 1)
+        {
+            // if not moving horizontally or moving to the right
+            if (_new_move_h == 0 || _new_move_h > 0)
+            {
+                // skip this test
+                return false;
+            }
+            // else, if moving to the left
+            else if (_new_move_h < 0)
+            {
+                // the instance is attempting to leave the slope
+                _sticky = false;
+            }
+        }
+        
+    }
+    
+    // if this is a "ceiling" tile
+    if ( ! _is_floor_tile)
+    {
+        _sticky = false;
+    }
+    
 }
 
-// else, if traveling down along the slope, just stick to the slope
-else if (sign(_tile_gradient) > 0 && _new_move_h > 0)
+// if this instance has no graivty
+if ( ! has_gravity)
 {
-    _sticky = true;
+    _sticky = false;
 }
 
-// if the instance is attempting to leave the slope
+// if the instance should not stick to the tile
 if ( ! _sticky)
 {
     // get the value that represents the side that is "open space'
-    var _tile_determinant = tile_definitions[_tile_at_point, 8];
+    var _tile_determinant = tile_definitions[_tile_at_point, 9];
     
     // find the side of the tile the end point is on
     var _end_determinant = (((_start_x + _new_move_h) - _tile_x1) * (_tile_y2 - _tile_y1)) - (((_start_y + _new_move_v) - _tile_y1) * (_tile_x2 - _tile_x1));
@@ -161,6 +248,7 @@ if ( ! _sticky)
     // if the end point is on the open side of the tile
     if (sign(_end_determinant) == _tile_determinant)
     {
+        // skip this test
         return false;
     }
     
@@ -203,6 +291,15 @@ else
     _yy = (_ray_gradient * _xx) + _ray_y_intercept;
 }
 
+// find the distance from the starting point to where the collision occurred
+var _distance = point_distance(_start_x, _start_y, _xx, _yy);
+
+// if the distance to the point of collision exceedes the maximum target distance
+if (_distance >= _ray_target)
+{
+    return false;
+}
+
 // round each value used for comparison to the same nearest decimal place
 // *don't rely on javascript to be able to accurately track large floating point values
 _xx = round(_xx * 1000) / 1000;
@@ -232,53 +329,80 @@ else
     
 }
 
-// if the lines intercepted within the sloped tile
-if (_tile_intercept)
+// if the lines don't intercept within this tile
+if ( ! _tile_intercept)
 {
-    // find the distance from the starting point to where the collision occurred
-    var _distance = point_distance(_start_x, _start_y, _xx, _yy);
-    
-    // if the distance to the intercept point does not exceede the maximum target distance
-    if (_distance < _ray_target)
-    {
-        raycast_slope_x = _xx - _offset_x;
-        raycast_slope_y = _yy - _offset_y;
-        
-        if (_new_move_h == 0)
-        {
-            // no movement redirection
-            raycast_slope_move_h = 0;
-            raycast_slope_move_v = 0;
-        }
-        else
-        {
-            // redirect the movement along the slope
-            //raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
-            //raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
-            
-            // redirect the remaining horizontal movement along the slope
-            var _distance_h = point_distance(_xx, 0, _start_x + _new_move_h, 0);
-            raycast_slope_move_h = _distance_h * _tile_cosine;
-            raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
-        }
-        
-        // save the gradient of this tile
-        collision_slope_tile_gradient = _tile_gradient;
-        
-        if (true)
-        {
-            // capture the point on the slope where collision occurred
-            var _list = ds_list_create();
-            ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
-            ds_list_add(global.GUI_AXIS_POINTS, _list);
-            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-        }
-        
-        return true;
-            
-    }
-    
+    return false;
 }
 
-return false;
 
+/**
+ * Update Instance Variables
+ *
+ */
+
+// update the point of collision
+raycast_slope_x = _xx - _offset_x;
+raycast_slope_y = _yy - _offset_y;
+
+// store the gradient of this tile
+collision_slope_tile_gradient = _tile_gradient;
+
+// update floor/ceiling collision states
+raycast_slope_collision_floor = _is_floor_tile;
+raycast_slope_collision_ceiling = !_is_floor_tile;
+
+// if this instance is always falling
+if (has_gravity)
+{
+    if (_new_move_h == 0)
+    {
+        // no movement redirection
+        raycast_slope_move_h = 0;
+        raycast_slope_move_v = 0;
+    }
+    else
+    {
+        // redirect only the remaining horizontal movement along the slope
+        var _distance_h = point_distance(_xx, 0, _start_x + _new_move_h, 0);
+        raycast_slope_move_h = _distance_h * _tile_cosine;
+        raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
+    }
+}
+
+// else, this instance has no graivty
+else
+{
+    // if only moving vertically
+    if (_new_move_h == 0)
+    {
+        // if descending and colliding with a SW slope
+        if (_new_move_v > 0 && sign(_tile_gradient) == 1)
+        {
+            // invert the cosine to continue descending
+            _tile_cosine = _tile_cosine * -1;
+        }
+        
+        // else, if ascending and colliding with a NW slope
+        else if (_new_move_v < 0 && sign(_tile_gradient) == -1)
+        {
+            // invert the cosine to conintue ascending
+            _tile_cosine = _tile_cosine * -1;
+        }
+    }
+    
+    // redirect the movement along the slope
+    raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
+    raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
+}
+
+if (true)
+{
+    // capture the point on the slope where collision occurred
+    var _list = ds_list_create();
+    ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
+    ds_list_add(global.GUI_AXIS_POINTS, _list);
+    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+}
+
+return true;

@@ -54,6 +54,13 @@ tile_size = global.TILE_SIZE;
 sloped_tiles_list = global.SLOPED_TILES_LIST;
 tile_definitions = global.TILE_DEFINITIONS;
 
+// tiles
+tile_solid = global.TILE_SOLID;
+tile_solid_east = global.TILE_SOLID_EAST;
+tile_solid_west = global.TILE_SOLID_WEST;
+tile_solid_south = global.TILE_SOLID_SOUTH;
+tile_solid_north = global.TILE_SOLID_NORTH;
+
 // starting position
 inst_x = 0;
 inst_y = 0;
@@ -72,8 +79,8 @@ move_v = 0;
 // collision states
 collision_h = false;
 collision_v = false
-//collision_slope = false;
-//collision_slope_tile_gradient = 0;
+collision_slope = false;
+collision_slope_tile_gradient = 0;
 collision_floor = false;
 collision_ceiling = false;
 
@@ -101,6 +108,7 @@ raycast_slope_collision_ceiling = false;
 // simulation states
 update_simulation = true;
 is_rotating = false;
+has_gravity = true;
 
 // drawing
 //sprite_index = spr_simulation_15px;
@@ -180,7 +188,7 @@ view_set_yport(view_index, 0);
  *
  */
 
-if (false)
+if (true)
 {
     inst_x = 27 * global.TILE_SIZE;
     inst_y = 13 * global.TILE_SIZE;
@@ -196,7 +204,7 @@ if (false)
     move_distance = 40;
 }
 
-if (true)
+if (false)
 {
     inst_x = 5 * global.TILE_SIZE;
     inst_y = 5 * global.TILE_SIZE;

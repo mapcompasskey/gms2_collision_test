@@ -119,8 +119,8 @@ collision_floor = false;
 collision_ceiling = false;
 
 // reset slope collision values
-//collision_slope = false;
-//collision_slope_tile_gradient = 0;
+collision_slope = false;
+collision_slope_tile_gradient = 0;
 
 // get the top left position of the bounding box
 var _x = inst_x + sprite_bbox_left;
@@ -139,7 +139,7 @@ var i = 0;
 while (i < 5)
 {
     // check for collisions along the path
-    script_execute(script_raycast_collision, _x, _y, _next_move_h, _next_move_v, bbox_width, bbox_height);
+    script_execute(script_raycast_collision, _x, _y, _next_move_h, _next_move_v);
     
     // update the starting point
     _x += raycast_move_h;
