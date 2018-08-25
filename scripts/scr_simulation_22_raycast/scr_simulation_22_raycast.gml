@@ -1,62 +1,26 @@
-/// @function scr_simulation_21_entity_raycast();
+/// @function scr_simulation_22_raycast(x, y, move_h, move_v, width, height);
+/// @param {number} x - the x position to start
+/// @param {number} y - the y position to start
+/// @param {number} move_h - the horizontal distance to move
+/// @param {number} move_v - the vertical distance to move
+/// @param {number} width - the width of the instance's bounding box
+/// @param {number} height - the height of the instance's bounding box
 
 
 /**
  * Tile Based Collision Test
  *
- * Cast a ray from the top left corner of an instance and check every horizontal and veritcal intersection for collision with a tile.
- * At each horizontal intersection, check every tile the height of the instance's bounding box would pass through.
- * At each vertical intersection, check every tile the width of the instance's bounding box would pass through.
- *
- * Required Instance Variables:
- *  number      raycast_x
- *  number      raycast_y
- *  number      raycast_new_move_h
- *  number      raycast_new_move_v
- *  number      raycast_redirect_move_h
- *  number      raycast_redirect_move_v
- *  boolean     raycast_collision_h
- *  boolean     raycast_collision_v
- *  boolean     raycast_collision_floor
- *  boolean     raycast_collision_ceiling
- *
- *  number      sprite_bbox_left
- *  number      sprite_bbox_top
- *  number      bbox_height
- *  number      bbox_width
- *  real        collision_tilemap
- *  number      tile_size
- *  number      tile_solid
- *  number      tile_solid_east
- *  number      tile_solid_west
- *  number      tile_solid_south
- *  number      tile_solid_north
- *
- * Required Instance Variables (Slope):
- *  real        script_slope_collision
- *  boolean     raycast_collision_slope
- *  number      raycast_slope_x
- *  number      raycast_slope_y
- *  number      raycast_slope_move_h
- *  number      raycast_slope_move_v
- *  boolean     raycast_slope_collision_floor
- *  boolean     raycast_slope_collision_ceiling
- *
- * The point (raycast_x, raycast_y) is the coordinate where the ray is cast from.
- * The values raycast_new_move_h and raycast_new_move_v represent the horizontal and vertical distance the ray will travel.
- * If a collision occurs, the values raycast_new_move_h and raycast_new_move_v will be updated to reach the point of collision.
- * If a collision occurs, the values raycast_redirect_move_h and raycast_redirect_move_v represent the distances the ray will travel during the next collision test.
- * The values raycast_collision_h and raycast_collision_v track whether a horizontal or vertical collision occurred.
- * If collision occurs, the values raycast_collision_floor and raycast_collision_ceiling store the state of the type of tile that was collided with.
- 
- * The values sprite_bbox_left and sprite_bbox_top are the pixel offsets of the bounding box of the instance calling this script.
- * The values bbox_width and bbox_height represent the size of the bounding box of the instance calling this script.
- * The tile_size value represents the size (in pixels) of the tiles being tested against.
- 
- 
- * If collision occurs, the values raycast_slope_collision_floor and raycast_slope_collision_ceiling store the state of the type of tile that was collided with.
- * If collision occurs, the point (raycast_slope_x, raycast_slope_y) stores the coordinate where the collision occurred.
+ * Cast a ray from the top left corner of an object checking every horizontal and veritcal intersection for collision with a tile.
+ * At each horizontal intersection, check every tile the height of the bounding box (of the instance) would pass through.
+ * At each vertical intersection, check every tile the width of the bounding box (of the instance) would pass through.
  */
+
+// drawing states
+var _capture_step_points = false;
+var _capture_step_tiles_h = false;
+var _capture_step_tiles_v = false;
+var _capture_step_special_tiles = true;
+var _capture_collision_tiles = true;
 
 // starting position
 // *should always be the top left of the bounding box
@@ -70,12 +34,18 @@ var _raycast_next_move_h = 0;
 var _raycast_next_move_v = 0;
 
 // if there is no movement
-if (_raycast_next_move_h == 0 && _raycast_next_move_v == 0)
+if (_raycast_move_h == 0 && _raycast_move_v == 0)
 {
     exit;
 }
 
 // collision states
+
+//var _collision_h = false;
+//var _collision_v = false;
+//var _collision_slope_h = false;
+//var _collision_slope_v = false;
+
 var _collision = false;
 var _collision_slope = false;
 var _collision_floor = false;
@@ -104,6 +74,34 @@ var _width = (argument4 + 1);
 var _height = (argument5 + 1);
 var _offset_x = (_raycast_move_h > 0 ? _width : 0);
 var _offset_y = (_raycast_move_v > 0 ? _height : 0);
+
+// horizontal rays
+if (_raycast_move_h != 0)
+{
+    var _temp_list = ds_list_create();
+    ds_list_add(_temp_list, (_start_x + _offset_x), _start_y, (_start_x + _offset_x + _raycast_move_h), (_start_y + _raycast_move_v), global.COLLISION_H_COLOR);
+    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
+    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
+    
+    var _temp_list = ds_list_create();
+    ds_list_add(_temp_list, (_start_x + _offset_x), (_start_y + _height), (_start_x + _offset_x + _raycast_move_h), (_start_y + _height + _raycast_move_v), global.COLLISION_H_COLOR);
+    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
+    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
+}
+
+// vertical rays
+if (_raycast_move_v != 0)
+{
+    var _temp_list = ds_list_create();
+    ds_list_add(_temp_list, _start_x, (_start_y + _offset_y), (_start_x + _raycast_move_h), (_start_y + _offset_y + _raycast_move_v), global.COLLISION_V_COLOR);
+    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
+    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
+    
+    var _temp_list = ds_list_create();
+    ds_list_add(_temp_list, (_start_x + _width), (_start_y + _offset_y), (_start_x + _width + _raycast_move_h), (_start_y + _offset_y + _raycast_move_v), global.COLLISION_V_COLOR);
+    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
+    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
+}
 
 
 /**
@@ -156,9 +154,9 @@ var _tile_offset_y = (_raycast_move_v > 0 ? 1 : 0);
 
 // tile values
 var _tile_at_point;
-var _tile_solid = tile_solid;
-var _tile_h_one_way = (_raycast_move_h > 0 ? tile_solid_east : tile_solid_west);
-var _tile_v_one_way = (_raycast_move_v > 0 ? tile_solid_south : tile_solid_north);
+var _tile_solid = global.TILE_SOLID;
+var _tile_h_one_way = (_raycast_move_h > 0 ? global.TILE_SOLID_EAST : global.TILE_SOLID_WEST);
+var _tile_v_one_way = (_raycast_move_v > 0 ? global.TILE_SOLID_SOUTH : global.TILE_SOLID_NORTH);
 
 
 /**
@@ -172,7 +170,7 @@ var _tile_v_one_way = (_raycast_move_v > 0 ? tile_solid_south : tile_solid_north
 while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
 {
     // if the horizontal collision test can be performed
-    // (and either can't test veritcal collision or the next horizontal test is closer than the next vertical test)
+    // (and either can't test veritcal collision or the horizontal test is closer than the vertical test)
     if (_test_h && ( ! _test_v || _ray_delta_h <= _ray_delta_v))
     {
         // reset collision values
@@ -209,6 +207,19 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             _cell_y -= 1; 
         }
         
+        if (_capture_step_points)
+        {
+            var _list = ds_list_create();
+            ds_list_add(_list, _step_h_x, _step_h_y, global.COLLISION_HV_COLOR);
+            ds_list_add(global.GUI_AXIS_POINTS, _list);
+            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+            
+            var _list = ds_list_create();
+            ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_H_COLOR);
+            ds_list_add(global.GUI_AXIS_POINTS, _list);
+            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+        }
+        
         // find the cell the last point occupies
         // *the last point is always the bottom of the bounding box
         var _cell_max_y = floor((_step_h_y + _height) / _tile_size);
@@ -227,6 +238,15 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
         // for every horizontal intersection the ray is cast through, check every vertical tile between the top and bottom of the bounding box
         for (_step_cell_y = _cell_y; _step_cell_y <= _cell_max_y; _step_cell_y++)
         {
+            if (_capture_step_tiles_h)
+            {
+                // capture the tile
+                var _list = ds_list_create();
+                ds_list_add(_list, (_cell_x * _tile_size), (_step_cell_y * _tile_size), global.COLLISION_H_COLOR);
+                ds_list_add(global.DRAW_CELLS, _list);
+                ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+            }
+            
             // get the tile at this position
             _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _step_cell_y) & tile_index_mask;
             
@@ -247,9 +267,8 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     _collision_x = _step_h_x - _offset_x;
                     _collision_y = _step_h_y;
                     _collision_move_h = 0;
-                    //_collision_move_v = raycast_new_move_v - (_collision_y - _start_y);
-                    //_collision_move_v = raycast_move_v - (_collision_y - _start_y);
-                    _collision_move_v = raycast_next_move_v - (_collision_y - _start_y);
+                    //_collision_move_v = raycast_next_move_v - (_collision_y - _start_y);
+                    _collision_move_v = _raycast_move_v - (_collision_y - _start_y);
                     _collision_floor = false;
                     _collision_ceiling = false;
                     break; // exit for loop
@@ -283,6 +302,16 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 {
                     // ignore this collision and continue testing
                     _collision = false;
+                    
+                    if (_capture_step_special_tiles)
+                    {
+                        var _list = ds_list_create();
+                        //ds_list_add(_list, (_cell_x * _tile_size), (_cell_y2 * _tile_size), global.COLLISION_HV_COLOR);
+                        ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_HV_COLOR);
+                        ds_list_add(global.DRAW_CELLS, _list);
+                        ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                    }
+                    
                 }
                     
             }
@@ -304,6 +333,13 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 // if colliding with a sloped tile, and a point on the slope is found
                 if (script_execute(script_slope_collision, _tile_at_point, _cell_x, _cell_y, _gradient, _ray_target_h))
                 {
+                    //_collision = true;
+                    //_collision_slope = true;
+                    //_collision_x = raycast_slope_x;
+                    //_collision_y = raycast_slope_y;
+                    //_collision_redirect_move_h = raycast_slope_move_h;
+                    //_collision_redirect_move_v = raycast_slope_move_v;
+                    
                     _collision = true;
                     _collision_slope = true;
                     _collision_x = raycast_slope_x;
@@ -328,6 +364,13 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     // if colliding with a sloped tile, and a point on the slope is found
                     if (script_execute(script_slope_collision, _tile_at_point, _cell_x, _cell_max_y, _gradient, _ray_target_h))
                     {
+                        //_collision = true;
+                        //_collision_slope = true;
+                        //_collision_x = raycast_slope_x;
+                        //_collision_y = raycast_slope_y;
+                        //_collision_redirect_move_h = raycast_slope_move_h;
+                        //_collision_redirect_move_v = raycast_slope_move_v;
+                        
                         _collision = true;
                         _collision_slope = true;
                         _collision_x = raycast_slope_x;
@@ -400,7 +443,7 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
     }
     
     // else, if vertical collision test can be performed
-    // (and either can't test horizontal collision or the next vertical test is closer than the next horizontal test)
+    // (and either can't test horizontal collision or the vertical test is closer than the horizontal test)
     else if  (_test_v && ( ! _test_h || _ray_delta_v <= _ray_delta_h))
     {
         // reset collision values
@@ -437,6 +480,19 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             _cell_y -= 1; 
         }
         
+        if (_capture_step_points)
+        {
+            var _list = ds_list_create();
+            ds_list_add(_list, _step_v_x, _step_v_y, global.COLLISION_HV_COLOR);
+            ds_list_add(global.GUI_AXIS_POINTS, _list);
+            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+            
+            var _list = ds_list_create();
+            ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_V_COLOR);
+            ds_list_add(global.GUI_AXIS_POINTS, _list);
+            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+        }
+        
         // find the cell the last point occupies
         // *the last point is always the right side of the bounding box
         var _cell_max_x = floor((_step_v_x + _width) / _tile_size);
@@ -455,6 +511,15 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
         // for every vertical intersection the ray is cast through, check every horizontal tile between the left and right sides of the bounding box
         for (_step_cell_x = _cell_x; _step_cell_x <= _cell_max_x; _step_cell_x++)
         {
+            if (_capture_step_tiles_v)
+            {
+                // capture the tile
+                var _list = ds_list_create();
+                ds_list_add(_list, (_step_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_V_COLOR);
+                ds_list_add(global.DRAW_CELLS, _list);
+                ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+            }
+            
             // get the tile at this position
             _tile_at_point = tilemap_get(_collision_tilemap, _step_cell_x, _cell_y) & tile_index_mask;
             
@@ -474,9 +539,8 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     _collision_slope = false;
                     _collision_x = _step_v_x;
                     _collision_y = _step_v_y - _offset_y;
-                    //_collision_move_h = raycast_new_move_h - (_collision_x - _start_x);
-                    //_collision_move_h = raycast_move_h - (_collision_x - _start_x);
-                    _collision_move_h = raycast_next_move_h - (_collision_x - _start_x);
+                    //_collision_move_h = raycast_next_move_h - (_collision_x - _start_x);
+                    _collision_move_h = _raycast_move_h - (_collision_x - _start_x);
                     _collision_move_v = 0;
                     _collision_floor = (_raycast_move_v > 0);
                     _collision_ceiling = (_raycast_move_v < 0);
@@ -501,6 +565,13 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 // if colliding with a sloped tile, and a point on the slope is found
                 if (script_execute(script_slope_collision, _tile_at_point, _cell_x, _cell_y, _gradient, _ray_target_v))
                 {
+                    //_collision = true;
+                    //_collision_slope = true;
+                    //_collision_x = raycast_slope_x;
+                    //_collision_y = raycast_slope_y;
+                    //_collision_redirect_move_h = raycast_slope_move_h;
+                    //_collision_redirect_move_v = raycast_slope_move_v;
+                    
                     _collision = true;
                     _collision_slope = true;
                     _collision_x = raycast_slope_x;
@@ -525,6 +596,13 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     // if colliding with a sloped tile, and a point on the slope is found
                     if (script_execute(script_slope_collision, _tile_at_point, _cell_max_x, _cell_y, _gradient, _ray_target_v))
                     {
+                        //_collision = true;
+                        //_collision_slope = true;
+                        //_collision_x = raycast_slope_x;
+                        //_collision_y = raycast_slope_y;
+                        //_collision_redirect_move_h = raycast_slope_move_h;
+                        //_collision_redirect_move_v = raycast_slope_move_v;
+                        
                         _collision = true;
                         _collision_slope = true;
                         _collision_x = raycast_slope_x;
@@ -611,10 +689,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
  */
 
 // update movement values
-//raycast_new_move_h = _raycast_move_h;
-//raycast_new_move_v = _raycast_move_v;
-//raycast_redirect_move_h = _raycast_next_move_h;
-//raycast_redirect_move_v = _raycast_next_move_v;
 raycast_move_h = _raycast_move_h;
 raycast_move_v = _raycast_move_v;
 raycast_next_move_h = _raycast_next_move_h;
@@ -626,4 +700,3 @@ raycast_collision_v = _raycast_collision_v;
 //raycast_collision_slope = _raycast_collision_slope;
 raycast_collision_floor = _raycast_collision_floor;
 raycast_collision_ceiling = _raycast_collision_ceiling;
-

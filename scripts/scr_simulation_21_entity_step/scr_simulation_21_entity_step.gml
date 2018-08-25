@@ -110,10 +110,12 @@ if (is_solid)
     // reset collision states
     collision_h = false;
     collision_v = false;
-    collision_slope = false;
-    collision_slope_tile_gradient = 0;
     collision_floor = false;
     collision_ceiling = false;
+    
+    // reset slope collision values
+    //collision_slope = false;
+    //collision_slope_tile_gradient = 0;
     
     // the distance to move this step
     //new_move_h = 0;
@@ -126,8 +128,8 @@ if (is_solid)
     raycast_next_move_v = move_v;
     
     // track the distance traveled (delta) against the target distance
-    move_distance_delta = 0;
-    move_distance_target = point_distance(0, 0, move_h, move_v);
+    var _move_distance_delta = 0;
+    var _move_distance_target = point_distance(0, 0, move_h, move_v);
     
     // prevents an infinite while loop
     // *this could occur if the value of a floating point falls too low, causing the distance delta to always be less than the target
@@ -138,17 +140,10 @@ if (is_solid)
     var _y = inst_y + sprite_bbox_top;
     
     // while the distance traveled is less than the target distance
-    while (move_distance_delta < move_distance_target && i < 5)
+    while (_move_distance_delta < _move_distance_target && i < 5)
     {
-        // reset the raycast collision states
-        raycast_collision_h = false;
-        raycast_collision_v = false;
-        raycast_collision_slope = false;
-        raycast_collision_floor = false;
-        raycast_collision_ceiling = false;
-        
         // check for collisions along the path
-        script_execute(script_raycast_collision, _x, _y, raycast_next_move_h, raycast_next_move_v, bbox_width, bbox_height, collision_tilemap, tile_size);
+        script_execute(script_raycast_collision, _x, _y, raycast_next_move_h, raycast_next_move_v, bbox_width, bbox_height);
         
         // update the starting point
         _x += raycast_move_h;
@@ -164,6 +159,7 @@ if (is_solid)
         collision_floor = (collision_floor ? collision_floor : raycast_collision_floor);
         collision_ceiling = (collision_ceiling ? collision_ceiling : raycast_collision_ceiling);
         
+        /*
         // if colliding with a slope
         if (has_gravity && raycast_collision_slope)
         {
@@ -171,6 +167,7 @@ if (is_solid)
             collision_h = false;
             collision_v = true;
         }
+        */
         
         // if both horizontal and vertical collision have occurred
         // *there is no longer any reason to continue raycasting
@@ -183,7 +180,7 @@ if (is_solid)
         i++;
         
         // update the distance traveled
-        move_distance_delta = point_distance(0, 0, _move_h, _move_v);
+        _move_distance_delta = point_distance(0, 0, _move_h, _move_v);
     }
 }
 else

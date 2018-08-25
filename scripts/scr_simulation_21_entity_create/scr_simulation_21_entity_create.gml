@@ -52,14 +52,14 @@ is_solid = true;
 // movement values
 move_h = 0;
 move_v = 0;
-move_distance_delta = 0;
-move_distance_target = 0;
+//move_distance_delta = 0;
+//move_distance_target = 0;
 
 // collision states
 collision_h = false;
 collision_v = false
-collision_slope = false;
-collision_slope_tile_gradient = 0;
+//collision_slope = false;
+//collision_slope_tile_gradient = 0;
 collision_floor = false;
 collision_ceiling = false;
 
