@@ -303,10 +303,21 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     _collision_slope = false;
                     _collision_x = _step_h_x - _offset_x;
                     _collision_y = _step_h_y;
-                    _collision_move_h = 0;
-                    _collision_move_v = _raycast_move_v - (_collision_y - _start_y);
+                    //_collision_move_h = 0;
+                    //_collision_move_v = _raycast_move_v - (_collision_y - _start_y);
                     _collision_floor = false;
                     _collision_ceiling = false;
+                    
+                    _collision_move_h = 0;
+                    if (has_gravity)
+                    {
+                        _collision_move_v = _raycast_move_v - (_collision_y - _start_y);
+                    }
+                    else
+                    {
+                        _collision_move_v = (_ray_target_h - point_distance(_start_x, _start_y, _collision_x, _collision_y)) * sign(_raycast_move_v);
+                    }
+                    
                     break; // exit for loop
                 }
             }
@@ -548,10 +559,21 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     _collision_slope = false;
                     _collision_x = _step_v_x;
                     _collision_y = _step_v_y - _offset_y;
-                    _collision_move_h = _raycast_move_h - (_collision_x - _start_x);
-                    _collision_move_v = 0;
+                    //_collision_move_h = _raycast_move_h - (_collision_x - _start_x);
+                    //_collision_move_v = 0;
                     _collision_floor = (_raycast_move_v > 0);
                     _collision_ceiling = (_raycast_move_v < 0);
+                    
+                    if (has_gravity)
+                    {
+                        _collision_move_h = _raycast_move_h - (_collision_x - _start_x);
+                    }
+                    else
+                    {
+                        _collision_move_h = (_ray_target_v - point_distance(_start_x, _start_y, _collision_x, _collision_y)) * sign(_raycast_move_h);
+                    }
+                    _collision_move_v = 0;
+                    
                     break; // exit for loop
                 }
             }

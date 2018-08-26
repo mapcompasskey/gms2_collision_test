@@ -108,7 +108,7 @@ raycast_slope_collision_ceiling = false;
 // simulation states
 update_simulation = true;
 is_rotating = false;
-has_gravity = true;
+has_gravity = false;
 
 // drawing
 //sprite_index = spr_simulation_15px;
@@ -188,8 +188,9 @@ view_set_yport(view_index, 0);
  *
  */
 
-if (true)
+if (false)
 {
+    // 45 degree slopes
     inst_x = 27 * global.TILE_SIZE;
     inst_y = 13 * global.TILE_SIZE;
     move_angle = -10;
@@ -204,8 +205,9 @@ if (false)
     move_distance = 40;
 }
 
-if (false)
+if (true)
 {
+    // box
     inst_x = 5 * global.TILE_SIZE;
     inst_y = 5 * global.TILE_SIZE;
     move_angle = -45;
