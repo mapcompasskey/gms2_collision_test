@@ -5,6 +5,14 @@
 /// @param {number} move_v  - the vertical distance to move
 
 
+// drawing states
+var _capture_step_points = false;
+var _capture_step_tiles_h = false;
+var _capture_step_tiles_v = false;
+var _capture_step_special_tiles = true;
+var _capture_collision_tiles = true;
+
+
 /**
  * Tile Based Collision Test
  *
@@ -12,9 +20,21 @@
  * At each horizontal intersection, check every tile the height of the bounding box (of the instance) would pass through.
  * At each vertical intersection, check every tile the width of the bounding box (of the instance) would pass through.
  *
- * Instead of creating and returning an array every time this script is called, it relies on the instance calling it to have a number of variables that can be updated.
+ * Instead of creating and returning an array every time this script is called, it relies on the instance calling it to have a number of variables that can be read and updated.
  *
- * Required Instance Variables:
+ * Instance Variables to Read:
+ *  boolean     has_gravity
+ *  number      bbox_width
+ *  number      bbox_height
+ *  real        collision_tilemap
+ *  number      tile_size
+ *  number      tile_solid
+ *  number      tile_solid_east
+ *  number      tile_solid_west
+ *  number      tile_solid_south
+ *  number      tile_solid_north
+ *
+ * Instance Variables to Update:
  *  number      raycast_move_h
  *  number      raycast_move_v
  *  number      raycast_next_move_h
@@ -24,19 +44,9 @@
  *  boolean     raycast_collision_slope
  *  boolean     raycast_collision_floor
  *  boolean     raycast_collision_ceiling
- *  real        collision_tilemap
- *  number      tile_size
- *  number      tile_solid
- *  number      tile_solid_east
- *  number      tile_solid_west
- *  number      tile_solid_south
- *  number      tile_solid_north
  *
- * The "raycast_move_h" and "raycast_move_v" values represent the total distance that can be moved after each collision test.
- * The "raycast_next_move_h" and "raycast_next_move_h" values represent the remaining distance that can be moved during the next collision test.
- * The "raycast_collision_h" and "raycast_collision_v" values store the horizontal and vertical collision states.
- * The "raycast_collision_slope" value stores the slope collision state.
- * The "raycast_collision_floor" and "raycast_collision_ceiling" values store the type of vertical collision state.
+ * The "has_gravity" value stores the state of how the instance interacts with collision tiles.
+ * The "bbox_width" and "bbox_height" values store the size of the bounding box of the instance calling this script. 
  * The "collision_tilemap" values points to the tilemap layer containing the tiles used for collision test.
  * The "tile_size" value stores the size in pixels of the tiles in the collision tilemap.
  * The "tile_solid" value stores the index of the tile that is solid from every direction.
@@ -44,14 +54,13 @@
  * The "tile_solid_west" value stores the index of the tile that is only solid on the western side.
  * The "tile_solid_south" value stores the index of the tile that is only solid on the southern side.
  * The "tile_solid_north" value stores the index of the tile that is only solid on the northern side.
+ *
+ * The "raycast_move_h" and "raycast_move_v" values represent the total distance the instance can move before a collision occurs.
+ * The "raycast_next_move_h" and "raycast_next_move_h" values represent the remaining distance to redirect the ray after a collision.
+ * The "raycast_collision_h" and "raycast_collision_v" values store the horizontal and vertical collision states.
+ * The "raycast_collision_slope" value stores the slope collision state.
+ * The "raycast_collision_floor" and "raycast_collision_ceiling" values store the states of a vertical (or slope) collision.
  */
-
-// drawing states
-var _capture_step_points = false;
-var _capture_step_tiles_h = false;
-var _capture_step_tiles_v = false;
-var _capture_step_special_tiles = true;
-var _capture_collision_tiles = true;
 
 // starting position
 // *should always be the top left of the bounding box
@@ -59,6 +68,7 @@ var _start_x = argument0;
 var _start_y = argument1;
 
 // movement values
+// *these values update their instance variable equivalents at the end of this script
 var _raycast_move_h = argument2;
 var _raycast_move_v = argument3;
 var _raycast_next_move_h = 0;
@@ -76,6 +86,8 @@ var _collision_slope = false;
 var _collision_floor = false;
 var _collision_ceiling = false;
 
+// collision states
+// *these values update their instance variable equivalents at the end of this script
 var _raycast_collision_h = false;
 var _raycast_collision_v = false;
 var _raycast_collision_slope = false;
@@ -292,7 +304,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     _collision_x = _step_h_x - _offset_x;
                     _collision_y = _step_h_y;
                     _collision_move_h = 0;
-                    //_collision_move_v = raycast_next_move_v - (_collision_y - _start_y);
                     _collision_move_v = _raycast_move_v - (_collision_y - _start_y);
                     _collision_floor = false;
                     _collision_ceiling = false;
@@ -317,10 +328,8 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             // if the point is on a vertical intersection
             if ((_step_h_y2 mod _tile_size) == 0)
             {
-                //var _cell_y2 = floor(_step_h_y2 / _tile_size) + (_raycast_move_v > 0 ? -1 : 0);
-                //_tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y2) & tile_index_mask;
-                _cell_y = floor(_step_h_y2 / _tile_size) + (_raycast_move_v > 0 ? -1 : 0);
-                _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y) & tile_index_mask;
+                var _cell_y2 = floor(_step_h_y2 / _tile_size) + (_raycast_move_v > 0 ? -1 : 0);
+                _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _cell_y2) & tile_index_mask;
                 
                 // if this tile is not a solid tile or one that is solid from this side
                 if (_tile_at_point != _tile_solid && _tile_at_point != _tile_h_one_way)
@@ -331,8 +340,7 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     if (_capture_step_special_tiles)
                     {
                         var _list = ds_list_create();
-                        //ds_list_add(_list, (_cell_x * _tile_size), (_cell_y2 * _tile_size), global.COLLISION_HV_COLOR);
-                        ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_HV_COLOR);
+                        ds_list_add(_list, (_cell_x * _tile_size), (_cell_y2 * _tile_size), global.COLLISION_HV_COLOR);
                         ds_list_add(global.DRAW_CELLS, _list);
                         ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
                     }
@@ -540,7 +548,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     _collision_slope = false;
                     _collision_x = _step_v_x;
                     _collision_y = _step_v_y - _offset_y;
-                    //_collision_move_h = raycast_next_move_h - (_collision_x - _start_x);
                     _collision_move_h = _raycast_move_h - (_collision_x - _start_x);
                     _collision_move_v = 0;
                     _collision_floor = (_raycast_move_v > 0);
@@ -661,7 +668,7 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
 
 
 /**
- * Update Values
+ * Update Instance Values
  *
  */
 
@@ -674,6 +681,7 @@ raycast_next_move_v = _raycast_next_move_v;
 // update collision states
 raycast_collision_h = _raycast_collision_h;
 raycast_collision_v = _raycast_collision_v;
-//raycast_collision_slope = _raycast_collision_slope;
+raycast_collision_slope = _raycast_collision_slope;
 raycast_collision_floor = _raycast_collision_floor;
 raycast_collision_ceiling = _raycast_collision_ceiling;
+

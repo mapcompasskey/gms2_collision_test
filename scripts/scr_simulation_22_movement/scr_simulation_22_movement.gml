@@ -159,15 +159,13 @@ while (i < 5)
     collision_floor = (collision_floor ? collision_floor : raycast_collision_floor);
     collision_ceiling = (collision_ceiling ? collision_ceiling : raycast_collision_ceiling);
     
-    /*
     // if colliding with a slope
+    // *only counts as a vertical collision
     if (raycast_collision_slope)
     {
-        // only counts as a vertical collision
         collision_h = false;
         collision_v = true;
     }
-    */
     
     // if both horizontal and vertical collision have occurred
     // *there is no longer any reason to continue raycasting

@@ -19,28 +19,36 @@
  * y-intercept: b = y - mx
  * slope: (y2 - y1) / (x2 - x1)
  *
+ * Instead of creating and returning an array every time this script is called, it relies on the instance calling it to have a number of variables that can be read and updated.
+ *
+ * Instance Variables to Read:
+ *  boolean     has_gravity
+ *  number      bbox_width
+ *  number      bbox_height
+ *  number      tile_size
+ *  real        sloped_tiles_list
+ *  real        tile_definitions
+ *
+ * Instance Variables to Update:
+ *  number      raycast_slope_x
+ *  number      raycast_slope_y
+ *  number      collision_slope_tile_gradient
+ *  boolean     raycast_slope_collision_floor
+ *  boolean     raycast_slope_collision_ceiling
+ *  number      raycast_slope_move_h
+ *  number      raycast_slope_move_v
+ *
+ * The "has_gravity" value stores the state of how the instance interacts with collision tiles.
+ * The "bbox_width" and "bbox_height" values store the size of the bounding box of the instance calling this script. 
+ * The "tile_size" value stores the size in pixels of the tiles in the collision tilemap.
+ * The "sloped_tiles_list" value points to the ds_list containing all the indexes for sloped tiles.
+ * The "tile_definintions" value points to the multidimensional array containing all the information about the sloped tiles.
+ *
+ * The point (raycast_slope_x, raycast_slope_y) stores the coordinate where collision occurrs.
+ * The "collision_slope_tile_gradient" value stores the gradient of the tile. Its used to prevent consecutive checks against the same type of tile.
+ * The "raycast_slope_collision_floor" and "raycast_slope_collision_ceiling" values store the type of tile the collision occurred with.
+ * The "raycast_slope_move_h" and "raycast_slope_move_v" values represent the remaining distance to redirect the ray after a collision.
  */
-
-/*
-// if there is no movement
-if (raycast_new_move_h == 0 && raycast_new_move_v == 0)
-{
-    return false;
-}
-
-// get values
-var _new_move_h = raycast_new_move_h;
-var _new_move_v = raycast_new_move_v;
-var _tile_at_point = argument0;
-var _cell_x = argument1;
-var _cell_y = argument2;
-var _ray_gradient = argument3;
-var _ray_target = argument4;
-
-// the starting position (always the top left corner of the bounding box)
-var _start_x = raycast_x + sprite_bbox_left;
-var _start_y = raycast_y + sprite_bbox_top;
-*/
 
 // the starting position
 // *should always be the top left corner of the bounding box
@@ -69,10 +77,14 @@ var _height = bbox_height + 1;
 // the tile size
 var _tile_size = tile_size;
 
-var _list = ds_list_create();
-ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_H_COLOR);
-ds_list_add(global.GUI_AXIS_POINTS, _list);
-ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+if (false)
+{
+    var _list = ds_list_create();
+    ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_H_COLOR);
+    ds_list_add(global.GUI_AXIS_POINTS, _list);
+    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+}
+
 
 
 /**
@@ -168,7 +180,7 @@ _start_y += _offset_y;
  * The "sign of the determinant" is used to determine if the starting and ending points are on the "open" or "solid" sides of the sloped tile.
  * Normally, the ray only needs to be redirected if the starting point is on the open side of the tile and the ending point is on the solid side.
  * But that relies on the floating point math to be extremely precise, which shouldn't be assumed.
- * Instead, just magnitize the instance to the slope unless the instance is attempting to jump off of the slope.
+ * Instead, just magnitize the instance to the slope unless the instance is attempting to move away from the slope (like if it was jumping).
  * You can determine if its leaving the slope because the "end determinant" will equal the side of the tile that is open space.
  *
  * d = (x - x1)(y2 - y1) - (y - y1)(x2 - x1)
@@ -192,9 +204,10 @@ if (has_gravity)
             // if not moving horizontally or moving to the left
             if (_new_move_h == 0 || _new_move_h < 0)
             {
-                // skip this test
+                // the instance is for sure leaving the slope
                 return false;
             }
+            
             // else, if moving to the right
             else if (_new_move_h > 0)
             {
@@ -209,9 +222,10 @@ if (has_gravity)
             // if not moving horizontally or moving to the right
             if (_new_move_h == 0 || _new_move_h > 0)
             {
-                // skip this test
+                // the instance is for sure leaving the slope
                 return false;
             }
+            
             // else, if moving to the left
             else if (_new_move_h < 0)
             {
@@ -248,7 +262,7 @@ if ( ! _sticky)
     // if the end point is on the open side of the tile
     if (sign(_end_determinant) == _tile_determinant)
     {
-        // skip this test
+        // the instance is moving into the open side of the tile
         return false;
     }
     
