@@ -188,12 +188,12 @@ view_set_yport(view_index, 0);
  *
  */
 
-if (false)
+if (true)
 {
     // 45 degree slopes
     inst_x = 27 * global.TILE_SIZE;
     inst_y = 13 * global.TILE_SIZE;
-    move_angle = -10;
+    move_angle = -45;
     move_distance = 40;
 }
 
@@ -205,7 +205,7 @@ if (false)
     move_distance = 40;
 }
 
-if (true)
+if (false)
 {
     // box
     inst_x = 5 * global.TILE_SIZE;

@@ -386,27 +386,31 @@ if (has_gravity)
 // else, this instance has no graivty
 else
 {
-    // if only moving vertically
-    if (_new_move_h == 0)
+    var _m1 = _ray_gradient;
+    var _m2 = _tile_gradient;
+    
+    // if the slopes are opposite, the lines are perpendicular
+    if (_m1 == -(_m2))
     {
-        // if descending and colliding with a SW slope
-        if (_new_move_v > 0 && sign(_tile_gradient) == 1)
-        {
-            // invert the cosine to continue descending
-            _tile_cosine = _tile_cosine * -1;
-        }
-        
-        // else, if ascending and colliding with a NW slope
-        else if (_new_move_v < 0 && sign(_tile_gradient) == -1)
-        {
-            // invert the cosine to conintue ascending
-            _tile_cosine = _tile_cosine * -1;
-        }
+        // no movement redirection
+        raycast_slope_move_h = 0;
+        raycast_slope_move_v = 0;
     }
     
-    // redirect the movement along the slope
-    raycast_slope_move_h = (_ray_target - _distance) * _tile_cosine;
-    raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
+    else
+    {
+        // get the angle between two straight lines with slope m1 and m2
+        // tan(θ) = ±(m2 - m1) / (1 + m1 * m2)
+        var _angle1 = darctan((_m2 - _m1) / (1 + (_m1 * _m2)));
+        
+        // get the angle of the ray
+        var _angle2 = point_direction(0, 0, _new_move_h, _new_move_v);
+        
+        // redirect the movement along the slope
+        raycast_slope_move_h = (_ray_target - _distance) * dcos(_angle2 - _angle1);
+        raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
+    }
+    
 }
 
 if (true)
