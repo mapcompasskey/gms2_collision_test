@@ -111,7 +111,6 @@ move_angle_rads = degtorad(move_angle);
 // the maximum distance to move this step
 //move_h = (move_distance * cos(move_angle_rads));
 //move_v = (move_distance * sin(move_angle_rads) * -1);
-
 move_h = lengthdir_x(move_distance, move_angle);
 move_v = lengthdir_y(move_distance, move_angle);
 

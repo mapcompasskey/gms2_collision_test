@@ -262,43 +262,6 @@ ds_list_clear(global.GUI_BBOX_POINTS);
  *
  */
 
-/*
-var pt1_x = inst_x;
-var pt1_y = inst_y - 10;
-
-var rad = degtorad(45);
-var dist = 40;
-//var pt2_x = pt1_x + (dist * cos(rad));
-//var pt2_y = pt1_y + (dist * sin(rad) * -1);
-
-var pt2_x = pt1_x + lengthdir_x(dist, 45);
-var pt2_y = pt1_y + lengthdir_y(dist, 45);
-
-var _temp_list = ds_list_create();
-ds_list_add(_temp_list, pt1_x, pt1_y, pt2_x, pt2_y, global.COLLISION_H_COLOR);
-ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
-ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
-
-var slope = (pt2_y - pt1_y) / (pt2_x - pt1_x);
-scr_output("slope", slope);
-
-var x1 = lengthdir_x(dist, 45);
-var y1 = lengthdir_y(dist, 45);
-var val = darctan2(x1, y1) - 90;
-scr_output("x1", x1, "y1", y1, "darctan2", val);
-
-var val = darctan(1);
-scr_output("darctan", val);
-
-var deg = point_direction(0, 0, x1, y1);
-scr_output("deg", deg);
-
-var deg = point_direction(0, 0, 10, -10);
-scr_output("deg", deg);
-*/
-
-
-
 script_execute(script_movement);
 
 

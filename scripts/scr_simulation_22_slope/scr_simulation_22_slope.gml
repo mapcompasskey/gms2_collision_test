@@ -365,53 +365,50 @@ collision_slope_tile_gradient = _tile_gradient;
 raycast_slope_collision_floor = _is_floor_tile;
 raycast_slope_collision_ceiling = !_is_floor_tile;
 
+var _raycast_slope_move_h = 0;
+var _raycast_slope_move_v = 0;
+
 // if this instance is always falling
 if (has_gravity)
 {
-    if (_new_move_h == 0)
-    {
-        // no movement redirection
-        raycast_slope_move_h = 0;
-        raycast_slope_move_v = 0;
-    }
-    else
+    // if there is horizontal movement remaining
+    if (_new_move_h != 0)
     {
         // redirect only the remaining horizontal movement along the slope
         var _distance_h = point_distance(_xx, 0, _start_x + _new_move_h, 0);
-        raycast_slope_move_h = _distance_h * _tile_cosine;
-        raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
+        _raycast_slope_move_h = _distance_h * _tile_cosine;
+        _raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
     }
 }
 
 // else, this instance has no graivty
 else
 {
-    var _m1 = _ray_gradient;
-    var _m2 = _tile_gradient;
-    
-    // if the slopes are opposite, the lines are perpendicular
-    if (_m1 == -(_m2))
+    // if the slopes are not opposite
+    // *if the slope were opposite, the lines would be perpendicular
+    if (_ray_gradient != -(_tile_gradient))
     {
-        // no movement redirection
-        raycast_slope_move_h = 0;
-        raycast_slope_move_v = 0;
-    }
-    
-    else
-    {
+        var _m1 = _ray_gradient;
+        var _m2 = _tile_gradient;
+        
         // get the angle between two straight lines with slope m1 and m2
         // tan(θ) = ±(m2 - m1) / (1 + m1 * m2)
-        var _angle1 = darctan((_m2 - _m1) / (1 + (_m1 * _m2)));
+        var _intersection_angle = darctan((_m2 - _m1) / (1 + (_m1 * _m2)));
         
         // get the angle of the ray
-        var _angle2 = point_direction(0, 0, _new_move_h, _new_move_v);
+        var _ray_angle = point_direction(0, 0, _new_move_h, _new_move_v);
         
         // redirect the movement along the slope
-        raycast_slope_move_h = (_ray_target - _distance) * dcos(_angle2 - _angle1);
-        raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
+        var _len = _ray_target - _distance;
+        var _dir = _ray_angle - _intersection_angle;
+        _raycast_slope_move_h = lengthdir_x(_len, _dir);
+        _raycast_slope_move_v = lengthdir_y(_len, _dir);
     }
-    
 }
+
+// update the movement to redirect
+raycast_slope_move_h = _raycast_slope_move_h;
+raycast_slope_move_v = _raycast_slope_move_v;
 
 if (true)
 {
