@@ -703,7 +703,7 @@ raycast_next_move_v = _raycast_next_move_v;
 // update collision states
 raycast_collision_h = _raycast_collision_h;
 raycast_collision_v = _raycast_collision_v;
-raycast_collision_slope = _raycast_collision_slope;
 raycast_collision_floor = _raycast_collision_floor;
 raycast_collision_ceiling = _raycast_collision_ceiling;
+raycast_collision_slope = _raycast_collision_slope;
 

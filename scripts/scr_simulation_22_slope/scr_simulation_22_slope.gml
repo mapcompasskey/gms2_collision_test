@@ -32,11 +32,11 @@
  * Instance Variables to Update:
  *  number      raycast_slope_x
  *  number      raycast_slope_y
- *  number      collision_slope_tile_gradient
- *  boolean     raycast_slope_collision_floor
- *  boolean     raycast_slope_collision_ceiling
  *  number      raycast_slope_move_h
  *  number      raycast_slope_move_v
+ *  boolean     raycast_slope_collision_floor
+ *  boolean     raycast_slope_collision_ceiling
+ *  number      raycast_slope_collision_gradient
  *
  * The "has_gravity" value stores the state of how the instance interacts with collision tiles.
  * The "bbox_width" and "bbox_height" values store the size of the bounding box of the instance calling this script. 
@@ -45,9 +45,12 @@
  * The "tile_definintions" value points to the multidimensional array containing all the information about the sloped tiles.
  *
  * The point (raycast_slope_x, raycast_slope_y) stores the coordinate where collision occurrs.
- * The "collision_slope_tile_gradient" value stores the gradient of the tile. Its used to prevent consecutive checks against the same type of tile.
- * The "raycast_slope_collision_floor" and "raycast_slope_collision_ceiling" values store the type of tile the collision occurred with.
  * The "raycast_slope_move_h" and "raycast_slope_move_v" values represent the remaining distance to redirect the ray after a collision.
+ * The "raycast_slope_collision_floor" and "raycast_slope_collision_ceiling" values store the type of tile the collision occurred with.
+ * The "raycast_slope_collision_gradient" value stores the gradient of the tile. Its used to prevent consecutive checks against the same type of tile.
+ *
+ * Instances with gravity could represent a side scrolling game in which only the horizontal movement and direction should be maintained when moving along a slope.
+ * Instances without gravity could represent a top down game in which the angle and total distance need to be used when redirecting along a slope.
  */
 
 // the starting position
@@ -147,7 +150,7 @@ if (_ray_gradient == _tile_gradient)
 }
 
 // if this tile's slope is the same as one already collided against
-if (_tile_gradient == collision_slope_tile_gradient)
+if (_tile_gradient == raycast_slope_collision_gradient)
 {
     return false;
 }
@@ -359,7 +362,7 @@ raycast_slope_x = _xx - _offset_x;
 raycast_slope_y = _yy - _offset_y;
 
 // store the gradient of this tile
-collision_slope_tile_gradient = _tile_gradient;
+raycast_slope_collision_gradient = _tile_gradient;
 
 // update floor/ceiling collision states
 raycast_slope_collision_floor = _is_floor_tile;
@@ -377,7 +380,7 @@ if (has_gravity)
         // redirect only the remaining horizontal movement along the slope
         var _distance_h = point_distance(_xx, 0, _start_x + _new_move_h, 0);
         _raycast_slope_move_h = _distance_h * _tile_cosine;
-        _raycast_slope_move_v = ((_tile_gradient * (_xx + raycast_slope_move_h)) + _tile_y_intercept) - _yy;
+        _raycast_slope_move_v = ((_tile_gradient * (_xx + _raycast_slope_move_h)) + _tile_y_intercept) - _yy;
     }
 }
 
@@ -406,7 +409,7 @@ else
     }
 }
 
-// update the movement to redirect
+// update the redirection movement values
 raycast_slope_move_h = _raycast_slope_move_h;
 raycast_slope_move_v = _raycast_slope_move_v;
 

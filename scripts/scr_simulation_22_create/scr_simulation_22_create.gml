@@ -6,7 +6,7 @@
  *
  */
 
-simulation_name = "Simulation 18";
+simulation_name = "Simulation 22";
 script_tile_definitions = scr_simulation_22_create_tiles;
 script_movement = scr_simulation_22_movement;
 script_raycast_collision = scr_simulation_22_raycast;
@@ -79,31 +79,31 @@ move_v = 0;
 // collision states
 collision_h = false;
 collision_v = false
-collision_slope = false;
-collision_slope_tile_gradient = 0;
 collision_floor = false;
 collision_ceiling = false;
+collision_slope = false;
 
-// raycasting movement values
+// raycasting movement values and states
+// *updated by the raycasting collision script
 raycast_move_h = 0;
 raycast_move_v = 0;
-raycast_next_move_h = move_h;
-raycast_next_move_v = move_v;
-
-// raycasting movement states
+raycast_next_move_h = 0;
+raycast_next_move_v = 0;
 raycast_collision_h = false;
 raycast_collision_v = false;
 raycast_collision_slope = false;
 raycast_collision_floor = false;
 raycast_collision_ceiling = false;
 
-// slope collision values
+// slope collision values and states
+// *updated by the raycasting slope collision script
 raycast_slope_x = 0;
 raycast_slope_y = 0;
 raycast_slope_move_h = 0;
 raycast_slope_move_v = 0;
 raycast_slope_collision_floor = false;
 raycast_slope_collision_ceiling = false;
+raycast_slope_collision_gradient = 0; // collision_slope_gradient = 0;
 
 // simulation states
 update_simulation = true;
