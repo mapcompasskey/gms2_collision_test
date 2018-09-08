@@ -1,4 +1,4 @@
-/// @function scr_simulation_22_slope(x, y, move_h, move_v, tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
+/// @function scr_simulation_23_entity_slope(x, y, move_h, move_v, tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
 /// @param {number} x            - the x position to start
 /// @param {number} y            - the y position to start
 /// @param {real} tile_at_point  - the index of the tile that was intersected
@@ -79,14 +79,6 @@ var _height = bbox_height + 1;
 
 // the tile size
 var _tile_size = tile_size;
-
-if (false)
-{
-    var _list = ds_list_create();
-    ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_H_COLOR);
-    ds_list_add(global.GUI_AXIS_POINTS, _list);
-    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-}
 
 
 /**
@@ -413,29 +405,11 @@ else
         var _dir = _ray_angle - _intersection_angle;
         _raycast_slope_move_h = lengthdir_x(_len, _dir);
         _raycast_slope_move_v = lengthdir_y(_len, _dir);
-        
-        scr_output(" ");
-        scr_output("_m1", _m1)
-        scr_output("_m2", _m2);
-        scr_output("tan(_m1)", darctan(_m1));
-        scr_output("tan(_m2)", darctan(_m2));
-        scr_output("_ray_angle", _ray_angle)
-        scr_output("_intersection_angle", _intersection_angle);
-        scr_output("_len", _len, "_dir", _dir);
     }
 }
 
 // update the redirection movement values
 raycast_slope_move_h = _raycast_slope_move_h;
 raycast_slope_move_v = _raycast_slope_move_v;
-
-if (true)
-{
-    // capture the point on the slope where collision occurred
-    var _list = ds_list_create();
-    ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
-    ds_list_add(global.GUI_AXIS_POINTS, _list);
-    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-}
 
 return true;

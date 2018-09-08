@@ -103,7 +103,7 @@ raycast_slope_move_h = 0;
 raycast_slope_move_v = 0;
 raycast_slope_collision_floor = false;
 raycast_slope_collision_ceiling = false;
-raycast_slope_collision_gradient = 0; // collision_slope_gradient = 0;
+raycast_slope_collision_gradient = 0;
 
 // simulation states
 update_simulation = true;
@@ -188,12 +188,21 @@ view_set_yport(view_index, 0);
  *
  */
 
-if (true)
+if (false)
 {
     // 45 degree slopes
     inst_x = 27 * global.TILE_SIZE;
     inst_y = 13 * global.TILE_SIZE;
     move_angle = -45;
+    move_distance = 40;
+}
+
+if (true)
+{
+    // 45 degree slopes
+    inst_x = 28 * global.TILE_SIZE;
+    inst_y = 13 * global.TILE_SIZE;
+    move_angle = -90;
     move_distance = 40;
 }
 
