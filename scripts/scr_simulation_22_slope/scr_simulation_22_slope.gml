@@ -391,6 +391,7 @@ else
     // *if the slope were opposite, the lines would be perpendicular
     if (_ray_gradient != -(_tile_gradient))
     {
+        /*
         var _m1 = _ray_gradient;
         var _m2 = _tile_gradient;
         
@@ -413,15 +414,51 @@ else
         var _dir = _ray_angle - _intersection_angle;
         _raycast_slope_move_h = lengthdir_x(_len, _dir);
         _raycast_slope_move_v = lengthdir_y(_len, _dir);
+        */
         
-        scr_output(" ");
-        scr_output("_m1", _m1)
-        scr_output("_m2", _m2);
-        scr_output("tan(_m1)", darctan(_m1));
-        scr_output("tan(_m2)", darctan(_m2));
-        scr_output("_ray_angle", _ray_angle)
-        scr_output("_intersection_angle", _intersection_angle);
-        scr_output("_len", _len, "_dir", _dir);
+        var _m1 = _ray_gradient;
+        var _m2 = _tile_gradient;
+        
+        // get the angle between two straight lines with slope m1 and m2
+        // tan(θ) = ±(m2 - m1) / (1 + m1 * m2)
+        var _intersection_angle = darctan((_m2 - _m1) / (1 + (_m1 * _m2)));
+        
+        // if the ray is straight up or down
+        // *the angle needs to be offset when the ray is parallel to the y-axis
+        if (_m1 == 0 && _new_move_h == 0)
+        {
+            _intersection_angle = _intersection_angle - (90 * sign(_m2));
+        }
+        
+        // get the angle of the ray
+        var _ray_angle = point_direction(0, 0, _new_move_h, _new_move_v);
+        
+        // find the distance to redirect the movement along the slope
+        var _len = _ray_target - _distance;
+        var _dir = _ray_angle - _intersection_angle;
+        var _dir_x = lengthdir_x(_len, _dir);
+        var _dir_y = lengthdir_y(_len, _dir);
+        
+        // make sure the slope redirection would not cause the entity to move in an opposite direction
+        // *if its moving straight north, it can continue north west or north east
+        // *if its moving north east, it can only continue moving north east
+        if (sign(_new_move_h) == 0 || sign(_new_move_v) == 0)
+        {
+            _raycast_slope_move_h = _dir_x;
+            _raycast_slope_move_v = _dir_y;
+        }
+        else 
+        {
+            if (sign(_new_move_h) == sign(_dir_x))
+            {
+                if (sign(_new_move_v) == sign(_dir_y))
+                {
+                    _raycast_slope_move_h = _dir_x;
+                    _raycast_slope_move_v = _dir_y;
+                }
+            }
+        }
+        
     }
 }
 

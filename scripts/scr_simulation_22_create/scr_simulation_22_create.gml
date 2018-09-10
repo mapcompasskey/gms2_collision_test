@@ -197,12 +197,20 @@ if (false)
     move_distance = 40;
 }
 
-if (true)
+if (false)
 {
     // 45 degree slopes
     inst_x = 28 * global.TILE_SIZE;
     inst_y = 13 * global.TILE_SIZE;
     move_angle = -90;
+    move_distance = 40;
+}
+
+if (true)
+{
+    inst_x = 43 * global.TILE_SIZE;
+    inst_y = 26 * global.TILE_SIZE;
+    move_angle = 61;
     move_distance = 40;
 }
 

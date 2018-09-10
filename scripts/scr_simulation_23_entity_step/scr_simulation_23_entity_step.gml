@@ -19,6 +19,7 @@ if (has_gravity && is_solid)
     // apply gravity
     var _gravity = 500;
     velocity_y += (_gravity * tick);
+    clamp(velocity_y, -(speed_v * 4), (speed_v * 4));
     
     // reset horizontal velocity
     velocity_x = 0;
