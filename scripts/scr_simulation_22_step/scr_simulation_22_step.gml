@@ -201,20 +201,22 @@ if (keyboard_check_released(ord("E")) && is_rotating)
  */
 
 // if the "}" key is pressed
+// *move to the next cell index
 if (keyboard_check_pressed(221))
 {
     global.DRAW_CELL_INDEX++;
     if (global.DRAW_CELL_INDEX >= ds_list_size(global.DRAW_CELLS))
     {
-        global.DRAW_CELL_INDEX = 0;
+        global.DRAW_CELL_INDEX = -1;
     }
 }
 
 // if the "{" key is pressed
+// *move to the previous cell index
 else if (keyboard_check_pressed(219))
 {
     global.DRAW_CELL_INDEX--;
-    if (global.DRAW_CELL_INDEX < 0)
+    if (global.DRAW_CELL_INDEX < -1)
     {
         global.DRAW_CELL_INDEX = (ds_list_size(global.DRAW_CELLS) - 1);
     }
@@ -250,10 +252,11 @@ camera_set_view_pos(camera, camera_x, camera_y);
  */
 
 ds_list_clear(global.DRAW_CELLS);
+ds_list_clear(global.GUI_DRAW_POINTS);
+
 ds_list_clear(global.GUI_ROOM_AXES);
 ds_list_clear(global.GUI_ROOM_X_AXIS);
 ds_list_clear(global.GUI_ROOM_Y_AXIS);
-ds_list_clear(global.GUI_AXIS_POINTS);
 ds_list_clear(global.GUI_BBOX_POINTS);
 
 

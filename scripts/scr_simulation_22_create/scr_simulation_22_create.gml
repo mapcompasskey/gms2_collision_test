@@ -27,12 +27,19 @@ global.COLLISION_V_COLOR = c_yellow;
 global.COLLISION_HV_COLOR = c_lime;
 global.COLLISION_SLOPE_COLOR = c_lime;
 
-// lists
+// ds_lists to store the cells and collision points
+global.CAPTURE_CELLS_H = true;
+global.CAPTURE_CELLS_V = true;
+global.CAPTURE_SPECIAL_CELLS_H = true;
 global.DRAW_CELLS = ds_list_create();
+global.GUI_DRAW_POINTS = ds_list_create();
+
+// ds_lists to store the axis lines
 global.GUI_ROOM_AXES = ds_list_create();
 global.GUI_ROOM_X_AXIS = ds_list_create();
 global.GUI_ROOM_Y_AXIS = ds_list_create();
-global.GUI_AXIS_POINTS = ds_list_create();
+
+// ds_list to store the collision rays
 global.GUI_BBOX_POINTS = ds_list_create();
 
 // include tile definitions

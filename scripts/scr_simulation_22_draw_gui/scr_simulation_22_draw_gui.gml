@@ -94,46 +94,44 @@ for (var points_idx = 0; points_idx < ds_list_size(global.GUI_BBOX_POINTS); poin
 
 
 /**
- * Draw Collision Points on the Axes
+ * Draw the Collision Points
  *
  */
 
-var temp_list;
-var x0, y0, x1, y1, x2, y2;
-var color;
-
-draw_set_alpha(1.0);
-draw_set_halign(fa_left);
-
-for (var i = 0; i < ds_list_size(global.GUI_AXIS_POINTS); i++)
+// if there are points to draw
+if (ds_list_size(global.GUI_DRAW_POINTS) > 0)
 {
-    temp_list = ds_list_find_value(global.GUI_AXIS_POINTS, i);
+    var temp_list, color;
+    var x0, y0;
+    var x1, y1;
+    var x2, y2;
     
-    x0 = ds_list_find_value(temp_list, 0);
-    y0 = ds_list_find_value(temp_list, 1);
+    draw_set_alpha(1.0);
     
-    color = ds_list_find_value(temp_list, 2);
-    draw_set_colour(color);
-    
-    x1 = (x0 - camera_x) * view_scale;
-    y1 = (y0 - camera_y) * view_scale;
-    
-    x2 = x1 + 5;
-    y2 = y1 + 5;
-    
-    x1 = x1 - 5;
-    y1 = y1 - 5;
-    
-    // draw a cross
-    draw_line(x1, y1, x2, y2);
-    draw_line(x1, y2, x2, y1);
-    
-    // if zoomed in, display the coordinates
-    if (view_scale > 15)
+    // if individual cells are being viewed
+    if (global.DRAW_CELL_INDEX >= 0 && global.DRAW_CELL_INDEX < ds_list_size(global.GUI_DRAW_POINTS))
     {
-        draw_text(x1 + 5, y1, "(" + string(x0) + ", " + string(y0) + ")");
+        temp_list = ds_list_find_value(global.GUI_DRAW_POINTS, global.DRAW_CELL_INDEX);
+        
+        x0 = ds_list_find_value(temp_list, 0);
+        y0 = ds_list_find_value(temp_list, 1);
+        
+        color = ds_list_find_value(temp_list, 2);
+        draw_set_colour(color);
+        
+        x1 = (x0 - camera_x) * view_scale;
+        y1 = (y0 - camera_y) * view_scale;
+        
+        x2 = x1 + 5;
+        y2 = y1 + 5;
+        
+        x1 = x1 - 5;
+        y1 = y1 - 5;
+        
+        // draw a cross
+        draw_line(x1, y1, x2, y2);
+        draw_line(x1, y2, x2, y1);
     }
-    
 }
 
 
@@ -169,26 +167,29 @@ draw_text(txt_x, txt_y, txt);
 
 
 /**
- * Output Focused Cell Data
+ * Output the Current Intersection Point Data
  *
  */
-
-var x1 = 0;
-var y1 = 0;
-if (global.DRAW_CELL_INDEX >= 0 && global.DRAW_CELL_INDEX < ds_list_size(global.GUI_AXIS_POINTS))
-{
-    temp_list = ds_list_find_value(global.GUI_AXIS_POINTS, global.DRAW_CELL_INDEX);
-    x1 = ds_list_find_value(temp_list, 0);
-    y1 = ds_list_find_value(temp_list, 1);
-}
 
 var txt_x = 10;
 var txt_y = string_height(txt) + 20;
 
 var txt = "";
-txt += "bracket keys { } to change point" + "\n";
-txt += string_format(x1, 1, 20) + "\n";
-txt += string_format(y1, 1, 20) + "\n";
+txt += "bracket keys { } to step through collisions" + "\n";
+
+if (global.DRAW_CELL_INDEX >= 0 && global.DRAW_CELL_INDEX < ds_list_size(global.GUI_DRAW_POINTS))
+{
+    temp_list = ds_list_find_value(global.GUI_DRAW_POINTS, global.DRAW_CELL_INDEX);
+    var x1 = ds_list_find_value(temp_list, 0);
+    var y1 = ds_list_find_value(temp_list, 1);
+    txt += string_format(x1, 1, 20) + "\n";
+    txt += string_format(y1, 1, 20) + "\n";
+}
+else
+{
+    txt += "-\n";
+    txt += "-\n";
+}
 
 // draw background
 draw_set_alpha(0.5);

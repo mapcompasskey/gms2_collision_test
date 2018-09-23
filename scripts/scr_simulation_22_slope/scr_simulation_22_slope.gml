@@ -80,14 +80,6 @@ var _height = bbox_height + 1;
 // the tile size
 var _tile_size = tile_size;
 
-if (false)
-{
-    var _list = ds_list_create();
-    ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_H_COLOR);
-    ds_list_add(global.GUI_AXIS_POINTS, _list);
-    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-}
-
 
 /**
  * Get the Tiles Information
@@ -317,7 +309,7 @@ if (_distance >= _ray_target)
 }
 
 // round each value used for comparison to the same nearest decimal place
-// *don't rely on javascript to be able to accurately track large floating point values
+// *don't rely the platform to be able to accurately track large floating point values
 var _xx2 = round(_xx * 1000) / 1000;
 var _yy2 = round(_yy * 1000) / 1000;
 _tile_x1 = round(_tile_x1 * 1000) / 1000;
@@ -360,6 +352,22 @@ if ( ! _tile_intercept)
 // update the point of collision
 raycast_slope_x = _xx - _offset_x;
 raycast_slope_y = _yy - _offset_y;
+
+// if capturing the horizontal intersections and cells
+if (global.CAPTURE_CELLS_H || global.CAPTURE_CELLS_V)
+{
+    // create an empty space in the ds_list
+    var _list = ds_list_create();
+    ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), noone);
+    ds_list_add(global.DRAW_CELLS, _list);
+    ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+    
+    // capture the point on the slope
+    var _list = ds_list_create();
+    ds_list_add(_list, raycast_slope_x, raycast_slope_y, global.COLLISION_HV_COLOR);
+    ds_list_add(global.GUI_DRAW_POINTS, _list);
+    ds_list_mark_as_list(global.GUI_DRAW_POINTS, ds_list_size(global.GUI_DRAW_POINTS) - 1);
+}
 
 // store the gradient of this tile
 raycast_slope_collision_gradient = _tile_gradient;
@@ -441,19 +449,15 @@ else
 raycast_slope_move_h = _raycast_slope_move_h;
 raycast_slope_move_v = _raycast_slope_move_v;
 
-scr_output(string_format(raycast_slope_x, 10, 20));
-scr_output(string_format(raycast_slope_y, 10, 20));
-scr_output(string_format(raycast_slope_move_h, 10, 20));
-scr_output(string_format(raycast_slope_move_v, 10, 20));
-scr_output(" ");
-
+/*
 if (true)
 {
     // capture the point on the slope where collision occurred
     var _list = ds_list_create();
     ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
-    ds_list_add(global.GUI_AXIS_POINTS, _list);
-    ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
+    ds_list_add(global.GUI_DRAW_POINTS, _list);
+    ds_list_mark_as_list(global.GUI_DRAW_POINTS, ds_list_size(global.GUI_DRAW_POINTS) - 1);
 }
+*/
 
 return true;

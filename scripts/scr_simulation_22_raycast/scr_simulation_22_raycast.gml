@@ -5,14 +5,6 @@
 /// @param {number} move_v  - the vertical distance to move
 
 
-// drawing states
-var _capture_step_points = false;
-var _capture_step_tiles_h = true;
-var _capture_step_tiles_v = false;
-var _capture_step_special_tiles = true;
-var _capture_collision_tiles = true;
-
-
 /**
  * Tile Based Collision Test
  *
@@ -224,10 +216,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
         // *the first point is always the top of the bounding box
         _cell_x = floor(_step_h_x / _tile_size);
         _cell_y = floor(_step_h_y / _tile_size);
-        scr_output(string_format(_step_h_x, 10, 20))
-        scr_output(string_format(_step_h_y, 10, 20));
-        scr_output(_cell_x, _cell_y);
-        scr_output(" ");
         
         // find how far from an interseciton the points are
         // *if the remainder is 0, then they are directly on an intersection
@@ -248,19 +236,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             _cell_y -= 1; 
         }
         
-        if (_capture_step_points)
-        {
-            var _list = ds_list_create();
-            ds_list_add(_list, _step_h_x, _step_h_y, global.COLLISION_HV_COLOR);
-            ds_list_add(global.GUI_AXIS_POINTS, _list);
-            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-            
-            var _list = ds_list_create();
-            ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_H_COLOR);
-            ds_list_add(global.GUI_AXIS_POINTS, _list);
-            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-        }
-        
         // find the cell the last point occupies
         // *the last point is always the bottom of the bounding box
         var _cell_max_y = floor((_step_h_y + _height) / _tile_size);
@@ -276,18 +251,30 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             }
         }
         
-        // for every horizontal intersection the ray is cast through, check every vertical tile between the top and bottom of the bounding box
-        for (_step_cell_y = _cell_y; _step_cell_y <= _cell_max_y; _step_cell_y++)
+        // if capturing the horizontal intersections and cells
+        if (global.CAPTURE_CELLS_H)
         {
-            if (_capture_step_tiles_h)
+            var _i = 0;
+            for (_step_cell_y = _cell_y; _step_cell_y <= _cell_max_y; _step_cell_y++)
             {
                 // capture the tile
                 var _list = ds_list_create();
                 ds_list_add(_list, (_cell_x * _tile_size), (_step_cell_y * _tile_size), global.COLLISION_H_COLOR);
                 ds_list_add(global.DRAW_CELLS, _list);
                 ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                
+                // capture the point on the ray that intersects the cell
+                var _list = ds_list_create();
+                ds_list_add(_list, _step_h_x, _step_h_y + (_i * _tile_size), global.COLLISION_HV_COLOR);
+                ds_list_add(global.GUI_DRAW_POINTS, _list);
+                ds_list_mark_as_list(global.GUI_DRAW_POINTS, ds_list_size(global.GUI_DRAW_POINTS) - 1);
+                _i++;
             }
-            
+        }
+        
+        // for every horizontal intersection the ray is cast through, check every vertical tile between the top and bottom of the bounding box
+        for (_step_cell_y = _cell_y; _step_cell_y <= _cell_max_y; _step_cell_y++)
+        {
             // get the tile at this position
             _tile_at_point = tilemap_get(_collision_tilemap, _cell_x, _step_cell_y) & tile_index_mask;
             
@@ -350,14 +337,15 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     // ignore this collision and continue testing
                     _collision = false;
                     
-                    if (_capture_step_special_tiles)
+                    /*
+                    if (global.CAPTURE_SPECIAL_CELLS_H)
                     {
                         var _list = ds_list_create();
                         ds_list_add(_list, (_cell_x * _tile_size), (_cell_y2 * _tile_size), global.COLLISION_HV_COLOR);
                         ds_list_add(global.DRAW_CELLS, _list);
                         ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
                     }
-                    
+                    */
                 }
                     
             }
@@ -502,19 +490,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             _cell_y -= 1; 
         }
         
-        if (_capture_step_points)
-        {
-            var _list = ds_list_create();
-            ds_list_add(_list, _step_v_x, _step_v_y, global.COLLISION_HV_COLOR);
-            ds_list_add(global.GUI_AXIS_POINTS, _list);
-            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-            
-            var _list = ds_list_create();
-            ds_list_add(_list, (_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_V_COLOR);
-            ds_list_add(global.GUI_AXIS_POINTS, _list);
-            ds_list_mark_as_list(global.GUI_AXIS_POINTS, ds_list_size(global.GUI_AXIS_POINTS) - 1);
-        }
-        
         // find the cell the last point occupies
         // *the last point is always the right side of the bounding box
         var _cell_max_x = floor((_step_v_x + _width) / _tile_size);
@@ -530,18 +505,30 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
             }
         }
         
-        // for every vertical intersection the ray is cast through, check every horizontal tile between the left and right sides of the bounding box
-        for (_step_cell_x = _cell_x; _step_cell_x <= _cell_max_x; _step_cell_x++)
+        // if capturing the vertical intersections and cells
+        if (global.CAPTURE_CELLS_V)
         {
-            if (_capture_step_tiles_v)
+            var _i = 0;
+            for (_step_cell_x = _cell_x; _step_cell_x <= _cell_max_x; _step_cell_x++)
             {
                 // capture the tile
                 var _list = ds_list_create();
                 ds_list_add(_list, (_step_cell_x * _tile_size), (_cell_y * _tile_size), global.COLLISION_V_COLOR);
                 ds_list_add(global.DRAW_CELLS, _list);
                 ds_list_mark_as_list(global.DRAW_CELLS, ds_list_size(global.DRAW_CELLS) - 1);
+                
+                // capture the point on the ray that intersects the cell
+                var _list = ds_list_create();
+                ds_list_add(_list, _step_v_x + (_i * _tile_size), _step_v_y, global.COLLISION_HV_COLOR);
+                ds_list_add(global.GUI_DRAW_POINTS, _list);
+                ds_list_mark_as_list(global.GUI_DRAW_POINTS, ds_list_size(global.GUI_DRAW_POINTS) - 1);
+                _i++;
             }
-            
+        }
+        
+        // for every vertical intersection the ray is cast through, check every horizontal tile between the left and right sides of the bounding box
+        for (_step_cell_x = _cell_x; _step_cell_x <= _cell_max_x; _step_cell_x++)
+        {
             // get the tile at this position
             _tile_at_point = tilemap_get(_collision_tilemap, _step_cell_x, _cell_y) & tile_index_mask;
             
