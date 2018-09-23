@@ -7,7 +7,7 @@
 
 // drawing states
 var _capture_step_points = false;
-var _capture_step_tiles_h = false;
+var _capture_step_tiles_h = true;
 var _capture_step_tiles_v = false;
 var _capture_step_special_tiles = true;
 var _capture_collision_tiles = true;
@@ -224,6 +224,10 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
         // *the first point is always the top of the bounding box
         _cell_x = floor(_step_h_x / _tile_size);
         _cell_y = floor(_step_h_y / _tile_size);
+        scr_output(string_format(_step_h_x, 10, 20))
+        scr_output(string_format(_step_h_y, 10, 20));
+        scr_output(_cell_x, _cell_y);
+        scr_output(" ");
         
         // find how far from an interseciton the points are
         // *if the remainder is 0, then they are directly on an intersection
@@ -303,8 +307,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     _collision_slope = false;
                     _collision_x = _step_h_x - _offset_x;
                     _collision_y = _step_h_y;
-                    //_collision_move_h = 0;
-                    //_collision_move_v = _raycast_move_v - (_collision_y - _start_y);
                     _collision_floor = false;
                     _collision_ceiling = false;
                     
@@ -449,8 +451,8 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 // if the y position is off a vertical intersection by a tiny amount, round towards the intersection
                 // *GameMaker returns inconsistent solutions when calculating the sin/cos of an angle
                 var _remainder_h_y = (_step_h_y mod _tile_size);
-                if (_remainder_h_y < 0.0001) _step_h_y = floor(_step_h_y);
-                if (_tile_size - _remainder_h_y < 0.0001) _step_h_y = ceil(_step_h_y);
+                if (_remainder_h_y < 0.001) _step_h_y = floor(_step_h_y);
+                if (_tile_size - _remainder_h_y < 0.001) _step_h_y = ceil(_step_h_y);
             }
             
             // update the distance to the next vertical intersection
@@ -559,8 +561,6 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                     _collision_slope = false;
                     _collision_x = _step_v_x;
                     _collision_y = _step_v_y - _offset_y;
-                    //_collision_move_h = _raycast_move_h - (_collision_x - _start_x);
-                    //_collision_move_v = 0;
                     _collision_floor = (_raycast_move_v > 0);
                     _collision_ceiling = (_raycast_move_v < 0);
                     
@@ -667,8 +667,8 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 // if the x position is off a horizontal intersection by a tiny amount, round towards the intersection
                 // *GameMaker returns inconsistent solutions when calculating the sin/cos of an angle
                 var _remainder_v_x = (_step_v_x mod _tile_size);
-                if (_remainder_v_x < 0.0001) _step_v_x = floor(_step_v_x);
-                if (_tile_size - _remainder_v_x < 0.0001) _step_v_x = ceil(_step_v_x);
+                if (_remainder_v_x < 0.001) _step_v_x = floor(_step_v_x);
+                if (_tile_size - _remainder_v_x < 0.001) _step_v_x = ceil(_step_v_x);
             }
             
             // update the distance to the next vertical intersection

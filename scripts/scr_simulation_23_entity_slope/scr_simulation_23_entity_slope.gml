@@ -310,8 +310,8 @@ if (_distance >= _ray_target)
 
 // round each value used for comparison to the same nearest decimal place
 // *don't rely on javascript to be able to accurately track large floating point values
-_xx = round(_xx * 1000) / 1000;
-_yy = round(_yy * 1000) / 1000;
+var _xx2 = round(_xx * 1000) / 1000;
+var _yy2 = round(_yy * 1000) / 1000;
 _tile_x1 = round(_tile_x1 * 1000) / 1000;
 _tile_y1 = round(_tile_y1 * 1000) / 1000;
 _tile_x2 = round(_tile_x2 * 1000) / 1000;
@@ -319,15 +319,15 @@ _tile_y2 = round(_tile_y2 * 1000) / 1000;
 
 // if colliding with the exact corner or edge of the sloped tile
 // *it could end up calculating into another cell when dividing by the _cell_size
-if ((_xx == _tile_x1 && _yy == _tile_y1) || _xx == _tile_x2 && _yy == _tile_y2)
+if ((_xx2 == _tile_x1 && _yy2 == _tile_y1) || _xx2 == _tile_x2 && _yy2 == _tile_y2)
 {
     _tile_intercept = true;
 }
 else
 {
     // find the cell where the lines intercept
-    var _cell_x2 = floor(_xx / _tile_size);
-    var _cell_y2 = floor(_yy / _tile_size);
+    var _cell_x2 = floor(_xx2 / _tile_size);
+    var _cell_y2 = floor(_yy2 / _tile_size);
     
     // if the lines intercept within the cell that called this script
     if (_cell_x2 == _cell_x && _cell_y2 == _cell_y)
@@ -383,31 +383,6 @@ else
     // *if the slope were opposite, the lines would be perpendicular
     if (_ray_gradient != -(_tile_gradient))
     {
-        /*
-        var _m1 = _ray_gradient;
-        var _m2 = _tile_gradient;
-        
-        // get the angle between two straight lines with slope m1 and m2
-        // tan(θ) = ±(m2 - m1) / (1 + m1 * m2)
-        var _intersection_angle = darctan((_m2 - _m1) / (1 + (_m1 * _m2)));
-        
-        // if the ray is straight up or down
-        // *the angle needs to be offset when the ray is parallel to the y-axis
-        if (_m1 == 0 && _new_move_h == 0)
-        {
-            _intersection_angle = _intersection_angle - (90 * sign(_m2));
-        }
-        
-        // get the angle of the ray
-        var _ray_angle = point_direction(0, 0, _new_move_h, _new_move_v);
-        
-        // redirect the movement along the slope
-        var _len = _ray_target - _distance;
-        var _dir = _ray_angle - _intersection_angle;
-        _raycast_slope_move_h = lengthdir_x(_len, _dir);
-        _raycast_slope_move_v = lengthdir_y(_len, _dir);
-        */
-        
         var _m1 = _ray_gradient;
         var _m2 = _tile_gradient;
         
@@ -433,7 +408,7 @@ else
         
         // make sure the slope redirection would not cause the entity to move in an opposite direction
         // *if its moving straight north, it can continue north west or north east
-        // *if its moving north east, it can only continue moving north east
+        // *if its moving north east, it can only continue moving north east on a different angle
         if (sign(_new_move_h) == 0 || sign(_new_move_v) == 0)
         {
             _raycast_slope_move_h = _dir_x;

@@ -206,11 +206,29 @@ if (false)
     move_distance = 40;
 }
 
+if (false)
+{
+    // 67.5 to 22.5 slopes
+    inst_x = 44 * global.TILE_SIZE;
+    inst_y = 26 * global.TILE_SIZE;
+    move_angle = 102;
+    move_distance = 40;
+}
+
+if (false)
+{
+    // 22.5 corner slopes
+    inst_x = 44 * global.TILE_SIZE;
+    inst_y = 26 * global.TILE_SIZE;
+    move_angle = 340;
+    move_distance = 40;
+}
+
 if (true)
 {
-    inst_x = 43 * global.TILE_SIZE;
-    inst_y = 26 * global.TILE_SIZE;
-    move_angle = 61;
+    inst_x = 23 * global.TILE_SIZE;
+    inst_y = 30 * global.TILE_SIZE;
+    move_angle = 197;
     move_distance = 40;
 }
 
