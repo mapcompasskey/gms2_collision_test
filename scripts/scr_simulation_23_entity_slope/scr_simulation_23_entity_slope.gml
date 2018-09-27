@@ -295,8 +295,27 @@ else if (_new_move_v == 0)
 else
 {
     // find the point where the lines intersect
-    _xx = (_tile_y_intercept - _ray_y_intercept) / (_ray_gradient - _tile_gradient);
-    _yy = (_ray_gradient * _xx) + _ray_y_intercept;
+    //_xx = (_tile_y_intercept - _ray_y_intercept) / (_ray_gradient - _tile_gradient);
+    //_yy = (_ray_gradient * _xx) + _ray_y_intercept;
+    
+    // http://www-cs.ccny.cuny.edu/~wolberg/capstone/intersection/Intersection%20point%20of%20two%20lines.html
+    var x1 = _start_x;
+    var y1 = _start_y;
+    var x2 = _start_x + _new_move_h;
+    var y2 = _start_y + _new_move_v;
+    
+    var x3 = _tile_x1;
+    var y3 = _tile_y1;
+    var x4 = _tile_x2;
+    var y4 = _tile_y2;
+    
+    var ua1 = ((x4 - x3) * (y1 - y3)) - ((y4 - y3) * (x1 - x3));
+    var ua2 = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1));
+    var ua = ua1 / ua2;
+    
+    var _xx = x1 + (ua * (x2 - x1));
+    var _yy = y1 + (ua * (y2 - y1));
+    
 }
 
 // find the distance from the starting point to where the collision occurred

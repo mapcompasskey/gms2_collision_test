@@ -266,6 +266,12 @@ if ( ! _sticky)
 /**
  * Find the Point of Intersection
  *
+ * intersection of two straight lines
+ *  (m1 * x) + b1 = (m2 * x) + b2
+ *  (m1 * x) = (m2 * x) + b2 - b1
+ *  (m1 * x) - (m2 * x) = b2 - b1
+ *  (m1 - m2) * x = (b2 - b1)
+ *  x = (b2 - b1) / (m1 - m2)
  */
 
 var _xx, _yy;
@@ -291,12 +297,80 @@ else if (_new_move_v == 0)
     _xx = (_yy - _tile_y_intercept) / _tile_gradient;
 }
 
-// else, both lines are slopedee
+// else, both lines are sloped
 else
 {
+    /*
     // find the point where the lines intersect
     _xx = (_tile_y_intercept - _ray_y_intercept) / (_ray_gradient - _tile_gradient);
     _yy = (_ray_gradient * _xx) + _ray_y_intercept;
+    //var _yy_tile = (_tile_gradient * _xx) + _tile_y_intercept;
+    */
+    
+    /**/
+    // http://www-cs.ccny.cuny.edu/~wolberg/capstone/intersection/Intersection%20point%20of%20two%20lines.html
+    var x1 = _start_x;
+    var y1 = _start_y;
+    var x2 = _start_x + _new_move_h;
+    var y2 = _start_y + _new_move_v;
+    
+    var x3 = _tile_x1;
+    var y3 = _tile_y1;
+    var x4 = _tile_x2;
+    var y4 = _tile_y2;
+    
+    var ua1 = ((x4 - x3) * (y1 - y3)) - ((y4 - y3) * (x1 - x3));
+    var ua2 = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1));
+    var ua = ua1 / ua2;
+    
+    var _xx = x1 + (ua * (x2 - x1));
+    var _yy = y1 + (ua * (y2 - y1));
+    
+    //scr_output(" ");
+    
+    //scr_output("_xx", string_format(_xx, 1, 20));
+    //scr_output("_yy", string_format(_yy, 1, 20));
+    
+    //scr_output("_xx2", string_format(_xx2, 1, 20));
+    //scr_output("_yy2", string_format(_yy2, 1, 20));
+    
+    //scr_output(" ");
+    //scr_output("_xx", string_format(_xx, 1, 20));
+    //scr_output("_yy1", string_format(_yy, 1, 20));
+    //scr_output("_yy2", string_format(_yy_tile, 1, 20));
+    
+    //scr_output("_ray_y_intercept", string_format(_ray_y_intercept, 1, 20));
+    //scr_output("_ray_gradient", string_format(_ray_gradient, 1, 20));
+    //scr_output("_tile_y_intercept", string_format(_tile_y_intercept, 1, 20));
+    //scr_output("_tile_gradient", string_format(_tile_gradient, 1, 20));
+    /**/
+    
+    /*
+    var p1_x = _start_x;
+    var p1_y = _start_y;
+    var q1_x = _start_x + _new_move_h;
+    var q1_y = _start_y + _new_move_v;
+    
+    var p2_x = _tile_x1;
+    var p2_y = _tile_y1;
+    var q2_x = _tile_x2;
+    var q2_y = _tile_y2;
+    
+    var o1 = (q1_y - p1_y) * (p2_x - q1_x) - (q1_x - p1_x) * (p2_y - q1_y);
+    var o2 = (q1_y - p1_y) * (q2_x - q1_x) - (q1_x - p1_x) * (q2_y - q1_y);
+    var o3 = (q2_y - p2_y) * (p1_x - q2_x) - (q2_x - p2_x) * (p1_y - q2_y);
+    var o4 = (q2_y - p2_y) * (q1_x - q2_x) - (q2_x - p2_x) * (q1_y - q2_y);
+    
+    if (o1 != o2 && o3 != o4) 
+    {
+        //return true;
+    }
+    else
+    {
+        return false;
+    }
+    */
+
 }
 
 // find the distance from the starting point to where the collision occurred

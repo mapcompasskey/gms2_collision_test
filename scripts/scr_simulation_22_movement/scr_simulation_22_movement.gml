@@ -63,6 +63,9 @@ raycast_slope_collision_gradient = 0;
 // get the top left position of the instance
 var _x = inst_x + sprite_bbox_left;
 var _y = inst_y + sprite_bbox_top;
+scr_output(" ");
+scr_output("_x", string_format(_x, 1, 20));
+scr_output("_y", string_format(_y, 1, 20));
 
 // the total distance to move this step
 var _move_h = 0;
@@ -82,14 +85,21 @@ while (_i < 5)
     // update the starting point
     _x += raycast_move_h;
     _y += raycast_move_v;
+    scr_output(" ");
+    scr_output("_x", string_format(_x, 1, 20));
+    scr_output("_y", string_format(_y, 1, 20));
     
     // update the movement values
     _move_h += raycast_move_h;
     _move_v += raycast_move_v;
+    scr_output("_move_h", string_format(_move_h, 1, 20));
+    scr_output("_move_v", string_format(_move_v, 1, 20));
     
     // get the remaining distance to test next
     _next_move_h = raycast_next_move_h;
     _next_move_v = raycast_next_move_v;
+    scr_output("_next_move_h", string_format(_next_move_h, 1, 20));
+    scr_output("_next_move_v", string_format(_next_move_v, 1, 20));
     
     // merge collision states
     collision_h = (collision_h ? collision_h : raycast_collision_h);

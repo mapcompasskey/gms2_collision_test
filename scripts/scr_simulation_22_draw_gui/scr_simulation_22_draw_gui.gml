@@ -142,9 +142,10 @@ if (ds_list_size(global.GUI_DRAW_POINTS) > 0)
 
 var txt = "";
 txt += simulation_name + "\n";
-txt += "p1: (" + string(inst_x) + ", " + string(inst_y) + ")" + "\n";
-//txt += "p2: (" + string(inst_x + new_move_h) + ", " + string(inst_y + new_move_v) + ")" + "\n";
-txt += "p2: (" + string(inst_x2) + ", " + string(inst_y2) + ")" + "\n";
+//txt += "p1: (" + string(inst_x) + ", " + string(inst_y) + ")" + "\n";
+//txt += "p2: (" + string(inst_x2) + ", " + string(inst_y2) + ")" + "\n";
+txt += "p1: (" + string_format(inst_x, 1, 20) + ", " + string_format(inst_y, 1, 20) + ")" + "\n";
+txt += "p2: (" + string_format(inst_x2, 1, 20) + ", " + string_format(inst_y2, 1, 20) + ")" + "\n";
 txt += "angle Deg: " + string_format(move_angle, 1, 5) + "\n";
 txt += "angle Rad: " + string_format(move_angle_rads, 1, 5) + "\n";
 txt += "h collision: " + (collision_h ? "true" : "false") + "\n";

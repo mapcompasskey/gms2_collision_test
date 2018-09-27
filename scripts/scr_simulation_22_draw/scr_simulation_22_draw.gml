@@ -8,7 +8,7 @@
 
 draw_sprite(sprite_index, 0, inst_x, inst_y);
 //draw_sprite_ext(sprite_index, 0, (inst_x + new_move_h), (inst_y + new_move_v), 1, 1, 0, c_red, 0.8);
-draw_sprite_ext(sprite_index, 0, inst_x2, inst_y2, 1, 1, 0, c_red, 0.8);
+draw_sprite_ext(sprite_index, 0, inst_x2, inst_y2, 1, 1, 0, c_purple, 1);
 
 
 /**
@@ -31,7 +31,7 @@ if (ds_list_size(global.DRAW_CELLS) > 0)
         color = ds_list_find_value(temp_list, 2);
         if (color != noone)
         {
-            draw_sprite_ext(spr_point, 0, x1 + 1, y1 + 1, global.TILE_SIZE - 2, global.TILE_SIZE - 2, 0, color, 0.5);
+            draw_sprite_ext(spr_point, 0, x1 + 1, y1 + 1, global.TILE_SIZE - 2, global.TILE_SIZE - 2, 0, color, 0.25);
         }
     }
     // else, display all the cells
@@ -45,7 +45,7 @@ if (ds_list_size(global.DRAW_CELLS) > 0)
             color = ds_list_find_value(temp_list, 2);
             if (color != noone)
             {
-                draw_sprite_ext(spr_point, 0, x1 + 1, y1 + 1, global.TILE_SIZE - 2, global.TILE_SIZE - 2, 0, color, 0.5);
+                draw_sprite_ext(spr_point, 0, x1 + 1, y1 + 1, global.TILE_SIZE - 2, global.TILE_SIZE - 2, 0, color, 0.25);
             }
         }
     }
