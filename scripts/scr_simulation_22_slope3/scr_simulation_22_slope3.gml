@@ -1,4 +1,4 @@
-/// @function scr_simulation_22_slope(x, y, move_h, move_v, tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
+/// @function scr_simulation_22_slope3(x, y, move_h, move_v, tile_at_point, cell_x, cell_y, ray_gradient, ray_target);
 /// @param {number} x            - the x position to start
 /// @param {number} y            - the y position to start
 /// @param {real} tile_at_point  - the index of the tile that was intersected
@@ -266,49 +266,153 @@ if ( ! _sticky)
 /**
  * Find the Point of Intersection
  *
- * http://www-cs.ccny.cuny.edu/~wolberg/capstone/intersection/Intersection%20point%20of%20two%20lines.html
  * intersection of two straight lines
  *  (m1 * x) + b1 = (m2 * x) + b2
- *
- * solve for x:
  *  (m1 * x) = (m2 * x) + b2 - b1
  *  (m1 * x) - (m2 * x) = b2 - b1
  *  (m1 - m2) * x = (b2 - b1)
  *  x = (b2 - b1) / (m1 - m2)
  */
 
-var x1 = _start_x;
-var y1 = _start_y;
-var x2 = _start_x + _new_move_h;
-var y2 = _start_y + _new_move_v;
-    
-var x3 = _tile_x1;
-var y3 = _tile_y1;
-var x4 = _tile_x2;
-var y4 = _tile_y2;
-    
-var ua1 = ((x4 - x3) * (y1 - y3)) - ((y4 - y3) * (x1 - x3));
-var ua2 = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1));
+var _xx, _yy;
+var _tile_intercept = false;
 
-var ub1 = ((x2 - x1) * (y1 - y3)) - ((y2 - y1) * (x1 - x3));
-var ub2 = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1));
+// find the y-intercepts for both lines
+var _ray_y_intercept = _start_y - (_ray_gradient * _start_x);
+var _tile_y_intercept = _tile_y1 - (_tile_gradient * _tile_x1);
 
-if (ua2 == 0 || ub2 == 0)
+// if a vertical line
+// *the ray's x position is always x1, so just plug x into the second line's equation and solve for y
+if (_new_move_h == 0)
 {
-    return false;
+    _xx = _start_x;
+    _yy = (_tile_gradient * _xx) + _tile_y_intercept;
 }
 
-var ua = ua1 / ua2;
-var ub = ub1 / ub2;
+// else, if a horizontal line
+// *the ray's y position is always y1, so just plug y into the second line's equation and solve for x
+else if (_new_move_v == 0)
+{
+    _yy = _start_y;
+    _xx = (_yy - _tile_y_intercept) / _tile_gradient;
+}
 
-var _xx = x1 + (ua * (x2 - x1));
-var _yy = y1 + (ua * (y2 - y1));
+// else, both lines are sloped
+else
+{
+    /*
+    // find the point where the lines intersect
+    _xx = (_tile_y_intercept - _ray_y_intercept) / (_ray_gradient - _tile_gradient);
+    _yy = (_ray_gradient * _xx) + _ray_y_intercept;
+    //var _yy_tile = (_tile_gradient * _xx) + _tile_y_intercept;
+    */
+    
+    /**/
+    // http://www-cs.ccny.cuny.edu/~wolberg/capstone/intersection/Intersection%20point%20of%20two%20lines.html
+    var x1 = _start_x;
+    var y1 = _start_y;
+    var x2 = _start_x + _new_move_h;
+    var y2 = _start_y + _new_move_v;
+    
+    var x3 = _tile_x1;
+    var y3 = _tile_y1;
+    var x4 = _tile_x2;
+    var y4 = _tile_y2;
+    
+    var ua1 = ((x4 - x3) * (y1 - y3)) - ((y4 - y3) * (x1 - x3));
+    var ua2 = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1));
+    var ua = ua1 / ua2;
+    
+    var _xx = x1 + (ua * (x2 - x1));
+    var _yy = y1 + (ua * (y2 - y1));
+    
+    //scr_output(" ");
+    
+    //scr_output("_xx", string_format(_xx, 1, 20));
+    //scr_output("_yy", string_format(_yy, 1, 20));
+    
+    //scr_output("_xx2", string_format(_xx2, 1, 20));
+    //scr_output("_yy2", string_format(_yy2, 1, 20));
+    
+    //scr_output(" ");
+    //scr_output("_xx", string_format(_xx, 1, 20));
+    //scr_output("_yy1", string_format(_yy, 1, 20));
+    //scr_output("_yy2", string_format(_yy_tile, 1, 20));
+    
+    //scr_output("_ray_y_intercept", string_format(_ray_y_intercept, 1, 20));
+    //scr_output("_ray_gradient", string_format(_ray_gradient, 1, 20));
+    //scr_output("_tile_y_intercept", string_format(_tile_y_intercept, 1, 20));
+    //scr_output("_tile_gradient", string_format(_tile_gradient, 1, 20));
+    /**/
+    
+    /*
+    var p1_x = _start_x;
+    var p1_y = _start_y;
+    var q1_x = _start_x + _new_move_h;
+    var q1_y = _start_y + _new_move_v;
+    
+    var p2_x = _tile_x1;
+    var p2_y = _tile_y1;
+    var q2_x = _tile_x2;
+    var q2_y = _tile_y2;
+    
+    var o1 = (q1_y - p1_y) * (p2_x - q1_x) - (q1_x - p1_x) * (p2_y - q1_y);
+    var o2 = (q1_y - p1_y) * (q2_x - q1_x) - (q1_x - p1_x) * (q2_y - q1_y);
+    var o3 = (q2_y - p2_y) * (p1_x - q2_x) - (q2_x - p2_x) * (p1_y - q2_y);
+    var o4 = (q2_y - p2_y) * (q1_x - q2_x) - (q2_x - p2_x) * (q1_y - q2_y);
+    
+    if (o1 != o2 && o3 != o4) 
+    {
+        //return true;
+    }
+    else
+    {
+        return false;
+    }
+    */
+
+}
 
 // find the distance from the starting point to where the collision occurred
 var _distance = point_distance(_start_x, _start_y, _xx, _yy);
 
 // if the distance to the point of collision exceedes the maximum target distance
 if (_distance >= _ray_target)
+{
+    return false;
+}
+
+// round each value used for comparison to the same nearest decimal place
+// *don't rely the platform to be able to accurately track large floating point values
+var _xx2 = round(_xx * 1000) / 1000;
+var _yy2 = round(_yy * 1000) / 1000;
+_tile_x1 = round(_tile_x1 * 1000) / 1000;
+_tile_y1 = round(_tile_y1 * 1000) / 1000;
+_tile_x2 = round(_tile_x2 * 1000) / 1000;
+_tile_y2 = round(_tile_y2 * 1000) / 1000;
+
+// if colliding with the exact corner or edge of the sloped tile
+// *it could end up calculating into another cell when dividing by the _cell_size
+if ((_xx2 == _tile_x1 && _yy2 == _tile_y1) || _xx2 == _tile_x2 && _yy2 == _tile_y2)
+{
+    _tile_intercept = true;
+}
+else
+{
+    // find the cell where the lines intercept
+    var _cell_x2 = floor(_xx / _tile_size);
+    var _cell_y2 = floor(_yy / _tile_size);
+    
+    // if the lines intercept within the cell that called this script
+    if (_cell_x2 == _cell_x && _cell_y2 == _cell_y)
+    {
+        _tile_intercept = true;
+    }
+    
+}
+
+// if the lines don't intercept within this tile
+if ( ! _tile_intercept)
 {
     return false;
 }
@@ -355,12 +459,10 @@ if (has_gravity)
     // if there is horizontal movement remaining
     if (_new_move_h != 0)
     {
-        /*
         // redirect only the remaining horizontal movement along the slope
         var _distance_h = point_distance(_xx, 0, _start_x + _new_move_h, 0);
         _raycast_slope_move_h = _distance_h * _tile_cosine;
         _raycast_slope_move_v = ((_tile_gradient * (_xx + _raycast_slope_move_h)) + _tile_y_intercept) - _yy;
-        */
     }
 }
 

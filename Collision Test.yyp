@@ -2311,6 +2311,14 @@
             }
         },
         {
+            "Key": "fd93666f-54c3-409d-a646-ee83074de103",
+            "Value": {
+                "id": "a6339ed9-0bf9-424f-9fc2-060dd987bf7c",
+                "resourcePath": "scripts\\scr_simulation_22_slope3\\scr_simulation_22_slope3.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "fe498e56-a02d-4338-ae1e-8add813f4bdb",
             "Value": {
                 "id": "51e29591-be1b-4ba2-9581-67d073f178fc",
@@ -2491,6 +2499,7 @@
         "602c536a-3b56-4f95-8177-853c59b122e7",
         "593d27ab-ddaf-4e9b-b4c2-45dabba7d1f7",
         "d29ca6a2-f3d8-4493-a96b-8309b7826e58",
+        "fd93666f-54c3-409d-a646-ee83074de103",
         "d6c715dd-c29c-4576-8540-f597cb6a3dc4",
         "05c50639-9be4-4b45-88b6-d2b0b1bf0377",
         "0ae81a81-a464-483d-859a-6d622b476d6d",
