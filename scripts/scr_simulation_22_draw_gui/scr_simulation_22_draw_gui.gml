@@ -59,7 +59,7 @@ draw_line(x1, y1, x2, y2);
 /**
  * Draw Bounding Box Rays
  *
- */
+ * /
 
 var temp_list;
 var x1, y1, x2, y2;
@@ -72,6 +72,49 @@ for (var points_idx = 0; points_idx < ds_list_size(global.GUI_BBOX_POINTS); poin
 {
     // get the points around the bounding box
     temp_list = ds_list_find_value(global.GUI_BBOX_POINTS, points_idx);
+    
+    // get the starting point
+    x1 = ds_list_find_value(temp_list, 0);
+    y1 = ds_list_find_value(temp_list, 1);
+    x2 = ds_list_find_value(temp_list, 2);
+    y2 = ds_list_find_value(temp_list, 3);
+    
+    color = ds_list_find_value(temp_list, 4);
+    draw_set_colour(color);
+    
+    // scale and offset the points
+    x1 = (x1 - camera_x) * view_scale;
+    y1 = (y1 - camera_y) * view_scale;
+    x2 = (x2 - camera_x) * view_scale;
+    y2 = (y2 - camera_y) * view_scale;
+    
+    // draw the line
+    draw_line(x1, y1, x2, y2);
+}
+
+
+/**
+ * Draw Bounding Box Rays
+ *
+ */
+
+var temp_list;
+var x1, y1, x2, y2;
+var color;
+
+draw_set_alpha(0.5);
+
+var _bbox_points = global.GUI_BBOX_POINTS;
+if (global.DRAW_CELL_INDEX >= 0)
+{
+    _bbox_points = global.GUI_BBOX_POINTS_2;
+}
+
+// iterate through all the points around the bounding box
+for (var points_idx = 0; points_idx < ds_list_size(_bbox_points); points_idx++)
+{
+    // get the points around the bounding box
+    temp_list = ds_list_find_value(_bbox_points, points_idx);
     
     // get the starting point
     x1 = ds_list_find_value(temp_list, 0);

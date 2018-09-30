@@ -240,6 +240,7 @@ ds_list_clear(global.GUI_ROOM_AXES);
 ds_list_clear(global.GUI_ROOM_X_AXIS);
 ds_list_clear(global.GUI_ROOM_Y_AXIS);
 ds_list_clear(global.GUI_BBOX_POINTS);
+ds_list_clear(global.GUI_BBOX_POINTS_2);
 
 
 /**

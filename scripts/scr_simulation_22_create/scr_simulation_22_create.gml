@@ -41,6 +41,7 @@ global.GUI_ROOM_Y_AXIS = ds_list_create();
 
 // ds_list to store the collision rays
 global.GUI_BBOX_POINTS = ds_list_create();
+global.GUI_BBOX_POINTS_2 = ds_list_create();
 
 // include tile definitions
 script_execute(script_tile_definitions);
