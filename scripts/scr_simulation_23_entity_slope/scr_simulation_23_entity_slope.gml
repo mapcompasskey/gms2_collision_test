@@ -266,7 +266,7 @@ if ( ! _sticky)
 /**
  * Find the Point of Intersection
  *
- */
+ * /
 
 var _xx, _yy;
 var _tile_intercept = false;
@@ -364,6 +364,57 @@ if ( ! _tile_intercept)
 
 
 /**
+ * Find the Point of Intersection
+ *
+ * http://www-cs.ccny.cuny.edu/~wolberg/capstone/intersection/Intersection%20point%20of%20two%20lines.html
+ * intersection of two straight lines
+ *  (m1 * x) + b1 = (m2 * x) + b2
+ *
+ * solve for x:
+ *  (m1 * x) = (m2 * x) + b2 - b1
+ *  (m1 * x) - (m2 * x) = b2 - b1
+ *  (m1 - m2) * x = (b2 - b1)
+ *  x = (b2 - b1) / (m1 - m2)
+ */
+
+var x1 = _start_x;
+var y1 = _start_y;
+var x2 = _start_x + _new_move_h;
+var y2 = _start_y + _new_move_v;
+    
+var x3 = _tile_x1;
+var y3 = _tile_y1;
+var x4 = _tile_x2;
+var y4 = _tile_y2;
+    
+var ua1 = ((x4 - x3) * (y1 - y3)) - ((y4 - y3) * (x1 - x3));
+var ua2 = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1));
+
+var ub1 = ((x2 - x1) * (y1 - y3)) - ((y2 - y1) * (x1 - x3));
+var ub2 = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1));
+
+if (ua2 == 0 || ub2 == 0)
+{
+    return false;
+}
+
+var ua = ua1 / ua2;
+var ub = ub1 / ub2;
+
+var _xx = x1 + (ua * (x2 - x1));
+var _yy = y1 + (ua * (y2 - y1));
+
+// find the distance from the starting point to where the collision occurred
+var _distance = point_distance(_start_x, _start_y, _xx, _yy);
+
+// if the distance to the point of collision exceedes the maximum target distance
+if (_distance >= _ray_target)
+{
+    return false;
+}
+
+
+/**
  * Update Instance Variables
  *
  */
@@ -389,6 +440,7 @@ if (has_gravity)
     if (_new_move_h != 0)
     {
         // redirect only the remaining horizontal movement along the slope
+        var _tile_y_intercept = _tile_y1 - (_tile_gradient * _tile_x1);
         var _distance_h = point_distance(_xx, 0, _start_x + _new_move_h, 0);
         _raycast_slope_move_h = _distance_h * _tile_cosine;
         _raycast_slope_move_v = ((_tile_gradient * (_xx + _raycast_slope_move_h)) + _tile_y_intercept) - _yy;

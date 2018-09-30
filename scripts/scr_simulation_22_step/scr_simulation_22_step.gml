@@ -47,38 +47,10 @@ else if (keyboard_check_pressed(ord(chr(189))))
 
 
 /**
- * Move Camera
- *
- */
- 
-if (keyboard_check_pressed(vk_left))
-{
-    camera_x -= 10;
-    update_simulation = true;
-}
-else if (keyboard_check_pressed(vk_right))
-{
-    camera_x += 10;
-    update_simulation = true;
-}
-
-if (keyboard_check_pressed(vk_up))
-{
-    camera_y -= 10;
-    update_simulation = true;
-}
-else if (keyboard_check_pressed(vk_down))
-{
-    camera_y += 10;
-    update_simulation = true;
-}
-
-
-/**
  * Move Simulation
  *
  */
- 
+
 if (keyboard_check_pressed(ord("A")))
 {
     if (keyboard_check(vk_shift)) inst_x -= 10;
@@ -102,6 +74,13 @@ else if (keyboard_check_pressed(ord("S")))
 {
     if (keyboard_check(vk_shift)) inst_y += 10;
     else inst_y += 1;
+    update_simulation = true;
+}
+
+if (mouse_check_button_pressed(mb_left))
+{
+    inst_x = round(mouse_x);
+    inst_y = round(mouse_y);
     update_simulation = true;
 }
 
@@ -242,7 +221,10 @@ update_simulation = false;
  *
  */
 
-// update the camera position
+camera_x = inst_x - (camera_width / 2);
+camera_y = inst_y - (camera_height / 2);
+//camera_x = floor(camera_x / global.TILE_SIZE) * global.TILE_SIZE;
+//camera_y = floor(camera_y / global.TILE_SIZE) * global.TILE_SIZE;
 camera_set_view_pos(camera, camera_x, camera_y);
 
 
