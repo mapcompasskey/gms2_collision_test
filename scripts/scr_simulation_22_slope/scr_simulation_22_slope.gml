@@ -304,6 +304,13 @@ var ub = ub1 / ub2;
 var _xx = x1 + (ua * (x2 - x1));
 var _yy = y1 + (ua * (y2 - y1));
 
+// if this collision is occurring after a slope collision
+if (raycast_slope_collision_gradient != 0)
+{
+    _xx = round(_xx);
+    _yy = round(_yy);
+}
+
 // find the distance from the starting point to where the collision occurred
 var _distance = point_distance(_start_x, _start_y, _xx, _yy);
 
@@ -323,7 +330,7 @@ if (_distance >= _ray_target)
 raycast_slope_x = _xx - _offset_x;
 raycast_slope_y = _yy - _offset_y;
 
-// if capturing the horizontal intersections and cells
+// if capturing the intersections and cells
 if (global.CAPTURE_CELLS_H || global.CAPTURE_CELLS_V)
 {
     // create an empty space in the ds_list
@@ -355,12 +362,11 @@ if (has_gravity)
     // if there is horizontal movement remaining
     if (_new_move_h != 0)
     {
-        /*
         // redirect only the remaining horizontal movement along the slope
+        var _tile_y_intercept = _tile_y1 - (_tile_gradient * _tile_x1);
         var _distance_h = point_distance(_xx, 0, _start_x + _new_move_h, 0);
         _raycast_slope_move_h = _distance_h * _tile_cosine;
         _raycast_slope_move_v = ((_tile_gradient * (_xx + _raycast_slope_move_h)) + _tile_y_intercept) - _yy;
-        */
     }
 }
 
@@ -420,16 +426,5 @@ else
 // update the redirection movement values
 raycast_slope_move_h = _raycast_slope_move_h;
 raycast_slope_move_v = _raycast_slope_move_v;
-
-/*
-if (true)
-{
-    // capture the point on the slope where collision occurred
-    var _list = ds_list_create();
-    ds_list_add(_list, _xx, _yy, global.COLLISION_SLOPE_COLOR);
-    ds_list_add(global.GUI_DRAW_POINTS, _list);
-    ds_list_mark_as_list(global.GUI_DRAW_POINTS, ds_list_size(global.GUI_DRAW_POINTS) - 1);
-}
-*/
 
 return true;

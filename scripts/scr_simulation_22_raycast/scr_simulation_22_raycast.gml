@@ -104,37 +104,33 @@ var _height = (bbox_height + 1);
 var _offset_x = (_raycast_move_h > 0 ? _width : 0);
 var _offset_y = (_raycast_move_v > 0 ? _height : 0);
 
-// draw the rays from start to finish
-//if (global.DRAW_CELL_INDEX < 0)
-//{
-    // horizontal rays
-    if (_raycast_move_h != 0)
-    {
-        var _temp_list = ds_list_create();
-        ds_list_add(_temp_list, (_start_x + _offset_x), _start_y, (_start_x + _offset_x + _raycast_move_h), (_start_y + _raycast_move_v), global.COLLISION_H_COLOR);
-        ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
-        ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
-        
-        var _temp_list = ds_list_create();
-        ds_list_add(_temp_list, (_start_x + _offset_x), (_start_y + _height), (_start_x + _offset_x + _raycast_move_h), (_start_y + _height + _raycast_move_v), global.COLLISION_H_COLOR);
-        ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
-        ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
-    }
+// horizontal rays
+if (_raycast_move_h != 0)
+{
+    var _temp_list = ds_list_create();
+    ds_list_add(_temp_list, (_start_x + _offset_x), _start_y, (_start_x + _offset_x + _raycast_move_h), (_start_y + _raycast_move_v), global.COLLISION_H_COLOR);
+    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
+    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
     
-    // vertical rays
-    if (_raycast_move_v != 0)
-    {
-        var _temp_list = ds_list_create();
-        ds_list_add(_temp_list, _start_x, (_start_y + _offset_y), (_start_x + _raycast_move_h), (_start_y + _offset_y + _raycast_move_v), global.COLLISION_V_COLOR);
-        ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
-        ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
-        
-        var _temp_list = ds_list_create();
-        ds_list_add(_temp_list, (_start_x + _width), (_start_y + _offset_y), (_start_x + _width + _raycast_move_h), (_start_y + _offset_y + _raycast_move_v), global.COLLISION_V_COLOR);
-        ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
-        ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
-    }
-//}
+    var _temp_list = ds_list_create();
+    ds_list_add(_temp_list, (_start_x + _offset_x), (_start_y + _height), (_start_x + _offset_x + _raycast_move_h), (_start_y + _height + _raycast_move_v), global.COLLISION_H_COLOR);
+    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
+    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
+}
+    
+// vertical rays
+if (_raycast_move_v != 0)
+{
+    var _temp_list = ds_list_create();
+    ds_list_add(_temp_list, _start_x, (_start_y + _offset_y), (_start_x + _raycast_move_h), (_start_y + _offset_y + _raycast_move_v), global.COLLISION_V_COLOR);
+    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
+    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
+    
+    var _temp_list = ds_list_create();
+    ds_list_add(_temp_list, (_start_x + _width), (_start_y + _offset_y), (_start_x + _width + _raycast_move_h), (_start_y + _offset_y + _raycast_move_v), global.COLLISION_V_COLOR);
+    ds_list_add(global.GUI_BBOX_POINTS, _temp_list);
+    ds_list_mark_as_list(global.GUI_BBOX_POINTS, ds_list_size(global.GUI_BBOX_POINTS) - 1);
+}
 
 
 /**
@@ -508,7 +504,7 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 _cell_max_x -= 1;
             }
         }
-        
+        /*
         // if capturing the vertical intersections and cells
         if (global.CAPTURE_CELLS_V)
         {
@@ -529,7 +525,7 @@ while ((_test_h || _test_v) && ! _raycast_collision_h && ! _raycast_collision_v)
                 _i++;
             }
         }
-        
+        */
         // for every vertical intersection the ray is cast through, check every horizontal tile between the left and right sides of the bounding box
         for (_step_cell_x = _cell_x; _step_cell_x <= _cell_max_x; _step_cell_x++)
         {

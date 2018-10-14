@@ -404,6 +404,13 @@ var ub = ub1 / ub2;
 var _xx = x1 + (ua * (x2 - x1));
 var _yy = y1 + (ua * (y2 - y1));
 
+// if this collision is occurring after a slope collision
+if (raycast_slope_collision_gradient != 0)
+{
+    _xx = round(_xx);
+    _yy = round(_yy);
+}
+
 // find the distance from the starting point to where the collision occurred
 var _distance = point_distance(_start_x, _start_y, _xx, _yy);
 
